@@ -1,0 +1,16 @@
+
+.highlighter-rouge {
+	margin-top: 2rem;
+	margin-bottom: 2rem;
+	border: solid;
+	border: 1px;
+	border-color: red;
+	background-color: beige;
+	box-shadow: 0px 1px 3px 0px rgba(0,0,0,0.4);
+	padding-left: 2rem;
+	padding-top: 2rem;
+	padding-bottom: 2rem;
+	width: 50%;
+}
+
+

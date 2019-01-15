@@ -1,0 +1,73 @@
+
+.ketu {
+}
+
+.sukra1 {
+	background-color: var(--sukra-colour);
+}
+
+.surya1 {
+	background-color: var(--surya-colour);
+}
+
+.chandra1 {
+	background-color: var(--chandra-colour);
+}
+
+.mangal1 {
+	background-color: var(--mangal-colour);
+}
+
+.rahu1 {
+	background-color: var(--rahu-colour);
+}
+
+.guru1 {
+	background-color: var(--guru-colour);
+}
+
+.sani1 {
+	background-color: var(--sani-colour);
+}
+
+:root {
+	--green-hig: rgba(121, 208, 77, 1);
+	--green-mid: rgba(181, 228, 168, 1);
+	--green-low: rgba(91, 168, 53, 1);
+}
+
+.budha1 {
+	background: var(--green-mid);
+	background: -webkit-gradient(
+		left top, left bottom,
+		color-stop(0%,   var(--green-hig)),
+		color-stop(30%,  var(--green-mid)),
+		color-stop(100%, var(--green-low)));
+	background: -webkit-linear-gradient(
+		90deg,
+		var(--green-hig) 0%,
+		var(--green-mid) 30%,
+		var(--green-low) 100%);
+	background: -moz-linear-gradient(
+		90deg,
+		var(--green-hig) 0%,
+		var(--green-mid) 30%,
+		var(--green-low) 100%);
+	background: -ms-linear-gradient(
+		90deg,
+		var(--green-hig) 0%,
+		var(--green-mid) 30%,
+		var(--green-low) 100%);
+	background: -o-linear-gradient(
+		90deg,
+		var(--green-hig) 0%,
+		var(--green-mid) 30%,
+		var(--green-low) 100%);
+	background: linear-gradient(
+		180deg,
+		var(--green-hig) 0%,
+		var(--green-mid) 30%,
+		var(--green-low) 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='--green-low', endColorstr='--green-hig', GradientType=0 );
+}
+

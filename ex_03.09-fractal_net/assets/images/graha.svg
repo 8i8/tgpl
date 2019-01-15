@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
+     xmlns:cc="http://creativecommons.org/ns#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:svg="http://www.w3.org/2000/svg"
+     xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink"
+     id="svg7151"
+     viewBox="0 0 290 290"
+     version="1.1">
+    <metadata
+    	http-equiv="Etag"
+	content="2018-12-22"
+         id="metadata7107">
+        <rdf:RDF>
+            <cc:Work
+                 rdf:about="">
+                <dc:format>image/svg+xml</dc:format>
+                <dc:type
+                     rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+                <dc:title></dc:title>
+            </cc:Work>
+        </rdf:RDF>
+    </metadata>
+    <defs
+         id="defs7130">
+        <filter
+             x="-.09"
+             y="-.09"
+             width="1.18"
+             height="1.18"
+             style="color-interpolation-filters:sRGB"
+             id="d">
+            <feGaussianBlur
+                 id="feGaussianBlur7109"
+                 stdDeviation="8.450171" />
+        </filter>
+        <filter
+             x="-.089999"
+             y="-.090001"
+             width="1.18"
+             height="1.18"
+             style="color-interpolation-filters:sRGB"
+             id="c">
+            <feGaussianBlur
+                 id="feGaussianBlur7112"
+                 stdDeviation="5.9777711" />
+        </filter>
+        <filter
+             x="-.09"
+             y="-.09"
+             width="1.18"
+             height="1.18"
+             style="color-interpolation-filters:sRGB"
+             id="b">
+            <feGaussianBlur
+                 id="feGaussianBlur7115"
+                 stdDeviation="3.6627685" />
+        </filter>
+        <filter
+             x="-.588"
+             y="-.588"
+             width="2.176"
+             height="2.176"
+             style="color-interpolation-filters:sRGB"
+             id="a">
+            <feGaussianBlur
+                 id="feGaussianBlur7118"
+                 stdDeviation="6.9370408" />
+        </filter>
+        <filter
+             x="-.97082"
+             y="-.97078"
+             width="2.9416"
+             height="2.9416"
+             style="color-interpolation-filters:sRGB"
+             id="g">
+            <feGaussianBlur
+                 id="feGaussianBlur7121"
+                 stdDeviation="17.935072" />
+        </filter>
+        <filter
+             x="-.51001"
+             y="-.50999"
+             width="2.02"
+             height="2.02"
+             style="color-interpolation-filters:sRGB"
+             id="f">
+            <feGaussianBlur
+                 id="feGaussianBlur7124"
+                 stdDeviation="9.8138068" />
+        </filter>
+        <filter
+             x="-.8468"
+             y="-.85"
+             width="2.6936"
+             height="2.7"
+             style="color-interpolation-filters:sRGB"
+             id="e">
+            <feGaussianBlur
+                 id="feGaussianBlur7127"
+                 stdDeviation="14.093396" />
+        </filter>
+    </defs>
+    <path
+         d="m145.32 121.83c-6.0455-0.00016-12.053 2.4889-16.328 6.7637-4.2748 4.2748-6.7638 10.283-6.7637 16.328-0.00016 6.0455 2.4889 12.053 6.7637 16.328 4.2748 4.2748 10.283 6.7638 16.328 6.7637 6.0451-0.0005 12.054-2.4889 16.328-6.7637 4.2743-4.2748 6.7619-10.283 6.7617-16.328 0.00016-6.0451-2.4874-12.053-6.7617-16.328-4.2743-4.2748-10.283-6.7632-16.328-6.7637z"
+         transform="matrix(1.1148 0 0 1.1148 -17.003 -16.56)"
+         xlink:href="#Surya"
+         style="filter:url(#f);stroke-width:.89702;paint-order:fill markers stroke;fill-opacity:.76544;fill:#337cff"
+         id="Surya-Glow" />
+    <g
+         id="g7149"
+         transform="matrix(1.1148 0 0 1.1148 -16.999 -16.565)"
+         style="stroke:#337cff;stroke-width:1.794">
+        <circle
+             cy="144.93"
+             cx="145.32"
+             style="stroke-linejoin:round;paint-order:fill markers stroke;stroke:#337cff;stroke-linecap:square;stroke-width:1.794;fill:#fb0000"
+             r="18.091"
+             id="Surya" />
+        <g
+             style="stroke-width:1.794"
+             id="Earth">
+            <path
+                 d="m145.32 32.256c-22.338 0.03226-44.163 6.7041-62.701 19.168l-25.213 23.201c-15.989 19.946-24.721 44.735-24.76 70.305 0.001 62.22 50.445 112.66 112.67 112.66 62.22 0 112.66-50.44 112.66-112.66 0.01-62.23-50.44-112.67-112.66-112.67z"
+                 xlink:href="#Earth-Orbit"
+                 style="stroke-linejoin:round;paint-order:fill markers stroke;filter:url(#d);stroke:#337cff;stroke-linecap:square;stroke-width:4.4851;fill:none"
+                 id="Earth-Orbit-Glow" />
+            <path
+                 d="m57.406 74.625c-15.99 19.946-24.721 44.737-24.76 70.301 0.000331 62.225 50.444 112.67 112.67 112.67 62.225-0.00033 112.67-50.443 112.67-112.67 0.00075-62.225-50.443-112.67-112.67-112.67-22.338 0.03226-44.163 6.7041-62.701 19.168"
+                 style="stroke-linejoin:round;paint-order:fill markers stroke;stroke:#337cff;stroke-linecap:square;stroke-width:1.794;fill:none"
+                 id="Earth-Orbit" />
+            <path
+                 d="m69.4 40.193c-5.8038 0.00044-11.572 2.39-15.676 6.4941-4.1036 4.1041-6.4924 9.872-6.4922 15.676-0.000221 5.8038 2.3885 11.572 6.4922 15.676 4.1036 4.1041 9.872 6.4937 15.676 6.4941 5.8042 0.00022 11.572-2.39 15.676-6.4941 4.1042-4.1042 6.4944-9.8716 6.4941-15.676 0.000221-5.8042-2.39-11.572-6.4941-15.676-4.104-4.104-9.872-6.494-15.676-6.494z"
+                 xlink:href="#Earth-Planet"
+                 style="filter:url(#g);stroke-width:1.794;paint-order:fill markers stroke;fill-opacity:.95490;fill:#337cff"
+                 id="Earth-Planet-Glow" />
+            <circle
+                 cy="62.363"
+                 cx="69.401"
+                 style="stroke-linejoin:round;paint-order:fill markers stroke;stroke:#337cff;stroke-linecap:square;stroke-width:1.794;fill:#fc0000"
+                 r="17.169"
+                 id="Earth-Planet" />
+        </g>
+        <g
+             style="stroke-width:1.794"
+             id="Budha">
+            <path
+                 d="m145.32 96.088c-26.973-0.000474-48.838 21.865-48.838 48.838 0.01646 5.6008 0.99624 11.157 2.8965 16.426l9.1816 15.635c9.257 10.636 22.659 16.753 36.76 16.775 26.971-0.00061 48.835-21.865 48.836-48.836 0.00047-26.972-21.864-48.837-48.836-48.838z"
+                 xlink:href="#Budha-Orbit"
+                 style="stroke-linejoin:round;paint-order:fill markers stroke;filter:url(#b);stroke:#337cff;stroke-linecap:square;stroke-width:4.4851;fill:none"
+                 id="Budha-Path-Glow" />
+            <path
+                 d="m108.56 176.99c9.257 10.636 22.659 16.753 36.76 16.775 26.971-0.00061 48.835-21.865 48.836-48.836 0.00047-26.972-21.864-48.837-48.836-48.838-26.973-0.000474-48.838 21.865-48.838 48.838 0.01646 5.6008 0.99624 11.157 2.8965 16.426"
+                 style="stroke-linejoin:round;paint-order:fill markers stroke;stroke:#337cff;stroke-linecap:square;stroke-width:1.794;fill:none"
+                 id="Budha-Orbit" />
+            <path
+                 d="m102.88 155.64c-7.4129-0.001-14.158 6.7434-14.158 14.156-0.001 7.4139 6.7443 14.159 14.158 14.158 7.4128-0.00056 14.157-6.7454 14.156-14.158-0.00056-7.4118-6.7444-14.156-14.156-14.156z"
+                 xlink:href="#Budha-Planet"
+                 style="filter:url(#a);stroke-width:1.794;paint-order:fill markers stroke;fill-opacity:.91144;fill:#337cff"
+                 id="Budha-Planet-Glow" />
+            <circle
+                 cy="169.8"
+                 cx="102.88"
+                 style="stroke-linejoin:round;paint-order:fill markers stroke;stroke:#337cff;stroke-linecap:square;stroke-width:1.794;fill:#fb0000"
+                 r="9.1569"
+                 id="Budha-Planet" />
+        </g>
+        <g
+             style="stroke-width:1.794"
+             id="Shukra">
+            <path
+                 d="m145.32 65.223c-44.02-0.001-79.708 35.687-79.709 79.707 0.000242 44.019 35.686 79.704 79.705 79.703 22.614-0.0332 44.149-9.6708 59.24-26.512l15.395-25.51c3.318-8.8536 5.0342-18.227 5.0684-27.682-0.00025-44.019-35.684-79.703-79.703-79.703z"
+                 xlink:href="#Shukra-Orbit"
+                 style="stroke-linejoin:round;stroke-opacity:.99459;paint-order:fill markers stroke;filter:url(#c);stroke:#337cff;stroke-linecap:square;stroke-width:4.4851;fill:none"
+                 id="Shukra-Orbit-Glow" />
+            <path
+                 d="m219.95 172.61c3.318-8.8536 5.0342-18.227 5.0684-27.682-0.00025-44.019-35.684-79.703-79.703-79.703-44.019-0.000836-79.705 35.684-79.705 79.703 0.000242 44.019 35.686 79.704 79.705 79.703 22.614-0.0332 44.149-9.6708 59.24-26.512"
+                 style="stroke-linejoin:round;stroke-opacity:.99459;paint-order:fill markers stroke;stroke:#337cff;stroke-linecap:square;stroke-width:1.794;fill:none"
+                 id="Shukra-Orbit" />
+            <path
+                 d="m212.65 165.71c-5.2218 0.00029-10.414 2.1375-14.113 5.8184-3.6992 3.6809-5.8575 8.8628-5.8574 14.078-0.00012 5.2153 2.1582 10.397 5.8574 14.078 3.6992 3.6809 8.8914 5.8181 14.113 5.8184 5.2223 0.00039 10.414-2.1374 14.113-5.8184 3.6998-3.681 5.8595-8.8624 5.8594-14.078 0.00012-5.2158-2.1596-10.397-5.8594-14.078s-8.891-5.8188-14.113-5.8184z"
+                 xlink:href="#Shukra-Planet"
+                 style="filter:url(#e);stroke-width:1.794;paint-order:fill markers stroke;fill:#337cff"
+                 id="Shukra-Planet-Glow" />
+            <ellipse
+                 cx="212.65"
+                 cy="185.6"
+                 ry="14.896"
+                 rx="14.972"
+                 style="stroke-linejoin:round;paint-order:fill markers stroke;stroke:#337cff;stroke-linecap:square;stroke-width:1.794;fill:#fb0000"
+                 id="Shukra-Planet" />
+        </g>
+    </g>
+</svg>
