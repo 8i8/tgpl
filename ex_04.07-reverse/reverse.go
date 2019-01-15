@@ -23,12 +23,12 @@ func ReverseUtf8(b []byte) []byte {
 		rr, rs := utf8.DecodeLastRune(b)
 		if ls == rs {
 			// Direct swap.
-			utf8.EncodeRune(b[:ls], rr)
-			utf8.EncodeRune(b[cl-rs:], lr)
+			utf8.EncodeRune(b[:rs], rr)
+			utf8.EncodeRune(b[cl-ls:], lr)
 		} else {
 			// Shunt the array when runes are differing sizes.
-			b = append(b[:rs], b[ls:]...)
-			utf8.EncodeRune(b[0:rs], rr)
+			b = append(b[:rs], b[ls:cl+ls-rs]...)
+			utf8.EncodeRune(b[:rs], rr)
 			utf8.EncodeRune(b[cl-ls:cl], lr)
 		}
 		b = b[rs : cl-ls]
@@ -44,9 +44,10 @@ func main() {
 	s3 := ReverseUtf8(s1)
 	if bytes.Compare(s3, s2) != 0 {
 		fmt.Printf("error: received `%v` wanted `%v`.\n", string(s3), string(s2))
+	} else {
+		fmt.Println("control: ", string(s2))
+		fmt.Println("result: ", string(s3))
 	}
-	fmt.Println("control: ", string(s2))
-	fmt.Println("result: ", string(s3))
 
 	var s4 []byte = []byte("界世 ,olleH")
 	var s5 []byte = []byte("Hello, 世界")
@@ -54,8 +55,19 @@ func main() {
 	s6 := ReverseUtf8(s4)
 	if bytes.Compare(s6, s5) != 0 {
 		fmt.Printf("error: recieved `%v` wanted `%v`.", string(s6), string(s5))
+	} else {
+		fmt.Println("control: ", string(s5))
+		fmt.Println("result: ", string(s6))
 	}
 
-	fmt.Println("control: ", string(s5))
-	fmt.Println("result: ", string(s6))
+	var s7 []byte = []byte("Hello, 世界")
+	var s8 []byte = []byte("界世 ,olleH")
+
+	s9 := ReverseUtf8(s7)
+	if bytes.Compare(s9, s8) != 0 {
+		fmt.Printf("error: received `%v` wanted `%v`.\n", string(s9), string(s8))
+	} else {
+		fmt.Println("control: ", string(s8))
+		fmt.Println("result: ", string(s9))
+	}
 }
