@@ -22,6 +22,21 @@ const (
 	x, KB, MB, GB, TB, PB, EB, ZB, YB = 'Ϩ', x, x * x, MB * x, GB * x, TB * GB, PB * x, EB * x, ZB * x
 )
 
+// This flag may be used to referance a lookup table to get the appropriate
+// exponent.
+type Flags uint
+
+const (
+	KB Flags = 1 << iota
+	MB
+	GB
+	TB
+	PB
+	EB
+	ZB
+	YB
+)
+
 func main() {
 	fmt.Println("vim-go")
 }
