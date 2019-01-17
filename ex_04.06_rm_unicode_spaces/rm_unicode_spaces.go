@@ -3,8 +3,6 @@ package main
 import (
 	"unicode"
 	"unicode/utf8"
-	//"unicode"
-	//"unicode/utf8"
 )
 
 // Function to remove all adjacent unicode space characters in a UTF-8-encoded
@@ -28,8 +26,9 @@ func adjDuplicates(b []byte) []byte {
 			// Activate the entire buffer.
 			b = b[:l]
 			// append the buffer from the end of the unichar
-			// whitespace onto the end of the next valid unispace character, leaving
-			// one space in which to add an ascii space character.
+			// whitespace onto the end of the next valid unispace
+			// character, leaving one space in which to add an
+			// ascii space character.
 			b = append(b[:t+1], b[t+count:]...)
 			// Add one ASCII space to replace the unichar spaces.
 			b[t] = ' '
