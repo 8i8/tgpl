@@ -10,6 +10,7 @@ import (
 type Configuration struct {
 	Repo    string
 	Queries string
+	Token   string
 }
 
 func (c Configuration) Strings() []string {

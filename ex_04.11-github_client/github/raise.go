@@ -25,7 +25,7 @@ func RaiseIssue() {
 
 	// Set header.
 	req.Header.Set("Accept", "application/json")
-	req.Header.Set("Authorization", "token c537f1922712dc29a8fcc96cbf1b6119a7f4cb25")
+	req.Header.Set("Authorization", "token "+Config.Token)
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "HEAD failed : %s\n", resp.Status)
