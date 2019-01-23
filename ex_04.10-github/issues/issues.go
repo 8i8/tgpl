@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sort"
 	"time"
 
 	"tgpl/ex_04.10-github/github"
@@ -25,13 +26,13 @@ func main() {
 	}
 	fmt.Printf("%d issues:\n", result.TotalCount)
 
-	// Make and fill a map with all the issue results.
+	// Make and fill a map from the result array.
 	issue := make(map[int]github.Issue)
 	for _, item := range result.Items {
 		issue[item.Number] = *item
 	}
 
-	// Make and fill an index for the issues map.
+	// Make and fill an array to index the issues.
 	index := make([]date, 0, len(issue))
 	for r, item := range issue {
 		y, m, d := item.CreatedAt.Date()
@@ -39,6 +40,11 @@ func main() {
 		issue := date{r, y, m, d, p}
 		index = append(index, issue)
 	}
+
+	// Sort the results, order by referance numbers.
+	sort.Slice(index, func(i, j int) bool {
+		return index[i].r > index[j].r
+	})
 
 	// 1) The same calendar month and year.
 	// 2) The same calendar year with one month difference; lesser day than
@@ -53,6 +59,7 @@ func main() {
 			i.y == ny-1 && nm == 1 && i.m == 12 && i.d > nd {
 			fmt.Printf("#%-5d %9.9s %55.55s  %.2d %s %d\n",
 				item.Number, item.User.Login, item.Title, i.d, i.m, i.y)
+			// Verify date logic
 			if i.p == true {
 				fmt.Println("error: this line has already been printed")
 			}
@@ -80,6 +87,7 @@ func main() {
 			i.y == ny-1 && i.m == nm && i.d > nd {
 			fmt.Printf("#%-5d %9.9s %55.55s  %.2d %s %d\n",
 				item.Number, item.User.Login, item.Title, i.d, i.m, i.y)
+			// Verify date logic
 			if i.p == true {
 				fmt.Println("error: this line has already been printed")
 			}
@@ -97,6 +105,7 @@ func main() {
 			i.y < ny-1 {
 			fmt.Printf("#%-5d %9.9s %55.55s  %.2d %s %d\n",
 				item.Number, item.User.Login, item.Title, i.d, i.m, i.y)
+			// Verify date logic
 			if i.p == true {
 				fmt.Println("error: this line has already been printed")
 			}
@@ -104,7 +113,7 @@ func main() {
 		}
 	}
 
-	// Check that all were printed.
+	// Verify date logic
 	for _, i := range index {
 		if i.p == false {
 			fmt.Println("error: this line has not been printed", i.d, i.m, i.y)

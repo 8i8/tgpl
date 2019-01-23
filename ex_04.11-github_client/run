@@ -1,0 +1,3 @@
+#!/bin/bash
+
+exec go run issues/main.go repo:8i8/test is:open

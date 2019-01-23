@@ -1,0 +1,438 @@
+== Info:   Trying 192.30.253.117...
+== Info: TCP_NODELAY set
+== Info: Connected to api.github.com (192.30.253.117) port 443 (#0)
+== Info: ALPN, offering h2
+== Info: ALPN, offering http/1.1
+== Info: Cipher selection: ALL:!EXPORT:!EXPORT40:!EXPORT56:!aNULL:!LOW:!RC4:@STRENGTH
+== Info: successfully set certificate verify locations:
+== Info:   CAfile: /etc/ssl/certs/ca-certificates.crt
+  CApath: /etc/ssl/certs
+== Info: TLSv1.2 (OUT), TLS header, Certificate Status (22):
+=> Send SSL data, 5 bytes (0x5)
+0000: .....
+== Info: TLSv1.2 (OUT), TLS handshake, Client hello (1):
+=> Send SSL data, 512 bytes (0x200)
+0000: ......*V.37c.x....J.Y..T...Q..*./6.../....0.,.(.$.............k.
+0040: j.i.h.9.8.7.6.........2...*.&.......=.5.../.+.'.#.............g.
+0080: @.?.>.3.2.1.0.........E.D.C.B.1.-.).%.......<./...A.....G.......
+00c0: ..api.github.com........................................... ....
+0100: .................................3t.........h2.http/1.1.........
+0140: ................................................................
+0180: ................................................................
+01c0: ................................................................
+<= Recv SSL data, 5 bytes (0x5)
+0000: ....l
+== Info: TLSv1.2 (IN), TLS handshake, Server hello (2):
+<= Recv SSL data, 108 bytes (0x6c)
+0000: ...h..>.#.#SxU.....p.C.s.....DOWNGRD. 2?t.....rI...=...O..x....
+0040: .i....y./.. ........................http/1.1
+<= Recv SSL data, 5 bytes (0x5)
+0000: ...."
+== Info: TLSv1.2 (IN), TLS handshake, Certificate (11):
+<= Recv SSL data, 2850 bytes (0xb22)
+0000: .........`0..\0..D........0.y... .3...:{v0...*.H........0p1.0...
+0040: U....US1.0...U....DigiCert Inc1.0...U....www.digicert.com1/0-..U
+0080: ...&DigiCert SHA2 High Assurance Server CA0...180619000000Z..190
+00c0: 710120000Z0h1.0...U....US1.0...U....California1.0...U....San Fra
+0100: ncisco1.0...U....GitHub, Inc.1.0...U....*.github.com0.."0...*.H.
+0140: ............0................../@}iG9..uy.[......l.........*. ..
+0180: p..L..&|g".M.....b.o....&tA......|...P.........k.Z...\A.....B.P
+01c0: ..m3.|..7&.-.q~.j....6~......I....w(v..h.........<.?.....X.s....
+0200: ..at.y..k..?:t,...?<..A...<1.Az.ke....].m..8&...s.F.....=......!
+0240: .<.....-..=..{)...H..........0...0...U.#..0...Qh.....u<..edb...
+0280: Yr;0...U.........~P&ocv...Z7.:....0#..U....0...*.github.com..git
+02c0: hub.com0...U...........0...U.%..0...+.........+.......0u..U...n0
+0300: l04.2.0..http://crl3.digicert.com/sha2-ha-server-g6.crl04.2.0..h
+0340: ttp://crl4.digicert.com/sha2-ha-server-g6.crl0L..U. .E0C07..`.H.
+0380: ..l..0*0(..+.........https://www.digicert.com/CPS0...g.....0....
+03c0: +........w0u0$..+.....0...http://ocsp.digicert.com0M..+.....0..A
+0400: http://cacerts.digicert.com/DigiCertSHA2HighAssuranceServerCA.cr
+0440: t0...U.......0.0.....+.....y............u.......X......gp.<5....
+0480: ...w.........d.,.......F0D. +..f..m...\.....f......k...v...S. .A
+04c0: ... ..c...;O...v...\C.....^..X.v..u..Y|..C._..n.V.GV6.J.`....^..
+0500: ....d.,.......G0E. 2...."......g.w.3j........y....m.!...m.e[.?..
+0540: .]...2..F.m....4.&zn..0...*.H..............y...}3."..ak.......g.
+0580: ..9l..LE...b....^.tf.?C.AQ..2p...eHx.NPT<.=...U.d.k..K.~...ob...
+05c0: .}..`w.....q.a 6.!I..r...#v...E....#..6.....4H.X...!..B..2..J.
+0600: .zIq..Jr..........3:.H.B#.9..2!..OB..l......DO.DG..-...a.)c.....
+0640: ......KP.t.A.Hm....c7...T......-.......lH....0...0..............
+0680: .\..m.+B.]..0...*.H........0l1.0...U....US1.0...U....DigiCert In
+06c0: c1.0...U....www.digicert.com1+0)..U..."DigiCert High Assurance E
+0700: V Root CA0...131022120000Z..281022120000Z0p1.0...U....US1.0...U.
+0740: ...DigiCert Inc1.0...U....www.digicert.com1/0-..U...&DigiCert SH
+0780: A2 High Assurance Server CA0.."0...*.H.............0........../.
+07c0: $..m._...d..}"&e..B@.....v.>.0U...O..Z..UV...*.....@...;r.......
+0800: .....C:.......@....M._W..Ph................-..........^DX*7..5..
+0840: .'2Z......Q.'..;B3..(..(...+#.x.{.^q.J>........#.M.....u.......D
+0880: 5eS%9....c...th.7..RH.9Z...]... .!..&o.J!A..m..H/....h.S/^.....
+08c0: ....I0..E0...U.......0.......0...U...........0...U.%..0...+.....
+0900: ....+.......04..+........(0&0$..+.....0...http://ocsp.digicert.c
+0940: om0K..U...D0B0@.>.<.:http://crl4.digicert.com/DigiCertHighAssura
+0980: nceEVRootCA.crl0=..U. .60402..U. .0*0(..+.........https://www.di
+09c0: gicert.com/CPS0...U......Qh.....u<..edb...Yr;0...U.#..0....>.i..
+0a00: .G...&....cd+.0...*.H...................m.\..h.J...Q/.kD...c..nl
+0a40: .....q.[.4N..y.).-.j.. .y...G.....Yq}...k.YX=..1%\.8.......[.1N.
+0a80: x.....I..'..r.>..A...6...nGI^.H|....I..&B@.....d.WT.....^k.....
+0ac0: .r.V....0..0..N.W..$...+..u..-..}y'............ (AYC(......{;w.
+0b00: @b..AE....>..3.g.a.r..i...W@.p....
+<= Recv SSL data, 5 bytes (0x5)
+0000: ....M
+== Info: TLSv1.2 (IN), TLS handshake, Server key exchange (12):
+<= Recv SSL data, 333 bytes (0x14d)
+0000: ...I...A...w.>].y.\G..].......ps...*u..)I@....>R.z(..+..L.N....
+0040: ..6...K.O....Fc<6v..|./.[O....;,..........T..N..]/....X..^.fK.l0
+0080: .\j."..6..R0;s.M...... F..\.....D...S&.H...>.,......V.....-H...\
+00c0: ..../..w...K.o.1.....T-./.....gm........w.;D.....K.E....N.Y...._
+0100: ..%..U..P..>(.....e.l......JS..t>QSNi.5X..S.%e.^sb......eE~...9.
+0140: .:..'.....m.~
+<= Recv SSL data, 5 bytes (0x5)
+0000: .....
+== Info: TLSv1.2 (IN), TLS handshake, Server finished (14):
+<= Recv SSL data, 4 bytes (0x4)
+0000: ....
+=> Send SSL data, 5 bytes (0x5)
+0000: ....F
+== Info: TLSv1.2 (OUT), TLS handshake, Client key exchange (16):
+=> Send SSL data, 70 bytes (0x46)
+0000: ...BA.....,f...-..8..*8.7z&.....OU..C?.....K.iG.B...h...}..k..q.
+0040: ...0..
+=> Send SSL data, 5 bytes (0x5)
+0000: .....
+== Info: TLSv1.2 (OUT), TLS change cipher, Client hello (1):
+=> Send SSL data, 1 bytes (0x1)
+0000: .
+=> Send SSL data, 5 bytes (0x5)
+0000: ....(
+== Info: TLSv1.2 (OUT), TLS handshake, Finished (20):
+=> Send SSL data, 16 bytes (0x10)
+0000: ......,...Q.z..S
+<= Recv SSL data, 5 bytes (0x5)
+0000: .....
+== Info: TLSv1.2 (IN), TLS change cipher, Client hello (1):
+<= Recv SSL data, 1 bytes (0x1)
+0000: .
+<= Recv SSL data, 5 bytes (0x5)
+0000: ....(
+== Info: TLSv1.2 (IN), TLS handshake, Finished (20):
+<= Recv SSL data, 16 bytes (0x10)
+0000: ..../'5V...X..9.
+== Info: SSL connection using TLSv1.2 / ECDHE-RSA-AES128-GCM-SHA256
+== Info: ALPN, server accepted to use http/1.1
+== Info: Server certificate:
+== Info:  subject: C=US; ST=California; L=San Francisco; O=GitHub, Inc.; CN=*.github.com
+== Info:  start date: Jun 19 00:00:00 2018 GMT
+== Info:  expire date: Jul 10 12:00:00 2019 GMT
+== Info:  subjectAltName: host "api.github.com" matched cert's "*.github.com"
+== Info:  issuer: C=US; O=DigiCert Inc; OU=www.digicert.com; CN=DigiCert SHA2 High Assurance Server CA
+== Info:  SSL certificate verify ok.
+== Info: Server auth using Basic with user '8i8'
+=> Send SSL data, 5 bytes (0x5)
+0000: .....
+=> Send header, 170 bytes (0xaa)
+0000: GET /repos/8i8/test/issues HTTP/1.1
+0025: Host: api.github.com
+003b: Authorization: Basic OGk4OjliMGMxN2U0Yzg4MjFjOWM1MDg4NTljMjhmZDM
+007b: wMDY0
+0082: User-Agent: curl/7.52.1
+009b: Accept: */*
+00a8: 
+<= Recv SSL data, 5 bytes (0x5)
+0000: ....r
+<= Recv header, 17 bytes (0x11)
+0000: HTTP/1.1 200 OK
+<= Recv header, 20 bytes (0x14)
+0000: Server: GitHub.com
+<= Recv header, 37 bytes (0x25)
+0000: Date: Tue, 22 Jan 2019 15:22:57 GMT
+<= Recv header, 47 bytes (0x2f)
+0000: Content-Type: application/json; charset=utf-8
+<= Recv header, 23 bytes (0x17)
+0000: Content-Length: 13289
+<= Recv header, 16 bytes (0x10)
+0000: Status: 200 OK
+<= Recv header, 25 bytes (0x19)
+0000: X-RateLimit-Limit: 5000
+<= Recv header, 29 bytes (0x1d)
+0000: X-RateLimit-Remaining: 4998
+<= Recv header, 31 bytes (0x1f)
+0000: X-RateLimit-Reset: 1548174091
+<= Recv header, 49 bytes (0x31)
+0000: Cache-Control: private, max-age=60, s-maxage=60
+<= Recv header, 51 bytes (0x33)
+0000: Vary: Accept, Authorization, Cookie, X-GitHub-OTP
+<= Recv header, 42 bytes (0x2a)
+0000: ETag: "72271bb90e248a8deaae037613cd0c35"
+<= Recv header, 45 bytes (0x2d)
+0000: X-GitHub-Media-Type: github.v3; format=json
+<= Recv header, 220 bytes (0xdc)
+0000: Access-Control-Expose-Headers: ETag, Link, Location, Retry-After
+0040: , X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-Rate
+0080: Limit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Int
+00c0: erval, X-GitHub-Media-Type
+<= Recv header, 32 bytes (0x20)
+0000: Access-Control-Allow-Origin: *
+<= Recv header, 73 bytes (0x49)
+0000: Strict-Transport-Security: max-age=31536000; includeSubdomains; 
+0040: preload
+<= Recv header, 23 bytes (0x17)
+0000: X-Frame-Options: deny
+<= Recv header, 33 bytes (0x21)
+0000: X-Content-Type-Options: nosniff
+<= Recv header, 33 bytes (0x21)
+0000: X-XSS-Protection: 1; mode=block
+<= Recv header, 76 bytes (0x4c)
+0000: Referrer-Policy: origin-when-cross-origin, strict-origin-when-cr
+0040: oss-origin
+<= Recv header, 45 bytes (0x2d)
+0000: Content-Security-Policy: default-src 'none'
+<= Recv header, 57 bytes (0x39)
+0000: X-GitHub-Request-Id: A71A:04DF:1403523:2F9E10F:5C473550
+<= Recv header, 2 bytes (0x2)
+0000: 
+<= Recv data, 344 bytes (0x158)
+0000: [.  {.    "url": "https://api.github.com/repos/8i8/test/issues/8
+0040: ",.    "repository_url": "https://api.github.com/repos/8i8/test"
+0080: ,.    "labels_url": "https://api.github.com/repos/8i8/test/issue
+00c0: s/8/labels{/name}",.    "comments_url": "https://api.github.com/
+0100: repos/8i8/test/issues/8/comments",.    "events_url": "https://ap
+0140: i.github.com/repos/8i8/t
+<= Recv SSL data, 5 bytes (0x5)
+0000: ....r
+<= Recv data, 1370 bytes (0x55a)
+0000: est/issues/8/events",.    "html_url": "https://github.com/8i8/te
+0040: st/issues/8",.    "id": 401768416,.    "node_id": "MDU6SXNzdWU0M
+0080: DE3Njg0MTY=",.    "number": 8,.    "title": "The Go Issue",.    
+00c0: "user": {.      "login": "8i8",.      "id": 10634856,.      "nod
+0100: e_id": "MDQ6VXNlcjEwNjM0ODU2",.      "avatar_url": "https://avat
+0140: ars3.githubusercontent.com/u/10634856?v=4",.      "gravatar_id":
+0180:  "",.      "url": "https://api.github.com/users/8i8",.      "htm
+01c0: l_url": "https://github.com/8i8",.      "followers_url": "https:
+0200: //api.github.com/users/8i8/followers",.      "following_url": "h
+0240: ttps://api.github.com/users/8i8/following{/other_user}",.      "
+0280: gists_url": "https://api.github.com/users/8i8/gists{/gist_id}",.
+02c0:       "starred_url": "https://api.github.com/users/8i8/starred{/
+0300: owner}{/repo}",.      "subscriptions_url": "https://api.github.c
+0340: om/users/8i8/subscriptions",.      "organizations_url": "https:/
+0380: /api.github.com/users/8i8/orgs",.      "repos_url": "https://api
+03c0: .github.com/users/8i8/repos",.      "events_url": "https://api.g
+0400: ithub.com/users/8i8/events{/privacy}",.      "received_events_ur
+0440: l": "https://api.github.com/users/8i8/received_events",.      "t
+0480: ype": "User",.      "site_admin": false.    },.    "labels": [..
+04c0:     ],.    "state": "open",.    "locked": false,.    "assignee":
+0500:  null,.    "assignees": [..    ],.    "milestone": null,.    "co
+0540: mments": 0,.    "created_a
+<= Recv SSL data, 5 bytes (0x5)
+0000: ....r
+<= Recv data, 1370 bytes (0x55a)
+0000: t": "2019-01-22T13:38:22Z",.    "updated_at": "2019-01-22T13:38:
+0040: 22Z",.    "closed_at": null,.    "author_association": "OWNER",.
+0080:     "body": "This is the thing you see, it came from a Go applic
+00c0: ation.".  },.  {.    "url": "https://api.github.com/repos/8i8/te
+0100: st/issues/7",.    "repository_url": "https://api.github.com/repo
+0140: s/8i8/test",.    "labels_url": "https://api.github.com/repos/8i8
+0180: /test/issues/7/labels{/name}",.    "comments_url": "https://api.
+01c0: github.com/repos/8i8/test/issues/7/comments",.    "events_url": 
+0200: "https://api.github.com/repos/8i8/test/issues/7/events",.    "ht
+0240: ml_url": "https://github.com/8i8/test/issues/7",.    "id": 40175
+0280: 8638,.    "node_id": "MDU6SXNzdWU0MDE3NTg2Mzg=",.    "number": 7
+02c0: ,.    "title": "The Next Big Issue",.    "user": {.      "login"
+0300: : "8i8",.      "id": 10634856,.      "node_id": "MDQ6VXNlcjEwNjM
+0340: 0ODU2",.      "avatar_url": "https://avatars3.githubusercontent.
+0380: com/u/10634856?v=4",.      "gravatar_id": "",.      "url": "http
+03c0: s://api.github.com/users/8i8",.      "html_url": "https://github
+0400: .com/8i8",.      "followers_url": "https://api.github.com/users/
+0440: 8i8/followers",.      "following_url": "https://api.github.com/u
+0480: sers/8i8/following{/other_user}",.      "gists_url": "https://ap
+04c0: i.github.com/users/8i8/gists{/gist_id}",.      "starred_url": "h
+0500: ttps://api.github.com/users/8i8/starred{/owner}{/repo}",.      "
+0540: subscriptions_url": "https
+<= Recv SSL data, 5 bytes (0x5)
+0000: ....r
+<= Recv data, 1370 bytes (0x55a)
+0000: ://api.github.com/users/8i8/subscriptions",.      "organizations
+0040: _url": "https://api.github.com/users/8i8/orgs",.      "repos_url
+0080: ": "https://api.github.com/users/8i8/repos",.      "events_url":
+00c0:  "https://api.github.com/users/8i8/events{/privacy}",.      "rec
+0100: eived_events_url": "https://api.github.com/users/8i8/received_ev
+0140: ents",.      "type": "User",.      "site_admin": false.    },.  
+0180:   "labels": [..    ],.    "state": "open",.    "locked": false,.
+01c0:     "assignee": null,.    "assignees": [..    ],.    "milestone"
+0200: : null,.    "comments": 0,.    "created_at": "2019-01-22T13:13:4
+0240: 8Z",.    "updated_at": "2019-01-22T13:13:48Z",.    "closed_at": 
+0280: null,.    "author_association": "OWNER",.    "body": "This is th
+02c0: e thing.".  },.  {.    "url": "https://api.github.com/repos/8i8/
+0300: test/issues/6",.    "repository_url": "https://api.github.com/re
+0340: pos/8i8/test",.    "labels_url": "https://api.github.com/repos/8
+0380: i8/test/issues/6/labels{/name}",.    "comments_url": "https://ap
+03c0: i.github.com/repos/8i8/test/issues/6/comments",.    "events_url"
+0400: : "https://api.github.com/repos/8i8/test/issues/6/events",.    "
+0440: html_url": "https://github.com/8i8/test/issues/6",.    "id": 401
+0480: 530798,.    "node_id": "MDU6SXNzdWU0MDE1MzA3OTg=",.    "number":
+04c0:  6,.    "title": "The Go Issue",.    "user": {.      "login": "8
+0500: i8",.      "id": 10634856,.      "node_id": "MDQ6VXNlcjEwNjM0ODU
+0540: 2",.      "avatar_url": "h
+<= Recv SSL data, 5 bytes (0x5)
+0000: ....r
+<= Recv data, 1370 bytes (0x55a)
+0000: ttps://avatars3.githubusercontent.com/u/10634856?v=4",.      "gr
+0040: avatar_id": "",.      "url": "https://api.github.com/users/8i8",
+0080: .      "html_url": "https://github.com/8i8",.      "followers_ur
+00c0: l": "https://api.github.com/users/8i8/followers",.      "followi
+0100: ng_url": "https://api.github.com/users/8i8/following{/other_user
+0140: }",.      "gists_url": "https://api.github.com/users/8i8/gists{/
+0180: gist_id}",.      "starred_url": "https://api.github.com/users/8i
+01c0: 8/starred{/owner}{/repo}",.      "subscriptions_url": "https://a
+0200: pi.github.com/users/8i8/subscriptions",.      "organizations_url
+0240: ": "https://api.github.com/users/8i8/orgs",.      "repos_url": "
+0280: https://api.github.com/users/8i8/repos",.      "events_url": "ht
+02c0: tps://api.github.com/users/8i8/events{/privacy}",.      "receive
+0300: d_events_url": "https://api.github.com/users/8i8/received_events
+0340: ",.      "type": "User",.      "site_admin": false.    },.    "l
+0380: abels": [..    ],.    "state": "open",.    "locked": false,.    
+03c0: "assignee": null,.    "assignees": [..    ],.    "milestone": nu
+0400: ll,.    "comments": 0,.    "created_at": "2019-01-21T22:29:06Z",
+0440: .    "updated_at": "2019-01-21T22:29:06Z",.    "closed_at": null
+0480: ,.    "author_association": "OWNER",.    "body": "This is the th
+04c0: ing you see, it came from a Go application.".  },.  {.    "url":
+0500:  "https://api.github.com/repos/8i8/test/issues/5",.    "reposito
+0540: ry_url": "https://api.gith
+<= Recv SSL data, 5 bytes (0x5)
+0000: ....r
+<= Recv data, 1370 bytes (0x55a)
+0000: ub.com/repos/8i8/test",.    "labels_url": "https://api.github.co
+0040: m/repos/8i8/test/issues/5/labels{/name}",.    "comments_url": "h
+0080: ttps://api.github.com/repos/8i8/test/issues/5/comments",.    "ev
+00c0: ents_url": "https://api.github.com/repos/8i8/test/issues/5/event
+0100: s",.    "html_url": "https://github.com/8i8/test/issues/5",.    
+0140: "id": 401529255,.    "node_id": "MDU6SXNzdWU0MDE1MjkyNTU=",.    
+0180: "number": 5,.    "title": "The Go Issue",.    "user": {.      "l
+01c0: ogin": "8i8",.      "id": 10634856,.      "node_id": "MDQ6VXNlcj
+0200: EwNjM0ODU2",.      "avatar_url": "https://avatars3.githubusercon
+0240: tent.com/u/10634856?v=4",.      "gravatar_id": "",.      "url": 
+0280: "https://api.github.com/users/8i8",.      "html_url": "https://g
+02c0: ithub.com/8i8",.      "followers_url": "https://api.github.com/u
+0300: sers/8i8/followers",.      "following_url": "https://api.github.
+0340: com/users/8i8/following{/other_user}",.      "gists_url": "https
+0380: ://api.github.com/users/8i8/gists{/gist_id}",.      "starred_url
+03c0: ": "https://api.github.com/users/8i8/starred{/owner}{/repo}",.  
+0400:     "subscriptions_url": "https://api.github.com/users/8i8/subsc
+0440: riptions",.      "organizations_url": "https://api.github.com/us
+0480: ers/8i8/orgs",.      "repos_url": "https://api.github.com/users/
+04c0: 8i8/repos",.      "events_url": "https://api.github.com/users/8i
+0500: 8/events{/privacy}",.      "received_events_url": "https://api.g
+0540: ithub.com/users/8i8/receiv
+<= Recv SSL data, 5 bytes (0x5)
+0000: ....r
+<= Recv data, 1370 bytes (0x55a)
+0000: ed_events",.      "type": "User",.      "site_admin": false.    
+0040: },.    "labels": [..    ],.    "state": "open",.    "locked": fa
+0080: lse,.    "assignee": null,.    "assignees": [..    ],.    "miles
+00c0: tone": null,.    "comments": 0,.    "created_at": "2019-01-21T22
+0100: :22:05Z",.    "updated_at": "2019-01-21T22:22:05Z",.    "closed_
+0140: at": null,.    "author_association": "OWNER",.    "body": "This 
+0180: is the thing you see, it came from a Go application.".  },.  {. 
+01c0:    "url": "https://api.github.com/repos/8i8/test/issues/4",.    
+0200: "repository_url": "https://api.github.com/repos/8i8/test",.    "
+0240: labels_url": "https://api.github.com/repos/8i8/test/issues/4/lab
+0280: els{/name}",.    "comments_url": "https://api.github.com/repos/8
+02c0: i8/test/issues/4/comments",.    "events_url": "https://api.githu
+0300: b.com/repos/8i8/test/issues/4/events",.    "html_url": "https://
+0340: github.com/8i8/test/issues/4",.    "id": 401243366,.    "node_id
+0380: ": "MDU6SXNzdWU0MDEyNDMzNjY=",.    "number": 4,.    "title": "An
+03c0: other Big Issue",.    "user": {.      "login": "8i8",.      "id"
+0400: : 10634856,.      "node_id": "MDQ6VXNlcjEwNjM0ODU2",.      "avat
+0440: ar_url": "https://avatars3.githubusercontent.com/u/10634856?v=4"
+0480: ,.      "gravatar_id": "",.      "url": "https://api.github.com/
+04c0: users/8i8",.      "html_url": "https://github.com/8i8",.      "f
+0500: ollowers_url": "https://api.github.com/users/8i8/followers",.   
+0540:    "following_url": "https
+<= Recv SSL data, 5 bytes (0x5)
+0000: ....r
+<= Recv data, 1370 bytes (0x55a)
+0000: ://api.github.com/users/8i8/following{/other_user}",.      "gist
+0040: s_url": "https://api.github.com/users/8i8/gists{/gist_id}",.    
+0080:   "starred_url": "https://api.github.com/users/8i8/starred{/owne
+00c0: r}{/repo}",.      "subscriptions_url": "https://api.github.com/u
+0100: sers/8i8/subscriptions",.      "organizations_url": "https://api
+0140: .github.com/users/8i8/orgs",.      "repos_url": "https://api.git
+0180: hub.com/users/8i8/repos",.      "events_url": "https://api.githu
+01c0: b.com/users/8i8/events{/privacy}",.      "received_events_url": 
+0200: "https://api.github.com/users/8i8/received_events",.      "type"
+0240: : "User",.      "site_admin": false.    },.    "labels": [..    
+0280: ],.    "state": "open",.    "locked": false,.    "assignee": nul
+02c0: l,.    "assignees": [..    ],.    "milestone": null,.    "commen
+0300: ts": 0,.    "created_at": "2019-01-21T08:33:51Z",.    "updated_a
+0340: t": "2019-01-21T08:33:51Z",.    "closed_at": null,.    "author_a
+0380: ssociation": "OWNER",.    "body": "This is the next thing.".  },
+03c0: .  {.    "url": "https://api.github.com/repos/8i8/test/issues/3"
+0400: ,.    "repository_url": "https://api.github.com/repos/8i8/test",
+0440: .    "labels_url": "https://api.github.com/repos/8i8/test/issues
+0480: /3/labels{/name}",.    "comments_url": "https://api.github.com/r
+04c0: epos/8i8/test/issues/3/comments",.    "events_url": "https://api
+0500: .github.com/repos/8i8/test/issues/3/events",.    "html_url": "ht
+0540: tps://github.com/8i8/test/
+<= Recv SSL data, 5 bytes (0x5)
+0000: ....r
+<= Recv data, 1370 bytes (0x55a)
+0000: issues/3",.    "id": 401130383,.    "node_id": "MDU6SXNzdWU0MDEx
+0040: MzAzODM=",.    "number": 3,.    "title": "The Next Big Issue",. 
+0080:    "user": {.      "login": "8i8",.      "id": 10634856,.      "
+00c0: node_id": "MDQ6VXNlcjEwNjM0ODU2",.      "avatar_url": "https://a
+0100: vatars3.githubusercontent.com/u/10634856?v=4",.      "gravatar_i
+0140: d": "",.      "url": "https://api.github.com/users/8i8",.      "
+0180: html_url": "https://github.com/8i8",.      "followers_url": "htt
+01c0: ps://api.github.com/users/8i8/followers",.      "following_url":
+0200:  "https://api.github.com/users/8i8/following{/other_user}",.    
+0240:   "gists_url": "https://api.github.com/users/8i8/gists{/gist_id}
+0280: ",.      "starred_url": "https://api.github.com/users/8i8/starre
+02c0: d{/owner}{/repo}",.      "subscriptions_url": "https://api.githu
+0300: b.com/users/8i8/subscriptions",.      "organizations_url": "http
+0340: s://api.github.com/users/8i8/orgs",.      "repos_url": "https://
+0380: api.github.com/users/8i8/repos",.      "events_url": "https://ap
+03c0: i.github.com/users/8i8/events{/privacy}",.      "received_events
+0400: _url": "https://api.github.com/users/8i8/received_events",.     
+0440:  "type": "User",.      "site_admin": false.    },.    "labels": 
+0480: [..    ],.    "state": "open",.    "locked": false,.    "assigne
+04c0: e": null,.    "assignees": [..    ],.    "milestone": null,.    
+0500: "comments": 0,.    "created_at": "2019-01-20T19:27:34Z",.    "up
+0540: dated_at": "2019-01-20T19:
+<= Recv SSL data, 5 bytes (0x5)
+0000: ....r
+<= Recv data, 1370 bytes (0x55a)
+0000: 27:34Z",.    "closed_at": null,.    "author_association": "OWNER
+0040: ",.    "body": "This is the thing.".  },.  {.    "url": "https:/
+0080: /api.github.com/repos/8i8/test/issues/2",.    "repository_url": 
+00c0: "https://api.github.com/repos/8i8/test",.    "labels_url": "http
+0100: s://api.github.com/repos/8i8/test/issues/2/labels{/name}",.    "
+0140: comments_url": "https://api.github.com/repos/8i8/test/issues/2/c
+0180: omments",.    "events_url": "https://api.github.com/repos/8i8/te
+01c0: st/issues/2/events",.    "html_url": "https://github.com/8i8/tes
+0200: t/issues/2",.    "id": 401128422,.    "node_id": "MDU6SXNzdWU0MD
+0240: ExMjg0MjI=",.    "number": 2,.    "title": "The Big Issue",.    
+0280: "user": {.      "login": "8i8",.      "id": 10634856,.      "nod
+02c0: e_id": "MDQ6VXNlcjEwNjM0ODU2",.      "avatar_url": "https://avat
+0300: ars3.githubusercontent.com/u/10634856?v=4",.      "gravatar_id":
+0340:  "",.      "url": "https://api.github.com/users/8i8",.      "htm
+0380: l_url": "https://github.com/8i8",.      "followers_url": "https:
+03c0: //api.github.com/users/8i8/followers",.      "following_url": "h
+0400: ttps://api.github.com/users/8i8/following{/other_user}",.      "
+0440: gists_url": "https://api.github.com/users/8i8/gists{/gist_id}",.
+0480:       "starred_url": "https://api.github.com/users/8i8/starred{/
+04c0: owner}{/repo}",.      "subscriptions_url": "https://api.github.c
+0500: om/users/8i8/subscriptions",.      "organizations_url": "https:/
+0540: /api.github.com/users/8i8/
+<= Recv SSL data, 5 bytes (0x5)
+0000: ....
+<= Recv data, 615 bytes (0x267)
+0000: orgs",.      "repos_url": "https://api.github.com/users/8i8/repo
+0040: s",.      "events_url": "https://api.github.com/users/8i8/events
+0080: {/privacy}",.      "received_events_url": "https://api.github.co
+00c0: m/users/8i8/received_events",.      "type": "User",.      "site_
+0100: admin": false.    },.    "labels": [..    ],.    "state": "open"
+0140: ,.    "locked": false,.    "assignee": null,.    "assignees": [.
+0180: .    ],.    "milestone": null,.    "comments": 0,.    "created_a
+01c0: t": "2019-01-20T19:04:51Z",.    "updated_at": "2019-01-20T19:04:
+0200: 51Z",.    "closed_at": null,.    "author_association": "OWNER",.
+0240:     "body": "This is the thing.".  }.].
+== Info: Curl_http_done: called premature == 0
+== Info: Connection #0 to host api.github.com left intact

@@ -10,6 +10,8 @@ package github
 
 import "time"
 
+// go run issues.go repo:golang/go is:open json decoder
+// GET /repos/:owner/:repo/issues/:number
 const IssuesURL = "https://api.github.com/search/issues"
 
 type IssuesSearchResult struct {
