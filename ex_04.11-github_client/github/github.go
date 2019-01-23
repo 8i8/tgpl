@@ -11,8 +11,9 @@ package github
 import "time"
 
 // go run issues.go repo:golang/go is:open json decoder
-//const IssuesURL = "https://api.github.com/search/issues"
-const IssuesURL = "https://api.github.com/repo/8i8/search/issues"
+const IssuesURL = "https://api.github.com/search/issues"
+
+//const IssuesURL = "https://api.github.com/repo/8i8/search/issues"
 const IssuesPostURL = "https://api.github.com/repos/8i8/test/issues"
 
 type IssuesSearchResult struct {

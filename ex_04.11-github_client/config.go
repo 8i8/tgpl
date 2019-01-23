@@ -1,4 +1,4 @@
-package issues
+package main
 
 import (
 	"encoding/json"
@@ -8,14 +8,14 @@ import (
 )
 
 type Configuration struct {
-	Repo   string
-	Search string
+	Repo    string
+	Queries string
 }
 
 func (c Configuration) Strings() []string {
 	var s []string
 	s = append(s, c.Repo)
-	s = append(s, c.Search)
+	s = append(s, c.Queries)
 	return s
 }
 
@@ -28,7 +28,6 @@ func loadConfig() error {
 		if err = setDefConfig(); err != nil {
 			panic(err)
 		}
-
 	}
 	decoder := json.NewDecoder(file)
 	err = decoder.Decode(&Config)
@@ -44,7 +43,7 @@ func loadConfig() error {
 func setDefConfig() error {
 
 	Config.Repo = "repo:golang/go"
-	Config.Search = "is:open json decoder"
+	Config.Queries = "is:open json decoder"
 	var data []byte
 
 	file, err := os.Create("config.json")

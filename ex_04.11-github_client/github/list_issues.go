@@ -2,7 +2,8 @@ package github
 
 import (
 	"fmt"
-	"log"
+	"os"
+	"runtime"
 	"sort"
 	"time"
 )
@@ -17,11 +18,15 @@ type date struct {
 
 // listIssues Retrieves a list of issues from the given repo that meet the
 // given search criteria.
-func ListIssues(terms []string) {
+func ListIssues(terms []string) error {
 	// Retrieve data
 	result, err := SearchIssues(terms)
 	if err != nil {
-		log.Fatal(err)
+		_, file, line, _ := runtime.Caller(0)
+		msg := "Issue search failed"
+		fmt.Fprintf(os.Stderr, "error: %s: %v %v: %s\n", msg, file, line, err.Error())
+		fmt.Println(terms)
+		return err
 	}
 	// Make and fill a map from the result array.
 	issue := make(map[int]Issue)
@@ -42,6 +47,7 @@ func ListIssues(terms []string) {
 	})
 
 	printIssues(issue, index)
+	return err
 }
 
 // Print to terminal order by date separating under one month and under one

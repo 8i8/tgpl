@@ -18,10 +18,13 @@ func SearchIssues(terms []string) (*IssuesSearchResult, error) {
 	if err != nil {
 		return nil, err
 	}
-	// Add header to reaquest.
+	// Add header to request.
 	req.Header.Set(
 		"Accept", "application/vnd.github.v3.text-match+json")
 	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
 
 	// Close resp.Body.
 	if resp.StatusCode != http.StatusOK {
