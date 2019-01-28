@@ -3,8 +3,6 @@ package fractal
 import (
 	"8i8/cmpbig"
 	"8i8/colour"
-	//"encoding/base64"
-	//"fmt"
 	"image"
 	"image/color"
 	"image/png"

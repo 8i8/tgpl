@@ -1,20 +1,8 @@
-// GET /issues                               // all issues for current user
-// GET /user/issues                          // all issues for user
-// GET /orgs/:org/issues                     // all issues for organisation
-// GET /repos/:owner/:repo/issues            // all issues for reps
-// GET /repos/:owner/:repo/issues/:number    // single issue
-// POST /repos/:owner/:repo/issues           // Create issue
-// PATCH /repos/:owner/:repo/issues/:number  // edit issue
-
 package github
 
-import "time"
-
-// go run issues.go repo:golang/go is:open json decoder
-const IssuesURL = "https://api.github.com/search/issues"
-
-//const IssuesURL = "https://api.github.com/repo/8i8/search/issues"
-const IssuesPostURL = "https://api.github.com/repos/8i8/test/issues"
+import (
+	"time"
+)
 
 type IssuesSearchResult struct {
 	TotalCount int `json:"total_count"`
@@ -36,4 +24,22 @@ type User struct {
 	HTMLURL string `json:"html_url"`
 }
 
-//!-
+type Config struct {
+	User
+	Token  string
+	Editor string
+	Request
+}
+
+type Request struct {
+	Name    User
+	Repo    string
+	Queries string
+}
+
+func (c Config) Strings() []string {
+	var s []string
+	s = append(s, "repo:"+c.Repo)
+	s = append(s, c.Queries)
+	return s
+}
