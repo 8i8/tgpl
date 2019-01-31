@@ -92,6 +92,8 @@ func SearchIssues(conf Config) (*IssuesSearchResult, error) {
 	q := url.QueryEscape(strings.Join(conf.Queries, " "))
 
 	// Genereate request.
+	// https://api.github.com/search/issues?q=repo%3Agolang%2Fgo+json+decoder
+	// req, err := http.NewRequest("GET", "https://api.github.com/search/issues?q=repo%3Agolang%2Fgo+json+decoder", nil)
 	req, err := http.NewRequest("GET", URL+"?q="+q, nil)
 	fmt.Println("GET", URL+"?q="+q)
 	if err != nil {
