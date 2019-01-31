@@ -21,25 +21,17 @@ type IssueMap struct {
 	I *[]date
 }
 
-// go run issues.go repo:golang/go is:open json decoder
-const IssuesURL = "https://api.github.com/search/issues"
-const IssuesPostURL = "https://api.github.com/repos/8i8/test/issues"
-
-func SetIssue() []Issue {
-	var i []Issue
-	return i
-}
-
 // listIssues Retrieves a list of issues from the given repo that meet the
 // search criteria.
-func ListIssues(terms []string) (IssueMap, error) {
+func ListIssues(conf Config) (IssueMap, error) {
 
+	terms := conf.Queries
 	issue := make(map[int]Issue)
 	index := make([]date, 0, len(issue))
 	resp := IssueMap{&issue, &index}
 
 	// Retrieve data
-	result, err := SearchIssues(IssuesURL, terms)
+	result, err := SearchIssues(conf)
 	if err != nil {
 		_, file, line, _ := runtime.Caller(0)
 		msg := "Issue search failed"

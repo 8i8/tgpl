@@ -9,16 +9,24 @@ import (
 
 var config = Config{}
 var def = Config{
-	User:    User{},
-	Request: Request{Name: User{}, Repo: "8i8/test", Queries: "is:open"},
-	Token:   "",
+	Login:   "8i8",
 	Editor:  "gvim",
+	Mode:    "list",
+	Request: Request{Name: "8i8", Repo: "test"},
+}
+
+func init() {
+	var queries []string
+	queries = append(queries, "json")
+	queries = append(queries, "decoder")
+	def.Queries = queries
 }
 
 // Load the last saved config, if no file exists create with the default
 // settings.
 func LoadConfig(c Config) error {
-	// Read file if present.
+
+	// Open file for reading if present.
 	file, err := os.Open("config.json")
 	if err != nil {
 		// If not present create file
@@ -26,7 +34,8 @@ func LoadConfig(c Config) error {
 			return err
 		}
 	}
-	// decode json from file.
+
+	// decode json from within the file.
 	decoder := json.NewDecoder(file)
 	err = decoder.Decode(&config)
 	if err != nil {
@@ -36,38 +45,35 @@ func LoadConfig(c Config) error {
 			line, err.Error())
 	}
 
-	// Check for modifications, if required resave.
-	compConfig(config, c)
+	// Check for modifications, with input settings, resave if required.
+	compConfig(def, c)
 
 	return err
 }
 
-// Compaire and update the configuration if required.
-func compConfig(c1, c2 Config) {
-	if c1 == c2 {
-		return
+// Compaire and update the configuration as required.
+func compConfig(conf, c2 Config) {
+	if conf.Repo == "" {
+		conf.Repo = def.Repo
 	}
-	if c2.Repo != "" {
-		c1.Repo = c2.Repo
+	if len(conf.Queries) == 0 {
+		conf.Queries = def.Queries
 	}
-	if c2.Queries != "" {
-		c1.Queries = c2.Queries
+	if conf.Token == "" {
+		conf.Token = def.Token
 	}
-	if c2.Token != "" {
-		c1.Token = c2.Token
+	if conf.Editor == "" {
+		conf.Editor = def.Editor
 	}
-	if c2.Editor != "" {
-		c1.Editor = c2.Editor
-	}
-	setConfig(c1)
+	setConfig(conf)
 }
 
-// Create a Config file, used in the case that no config file is present.
+// Create a base Config file, used in the case that no config file is present.
 func setConfig(c Config) error {
 
 	var data []byte
 
-	// Set the config from.
+	// Set the config from input.
 	config = c
 
 	// Make the file.

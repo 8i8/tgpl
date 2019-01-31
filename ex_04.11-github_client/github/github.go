@@ -25,21 +25,16 @@ type User struct {
 }
 
 type Config struct {
-	User
+	Login  string
 	Token  string
 	Editor string
+	Mode   string
 	Request
 }
 
 type Request struct {
-	Name    User
+	Name    string
+	Org     string
 	Repo    string
-	Queries string
-}
-
-func (c Config) Strings() []string {
-	var s []string
-	s = append(s, "repo:"+c.Repo)
-	s = append(s, c.Queries)
-	return s
+	Queries []string
 }

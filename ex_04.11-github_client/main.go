@@ -8,52 +8,65 @@ import (
 )
 
 var (
-	mode                         string
-	Repo, Queries, Token, Editor *string
+	conf                            github.Config
+	Login, Org, Repo, Token, Editor *string
 )
 
 func init() {
 	const def = "list"
-	flag.StringVar(&mode, "mode", def,
+	flag.StringVar(&conf.Mode, "mode", def,
 		`Set the running mode of the program, requires an option argument.
 	'list' a list of active issues, following the given search creiteria.
 	'read' a designated issue, followed by the specific issue number.
 	'edit' an existing issue.
 	'raise' a new issue.
 	'resolved' set the issue status to resolved.`)
-	flag.StringVar(&mode, "m", def,
+	flag.StringVar(&conf.Mode, "m", def,
 		"Raise a new issue (shorthand) requires an option argument.")
 
-	Repo = flag.String("r", "golang/go", "set repo address")
+	Login = flag.String("u", "", "set user name")
+	Org = flag.String("o", "", "set organisation name")
+	Repo = flag.String("r", "", "set repo name")
 	Token = flag.String("t", "", "set token")
 	Editor = flag.String("e", "", "set editor")
-	Queries = flag.String("q", "json decoder", "set a query")
+}
+
+// Store command line arguments in the config struct.
+func setFlags() {
+	flag.Parse()
+	conf.Login = *Login
+	conf.Org = *Org
+	conf.Repo = *Repo
+	conf.Token = *Token
+	conf.Editor = *Editor
+	conf.Queries = flag.Args()
 }
 
 func main() {
 
-	flag.Parse()
-	conf := github.Config{
-		github.User{},
-		*Token,
-		*Editor,
-		github.Request{github.User{}, *Repo, *Queries}}
-	fmt.Println(conf)
-	if err := github.LoadConfig(conf); err != nil {
-		panic(err)
-	}
+	setFlags()
+	//if err := github.LoadConfig(conf); err != nil {
+	//	panic(err)
+	//}
 
-	switch mode {
+	switch conf.Mode {
 	case "list":
-		results, _ := github.ListIssues(conf.Strings())
+		// TODO 1 set the correct URL.
+		results, _ := github.ListIssues(conf)
 		github.PrintIssues(results)
 	case "raise":
-		issue := github.SetIssue()
-		github.RaiseIssue(issue, conf.Token)
+		// TODO 2 impliment writing issues.
+		issue := []github.Issue{}
+		github.RaiseIssue(issue, conf)
 	case "read":
+		// TODO 1 set the correct URL.
 	case "edit":
+		// TODO 1 set the correct URL.
+		// TODO 2 impliment writing issues.
 		github.EditIssue()
 	case "resolved":
-		fmt.Println(mode)
+		// TODO 1 set the correct URL.
+		// TODO 2 impliment writing issues.
+		fmt.Println(conf.Mode)
 	}
 }

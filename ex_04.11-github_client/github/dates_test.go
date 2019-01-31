@@ -13,7 +13,7 @@ func TestDates(t *testing.T) {
 	// Test all months.
 	for i := 0; i < 12; i++ {
 		// Test for many different start days.
-		for j := 0; j < 10; j++ {
+		for j := 0; j < 1000; j++ {
 
 			// Set the start date.
 			d := time.Date(2011, 1, 10, 1, 0, 0, 0, time.UTC)
