@@ -78,6 +78,8 @@ func setUrl(conf Config) string {
 		} else {
 			str = str + "issues"
 		}
+	case "test":
+		str = str + "search/issues"
 	}
 
 	return str
@@ -89,11 +91,11 @@ func SearchIssues(conf Config) (*IssuesSearchResult, error) {
 	state = setState(conf)
 	URL = setUrl(conf)
 
-	q := url.QueryEscape(strings.Join(conf.Queries, " "))
+	q := url.QueryEscape("is:open+" + strings.Join(conf.Queries, " "))
 
 	// Genereate request.
 	// https://api.github.com/search/issues?q=repo%3Agolang%2Fgo+json+decoder
-	// req, err := http.NewRequest("GET", "https://api.github.com/search/issues?q=repo%3Agolang%2Fgo+json+decoder", nil)
+	//req, err := http.NewRequest("GET", "https://api.github.com/search/issues?q=repo%3Agolang%2Fgo+json+decoder", nil)
 	req, err := http.NewRequest("GET", URL+"?q="+q, nil)
 	fmt.Println("GET", URL+"?q="+q)
 	if err != nil {
@@ -107,6 +109,9 @@ func SearchIssues(conf Config) (*IssuesSearchResult, error) {
 	// Add header to request.
 	req.Header.Set(
 		"Accept", "application/vnd.github.v3.text-match+json")
+	if conf.Token != "" {
+		req.Header.Set("Authorization", "token "+conf.Token)
+	}
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		msg := "Header failed."

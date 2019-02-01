@@ -5,6 +5,8 @@ import "testing"
 const t_IssuesAddrURL = "https://api.github.com/repos/golang/go/issues"
 const t_IssuesQueryURL = "https://api.github.com/search/issues"
 
+// GET https://api.github.com/repos/golang/go/issues?q=json+decoder
+
 var query1 []string
 var query2 []string
 
