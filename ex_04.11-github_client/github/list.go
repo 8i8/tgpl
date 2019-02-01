@@ -31,6 +31,7 @@ func ListIssues(conf Config) (IssueMap, error) {
 	resp := IssueMap{&issue, &index}
 
 	// Retrieve data
+	//result, err := SearchIssuesOld("https://api.github.com/repos/golang/go/issues", query)
 	result, err := SearchIssues(conf)
 	if err != nil {
 		_, file, line, _ := runtime.Caller(0)
@@ -58,7 +59,6 @@ func ListIssues(conf Config) (IssueMap, error) {
 		return index[i].r > index[j].r
 	})
 
-	//printIssues(issue, index)
 	return resp, err
 }
 
