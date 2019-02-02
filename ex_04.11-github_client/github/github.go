@@ -1,8 +1,12 @@
 package github
 
 import (
+	"log"
+	"os"
 	"time"
 )
+
+var Log = log.New(os.Stderr, "github: ", log.Lshortfile)
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     Search request.

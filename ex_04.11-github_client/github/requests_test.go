@@ -33,47 +33,62 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"runtime"
 	"testing"
 )
 
 const t_IssuesAddrURL = "https://api.github.com/repos/8i8/test/issues"
 const t_IssuesQueryURL = "https://api.github.com/search/issues?q=repo:8i8/test"
 
+var err error
+
 func TestSearchIssuesQuery(t *testing.T) {
-	searchIssuesQueryTest(t, "GET", t_IssuesQueryURL)
+	if err := searchIssuesQueryTest("GET", t_IssuesQueryURL); err != nil {
+		t.Errorf("error: %v", err.Error())
+	}
 }
 
 func TestSearchIssuesAddr(t *testing.T) {
-	searchIssuesAddrTest(t, "GET", t_IssuesAddrURL)
+	if err := searchIssuesAddrTest("GET", t_IssuesAddrURL); err != nil {
+		t.Errorf("error: %v", err.Error())
+	}
+}
+
+func BenchmarkSearchIssuesQuery(b *testing.B) {
+	if err = searchIssuesQueryTest("GET", t_IssuesQueryURL); err != nil {
+		Log.Printf("error: %v", err.Error())
+	}
+}
+
+func BenchmarkSearchIssuesAddr(b *testing.B) {
+	if err = searchIssuesAddrTest("GET", t_IssuesAddrURL); err != nil {
+		Log.Printf("error: %v", err.Error())
+	}
 }
 
 // SearchIssues queries the GitHub issue tracker.
-func searchIssuesQueryTest(t *testing.T, HTTP, URL string) error {
+func searchIssuesQueryTest(HTTP, URL string) error {
 
 	// Genereate request.
 	req, err := http.NewRequest(HTTP, URL, nil)
 	if err != nil {
-		t.Errorf("error: %v\n", err.Error())
-		fmt.Fprintf(os.Stderr, "error: %s\n", err.Error())
+		Log.Printf("error: %v", err.Error())
 		return err
 	}
 
 	// Add header to request.
 	req.Header.Set(
-		//"Accept", "application/vnd.github.v3.text-match+json")
-		"Accept", "application/vnd.github.v3+json")
-	//"Accept", "application/json")
-	//req.Header.Set("Authorization", "token "+conf.Token)
+		"Accept", "application/vnd.github.v3.text-match+json")
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		t.Errorf("error: %v\n", err.Error())
+		Log.Printf("error: %v", err.Error())
 		return err
 	}
 
 	// Close resp.Body.
 	if resp.StatusCode != http.StatusOK {
 		resp.Body.Close()
-		t.Errorf("error: %v", resp.Status)
+		Log.Printf("error: %v : status: %v", err.Error(), resp.Status)
 		return err
 	}
 
@@ -82,7 +97,7 @@ func searchIssuesQueryTest(t *testing.T, HTTP, URL string) error {
 
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
 		resp.Body.Close()
-		t.Errorf("error: %v\n", err.Error())
+		Log.Printf("error: %v", err.Error())
 		return err
 	}
 	resp.Body.Close()
@@ -90,31 +105,31 @@ func searchIssuesQueryTest(t *testing.T, HTTP, URL string) error {
 }
 
 // SearchIssues queries the GitHub issue tracker.
-func searchIssuesAddrTest(t *testing.T, HTTP, URL string) error {
+func searchIssuesAddrTest(HTTP, URL string) error {
 
 	// Genereate request.
 	req, err := http.NewRequest(HTTP, URL, nil)
 	if err != nil {
-		t.Errorf("error: %v\n", err.Error())
+		_, _, line, _ := runtime.Caller(0)
+		fmt.Fprintf(os.Stderr, "error: %v: %s\n", line, err.Error())
 		return err
 	}
 
 	// Add header to request.
 	req.Header.Set(
-		//"Accept", "application/vnd.github.v3.text-match+json")
-		"Accept", "application/vnd.github.v3+json")
-	//"Accept", "application/json")
-	//req.Header.Set("Authorization", "token "+conf.Token)
+		"Accept", "application/vnd.github.v3.text-match+json")
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		t.Errorf("error: %v\n", err.Error())
+		_, _, line, _ := runtime.Caller(0)
+		fmt.Fprintf(os.Stderr, "error: %v: %s\n", line, err.Error())
 		return err
 	}
 
 	// Close resp.Body.
 	if resp.StatusCode != http.StatusOK {
 		resp.Body.Close()
-		t.Errorf("error: %v", resp.Status)
+		_, _, line, _ := runtime.Caller(0)
+		fmt.Fprintf(os.Stderr, "error: %v: %s\n", line, resp.Status)
 		return err
 	}
 
@@ -123,21 +138,10 @@ func searchIssuesAddrTest(t *testing.T, HTTP, URL string) error {
 
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
 		resp.Body.Close()
-		t.Errorf("error: %v\n", err.Error())
+		_, _, line, _ := runtime.Caller(0)
+		fmt.Fprintf(os.Stderr, "error: %v: %s\n", line, err.Error())
 		return err
 	}
 	resp.Body.Close()
 	return nil
-}
-
-func BenchmarkSearchIssuesQuery(b *testing.B) {
-	for i := 0; i < 3; i++ {
-		searchIssuesQueryTest(nil, "GET", t_IssuesQueryURL)
-	}
-}
-
-func BenchmarkSearchIssuesAddr(b *testing.B) {
-	for i := 0; i < 3; i++ {
-		searchIssuesAddrTest(nil, "GET", t_IssuesAddrURL)
-	}
 }

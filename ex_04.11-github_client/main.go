@@ -54,12 +54,12 @@ func main() {
 		// TODO 1 set the correct URL.
 		results, _ := github.ListIssues(conf)
 		github.PrintIssues(results)
+	case "read":
+		// TODO 1 set the correct URL.
 	case "raise":
 		// TODO 2 impliment writing issues.
 		issue := []github.Issue{}
 		github.RaiseIssue(issue, conf)
-	case "read":
-		// TODO 1 set the correct URL.
 	case "edit":
 		// TODO 1 set the correct URL.
 		// TODO 2 impliment writing issues.
