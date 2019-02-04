@@ -28,6 +28,7 @@ package github
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/url"
 	"strings"
@@ -38,52 +39,89 @@ const (
 	ORG
 	USER
 	LOGIN
+	SEARCH
+	ADDRESS
 )
 
 var state int = NONE
 
-// Define a state by which to run the program, from the selection of possible
-// uses infered frim available information.
-func setState(conf Config) int {
-	if conf.Name != "" {
-		return USER
-	} else if conf.Org != "" {
-		return ORG
-	} else if conf.Login != "" {
-		return LOGIN
-	}
-	return NONE
+// Check whether all requirements are met to enter ADDRESS mode.
+func checkAddress(c Config) bool {
+	return (len(c.Login) > 0 || len(c.Author) > 0 ||
+		len(c.Owner) > 0 || len(c.Org) > 0) &&
+		len(c.Repo) > 0
 }
 
-// Structure an https request from the availabe data given.
+// Define a state by which to run the program, from the selection of possible
+// uses inferred from available information.
+func SetState(c *Config) int {
+
+	// If there is a number given and all paramiters exist for a direct
+	// HTTP access then do so, else add the number to the query listing and
+	// search.
+	if len(c.Number) > 0 {
+		if checkAddress(*c) {
+			c.Mode = "read"
+		} else {
+			c.Queries = append(c.Queries, c.Number)
+		}
+	}
+	// Set to the default mode if no other mode has been set.
+	if c.Mode == "def" {
+		c.Mode = "list"
+	}
+
+	// Set the run state.
+	if c.Mode == "list" {
+		state = SEARCH
+	} else if c.Mode == "read" {
+		state = ADDRESS
+	}
+	return state
+}
+
+// Structure an https request from the available data given.
 func setUrl(conf Config) (string, string) {
 
 	var HTTP string
 	URL := "https://api.github.com/"
 
 	switch conf.Mode {
+
 	case "list":
 		HTTP = "GET"
-		if conf.Name != "" && conf.Repo == "" {
-			URL = URL + conf.Name + "/issues"
-		} else if conf.Name != "" && conf.Repo != "" {
-			URL = URL + "repos/" + conf.Name + "/" + conf.Repo + "/issues"
-		} else if conf.Name != "" {
-			URL = URL + "repos/" + conf.Name + "/issues"
+		URL = URL + "search/issues"
+		if conf.Owner != "" && conf.Repo != "" {
+			conf.Queries = append(conf.Queries, "repo:"+conf.Owner+"/"+conf.Repo)
+		} else if conf.Owner != "" {
+			conf.Queries = append(conf.Queries, "user:"+conf.Owner)
 		} else if conf.Org != "" && conf.Repo != "" {
-			URL = URL + "orgs/" + conf.Org + "/" + conf.Repo + "/issues"
+			conf.Queries = append(conf.Queries, "org:"+conf.Repo+"/"+conf.Repo)
 		} else if conf.Org != "" {
-			URL = URL + "orgs/" + conf.Org + "/issues"
+			conf.Queries = append(conf.Queries, "org:"+conf.Org)
+		} else if conf.Author != "" && conf.Repo != "" {
+			conf.Queries = append(conf.Queries, "repo:"+conf.Author+"/"+conf.Repo)
+		} else if conf.Author != "" {
+			conf.Queries = append(conf.Queries, "author:"+conf.Author)
 		} else if conf.Login != "" && conf.Repo != "" {
-			URL = URL + "repos/" + conf.Login + "/" + conf.Repo + "/issues"
+			conf.Queries = append(conf.Queries, "repo:"+conf.Login+"/"+conf.Repo)
 		} else if conf.Login != "" {
-			URL = URL + "repos/" + conf.Login + "/issues"
-		} else {
-			URL = URL + "search/issues"
+			conf.Queries = append(conf.Queries, "author:"+conf.Login)
 		}
+
 	case "read":
 		HTTP = "GET"
-		URL = URL + "search/issues"
+		if len(conf.Owner) > 0 && len(conf.Repo) > 0 && len(conf.Number) > 0 {
+			URL = URL + "repos/" + conf.Owner + "/" + conf.Repo + "/issues/" + conf.Number
+		} else if len(conf.Login) > 0 && len(conf.Repo) > 0 && len(conf.Number) > 0 {
+			URL = URL + "repos/" + conf.Login + "/" + conf.Repo + "/issues"
+		} else if len(conf.Author) > 0 && len(conf.Repo) > 0 && len(conf.Number) > 0 {
+			URL = URL + "repos/" + conf.Author + "/" + conf.Repo + "/issues"
+		} else if len(conf.Org) > 0 && len(conf.Repo) > 0 && len(conf.Number) > 0 {
+			URL = URL + "orgs/" + conf.Org + "/" + conf.Repo + "/issues"
+		} else {
+			fmt.Println("Please provide owner, repo and number information.")
+		}
 	}
 
 	// Add queries to url.
@@ -96,12 +134,12 @@ func setUrl(conf Config) (string, string) {
 }
 
 // SearchIssues queries the GitHub issue tracker.
-func SearchIssues(conf Config) (*IssuesSearchResult, error) {
+func SearchIssues(conf Config) ([]*Issue, error) {
 
-	state = setState(conf)
 	HTTP, URL := setUrl(conf)
+	fmt.Println(HTTP, URL)
 
-	// Genereate request.
+	// Generate request.
 	req, err := http.NewRequest(HTTP, URL, nil)
 	if err != nil {
 		Log.Printf("error: %v", err.Error())
@@ -111,39 +149,54 @@ func SearchIssues(conf Config) (*IssuesSearchResult, error) {
 	// Add header to request.
 	req.Header.Set(
 		"Accept", "application/vnd.github.v3.text-match+json")
+	//"Accept", "application/vnd.github.machine-man-preview")
 	if conf.Token != "" {
 		req.Header.Set("Authorization", "token "+conf.Token)
 	}
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		Log.Printf("error: %v: http response: %v", err.Error(), resp.StatusCode)
+		Log.Printf("error: %v: http response: %v %v", err.Error(),
+			resp.StatusCode, http.StatusText(resp.StatusCode))
 		return nil, err
 	}
 
-	// Close resp.Body.
+	var result []*Issue
+
+	// Close without decoding.
 	if resp.StatusCode != http.StatusOK {
+		fmt.Printf("http response: %v %v\n", resp.StatusCode,
+			http.StatusText(resp.StatusCode))
 		resp.Body.Close()
-		Log.Printf("http response: %v", resp.StatusCode)
-		return nil, err
+		return result, err
 	}
 
-	// Decode reply.
-	var result IssuesSearchResult
-	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		resp.Body.Close()
-		Log.Printf("error: %v", err.Error())
-		return &result, err
+	// Decode reply ADDRESS for a direct http request and SEARCH using the
+	// API search function.
+	if state == ADDRESS {
+		var issue Issue
+		if err := json.NewDecoder(resp.Body).Decode(&issue); err != nil {
+			Log.Printf("error: %v", err.Error())
+		}
+		result = append(result, &issue)
+	} else if state == SEARCH {
+		var resultStruct IssuesSearchResult
+		if err := json.NewDecoder(resp.Body).Decode(&resultStruct); err != nil {
+			Log.Printf("error: %v", err.Error())
+		}
+		result = resultStruct.Items
 	}
 
 	resp.Body.Close()
-	return &result, nil
+	return result, err
 }
 
 // Generate a new issue.
-func RaiseIssue(data []Issue, conf Config) {
+func RaiseIssue(conf Config) {
 
 	HTTP, URL := setUrl(conf)
+	fmt.Println(HTTP, URL)
 
+	data := writeIssue()
 	str, err := json.Marshal(data)
 	if err != nil {
 		Log.Printf("error: %v", err.Error())
@@ -174,6 +227,9 @@ func RaiseIssue(data []Issue, conf Config) {
 	}
 
 	resp.Body.Close()
+}
+
+func writeIssue() Issue {
 }
 
 func EditIssue() {

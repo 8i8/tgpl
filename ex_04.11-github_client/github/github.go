@@ -25,6 +25,7 @@ type Issue struct {
 	User      *User
 	CreatedAt time.Time `json:"created_at"`
 	Body      string    // in Markdown format
+	Repo      string    `json:"repository_url"`
 }
 
 type User struct {
@@ -45,8 +46,10 @@ type Config struct {
 }
 
 type Request struct {
-	Name    string
+	Owner   string
+	Author  string
 	Org     string
 	Repo    string
+	Number  string
 	Queries []string
 }

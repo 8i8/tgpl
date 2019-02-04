@@ -12,7 +12,7 @@ var def = Config{
 	Login:   "8i8",
 	Editor:  "gvim",
 	Mode:    "list",
-	Request: Request{Name: "8i8", Repo: "test"},
+	Request: Request{Owner: "8i8", Repo: "test"},
 }
 
 func init() {
@@ -46,26 +46,26 @@ func LoadConfig(c Config) error {
 	}
 
 	// Check for modifications, with input settings, resave if required.
-	compConfig(def, c)
+	compConfig(c, def)
 
 	return err
 }
 
 // Compaire and update the configuration as required.
-func compConfig(conf, c2 Config) {
-	if conf.Repo == "" {
-		conf.Repo = def.Repo
+func compConfig(c, def Config) {
+	if c.Repo == "" {
+		c.Repo = def.Repo
 	}
-	if len(conf.Queries) == 0 {
-		conf.Queries = def.Queries
+	if len(c.Queries) == 0 {
+		c.Queries = def.Queries
 	}
-	if conf.Token == "" {
-		conf.Token = def.Token
+	if c.Token == "" {
+		c.Token = def.Token
 	}
-	if conf.Editor == "" {
-		conf.Editor = def.Editor
+	if c.Editor == "" {
+		c.Editor = def.Editor
 	}
-	setConfig(conf)
+	setConfig(c)
 }
 
 // Create a base Config file, used in the case that no config file is present.
@@ -86,6 +86,7 @@ func setConfig(c Config) error {
 	}
 
 	// Prepare the json in readable fashon.
+	c.Token = ""
 	if data, err = json.MarshalIndent(config, "", "	"); err != nil {
 		_, file, line, _ := runtime.Caller(0)
 		fmt.Fprintf(os.Stderr, "error: %v %v: %s\n", file, line,

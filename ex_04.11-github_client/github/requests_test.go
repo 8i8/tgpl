@@ -30,10 +30,7 @@ package github
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
-	"os"
-	"runtime"
 	"testing"
 )
 
@@ -88,7 +85,7 @@ func searchIssuesQueryTest(HTTP, URL string) error {
 	// Close resp.Body.
 	if resp.StatusCode != http.StatusOK {
 		resp.Body.Close()
-		Log.Printf("error: %v : status: %v", err.Error(), resp.Status)
+		Log.Printf("error: %v", resp.Status)
 		return err
 	}
 
@@ -110,8 +107,7 @@ func searchIssuesAddrTest(HTTP, URL string) error {
 	// Genereate request.
 	req, err := http.NewRequest(HTTP, URL, nil)
 	if err != nil {
-		_, _, line, _ := runtime.Caller(0)
-		fmt.Fprintf(os.Stderr, "error: %v: %s\n", line, err.Error())
+		Log.Printf("error: %v", err.Error())
 		return err
 	}
 
@@ -120,16 +116,14 @@ func searchIssuesAddrTest(HTTP, URL string) error {
 		"Accept", "application/vnd.github.v3.text-match+json")
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		_, _, line, _ := runtime.Caller(0)
-		fmt.Fprintf(os.Stderr, "error: %v: %s\n", line, err.Error())
+		Log.Printf("error: %v", err.Error())
 		return err
 	}
 
 	// Close resp.Body.
 	if resp.StatusCode != http.StatusOK {
 		resp.Body.Close()
-		_, _, line, _ := runtime.Caller(0)
-		fmt.Fprintf(os.Stderr, "error: %v: %s\n", line, resp.Status)
+		Log.Printf("error: %v", resp.Status)
 		return err
 	}
 
@@ -138,8 +132,7 @@ func searchIssuesAddrTest(HTTP, URL string) error {
 
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
 		resp.Body.Close()
-		_, _, line, _ := runtime.Caller(0)
-		fmt.Fprintf(os.Stderr, "error: %v: %s\n", line, err.Error())
+		Log.Printf("error: %v", err.Error())
 		return err
 	}
 	resp.Body.Close()

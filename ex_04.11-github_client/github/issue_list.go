@@ -1,7 +1,6 @@
 package github
 
 import (
-	"fmt"
 	"sort"
 	"time"
 )
@@ -20,23 +19,27 @@ type IssueMap struct {
 	I *[]date
 }
 
+func (v IssueMap) Len() int {
+	return len(*v.M)
+}
+
 // listIssues Retrieves a list of issues from the given repo that meet the
 // search criteria.
-func ListIssues(conf Config) (IssueMap, error) {
-
-	issue := make(map[int]Issue)
-	index := make([]date, 0, len(issue))
-	resp := IssueMap{&issue, &index}
+func ListIssues(conf Config) error {
 
 	// Retrieve data
 	result, err := SearchIssues(conf)
 	if err != nil {
-		Log.Printf("error: %v", err.Error())
-		return resp, err
+		Log.Printf("no issue returned.")
+		return err
 	}
 
+	issue := make(map[int]Issue)
+	index := make([]date, 0, len(result))
+	resp := IssueMap{&issue, &index}
+
 	// Make and fill a map from the result array.
-	for _, item := range result.Items {
+	for _, item := range result {
 		issue[item.Number] = *item
 	}
 
@@ -53,51 +56,8 @@ func ListIssues(conf Config) (IssueMap, error) {
 		return index[i].r > index[j].r
 	})
 
-	return resp, err
-}
+	// If there is something to print, print it.
+	PrintIssues(resp)
 
-// Print to terminal order by date, separating newer than one month and within
-// a year.
-func PrintIssues(results IssueMap) {
-
-	issue := *results.M
-	index := *results.I
-	now := date{}
-	now.y, now.m, now.d = time.Now().Date()
-	fmt.Printf("%d issues:\n", len(index))
-
-	// Print issues that are less than a month old.
-	fmt.Println("\nLess than a month")
-	for n, d := range index {
-		item := issue[d.r]
-		if lessThanMonth(now, d) {
-			printLine(item, d)
-			index[n].p = true
-		}
-	}
-
-	// Print issues that are less than a year old.
-	fmt.Println("\nLess than a year")
-	for n, d := range index {
-		item := issue[d.r]
-		if monthToAYear(now, d) {
-			printLine(item, d)
-			index[n].p = true
-		}
-	}
-
-	// Print issues that are older than a year.
-	fmt.Println("\nOlder than a year")
-	for n, d := range index {
-		item := issue[d.r]
-		if yearOnward(now, d) {
-			printLine(item, d)
-			index[n].p = true
-		}
-	}
-}
-
-func printLine(item Issue, d date) {
-	fmt.Printf("#%-5d %9.9s %55.55s  %.2d %s %d\n",
-		item.Number, item.User.Login, item.Title, d.d, d.m, d.y)
+	return err
 }
