@@ -237,6 +237,41 @@ func RaiseIssue(conf Config) {
 	resp.Body.Close()
 }
 
+func RaiseIssueOld(data []Issue, conf Config) {
+
+	URL = setUrl(conf)
+
+	str := `{"title": "Hello","body": "World"}`
+	json := bytes.NewBufferString(str)
+
+	// str, err := json.Marshal(data)
+	// if err != nil {
+	// 	fmt.Fprintf(os.Stderr, "Json Marshal failed : %s\n", err)
+	// }
+	// json := bytes.NewBuffer(str)
+
+	// Formulate post request
+	req, err := http.NewRequest("POST", URL, json)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "POST failed : %s\n", err)
+	}
+
+	// Set header.
+	req.Header.Set("Accept", "application/json")
+	req.Header.Set("Authorization", "token "+conf.Token)
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "HEAD failed : %s\n", resp.Status)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		resp.Body.Close()
+		fmt.Fprintf(os.Stderr, "Issue creation failed: %s\n", resp.Status)
+	}
+
+	resp.Body.Close()
+}
+
 // Compose issues for the designated repo.
 func writeIssue() *bytes.Buffer {
 
