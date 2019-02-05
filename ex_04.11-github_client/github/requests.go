@@ -237,9 +237,9 @@ func RaiseIssue(conf Config) {
 	resp.Body.Close()
 }
 
-func RaiseIssueOld(data []Issue, conf Config) {
+func RaiseIssueOld(conf Config) {
 
-	URL = setUrl(conf)
+	HTTP, URL := setUrl(conf)
 
 	str := `{"title": "Hello","body": "World"}`
 	json := bytes.NewBufferString(str)
@@ -251,7 +251,7 @@ func RaiseIssueOld(data []Issue, conf Config) {
 	// json := bytes.NewBuffer(str)
 
 	// Formulate post request
-	req, err := http.NewRequest("POST", URL, json)
+	req, err := http.NewRequest(HTTP, URL, json)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "POST failed : %s\n", err)
 	}
@@ -265,7 +265,6 @@ func RaiseIssueOld(data []Issue, conf Config) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		resp.Body.Close()
 		fmt.Fprintf(os.Stderr, "Issue creation failed: %s\n", resp.Status)
 	}
 
