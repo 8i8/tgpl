@@ -26,19 +26,18 @@
 package github
 
 import (
+	"bufio"
 	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 )
 
 const (
 	NONE = iota
-	ORG
-	USER
-	LOGIN
 	SEARCH
 	ADDRESS
 )
@@ -75,6 +74,8 @@ func SetState(c *Config) int {
 	if c.Mode == "list" {
 		state = SEARCH
 	} else if c.Mode == "read" {
+		state = ADDRESS
+	} else if c.Mode == "raise" {
 		state = ADDRESS
 	}
 	return state
@@ -114,10 +115,24 @@ func setUrl(conf Config) (string, string) {
 		if len(conf.Owner) > 0 && len(conf.Repo) > 0 && len(conf.Number) > 0 {
 			URL = URL + "repos/" + conf.Owner + "/" + conf.Repo + "/issues/" + conf.Number
 		} else if len(conf.Login) > 0 && len(conf.Repo) > 0 && len(conf.Number) > 0 {
-			URL = URL + "repos/" + conf.Login + "/" + conf.Repo + "/issues"
+			URL = URL + "repos/" + conf.Login + "/" + conf.Repo + "/issues/" + conf.Number
 		} else if len(conf.Author) > 0 && len(conf.Repo) > 0 && len(conf.Number) > 0 {
-			URL = URL + "repos/" + conf.Author + "/" + conf.Repo + "/issues"
+			URL = URL + "repos/" + conf.Author + "/" + conf.Repo + "/issues/" + conf.Number
 		} else if len(conf.Org) > 0 && len(conf.Repo) > 0 && len(conf.Number) > 0 {
+			URL = URL + "orgs/" + conf.Org + "/" + conf.Repo + "/issues/" + conf.Number
+		} else {
+			fmt.Println("Please provide owner, repo and number information.")
+		}
+
+	case "raise":
+		HTTP = "POST"
+		if len(conf.Owner) > 0 && len(conf.Repo) > 0 {
+			URL = URL + "repos/" + conf.Owner + "/" + conf.Repo + "/issues"
+		} else if len(conf.Login) > 0 && len(conf.Repo) > 0 {
+			URL = URL + "repos/" + conf.Login + "/" + conf.Repo + "/issues"
+		} else if len(conf.Author) > 0 && len(conf.Repo) > 0 {
+			URL = URL + "repos/" + conf.Author + "/" + conf.Repo + "/issues"
+		} else if len(conf.Org) > 0 && len(conf.Repo) > 0 {
 			URL = URL + "orgs/" + conf.Org + "/" + conf.Repo + "/issues"
 		} else {
 			fmt.Println("Please provide owner, repo and number information.")
@@ -196,13 +211,7 @@ func RaiseIssue(conf Config) {
 	HTTP, URL := setUrl(conf)
 	fmt.Println(HTTP, URL)
 
-	data := writeIssue()
-	str, err := json.Marshal(data)
-	if err != nil {
-		Log.Printf("error: %v", err.Error())
-		return
-	}
-	json := bytes.NewBuffer(str)
+	json := writeIssue()
 
 	// Formulate post request
 	req, err := http.NewRequest(HTTP, URL, json)
@@ -221,15 +230,35 @@ func RaiseIssue(conf Config) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		resp.Body.Close()
-		Log.Printf("error: %v", err.Error())
-		return
+		fmt.Printf("http response: %v %v\n", resp.StatusCode,
+			http.StatusText(resp.StatusCode))
 	}
 
 	resp.Body.Close()
 }
 
-func writeIssue() Issue {
+// Compose issues for the designated repo.
+func writeIssue() *bytes.Buffer {
+
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Print("title: ")
+	title, _ := reader.ReadString('\n')
+	title = strings.Replace(title, "\n", "", -1)
+	fmt.Print("message: ")
+	body, _ := reader.ReadString('\n')
+	body = strings.Replace(body, "\n", "", -1)
+
+	str := `{"title":"` + title + `","body":"` + body + `"}`
+	data := bytes.NewBufferString(str)
+
+	buff, err := json.Marshal(data)
+	if err != nil {
+		Log.Printf("error: %v", err.Error())
+		return nil
+	}
+	json := bytes.NewBuffer(buff)
+
+	return json
 }
 
 func EditIssue() {
