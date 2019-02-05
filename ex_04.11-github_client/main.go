@@ -65,7 +65,7 @@ func main() {
 		github.ReadIssue(conf)
 	case "raise":
 		// TODO 2 implement writing issues.
-		github.RaiseIssueOld(conf)
+		github.RaiseIssue(conf)
 	case "edit":
 		// TODO 1 set the correct URL.
 		// TODO 2 implement writing issues.

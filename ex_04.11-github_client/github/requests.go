@@ -221,7 +221,7 @@ func RaiseIssue(conf Config) {
 	}
 
 	// Set header.
-	req.Header.Set("Accept", "application/json")
+	req.Header.Set("Accept", "application/vnd.github.v3.json")
 	req.Header.Set("Authorization", "token "+conf.Token)
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -229,7 +229,8 @@ func RaiseIssue(conf Config) {
 		return
 	}
 
-	if resp.StatusCode != http.StatusOK {
+	// If responce not successful report it.
+	if resp.StatusCode != http.StatusCreated {
 		fmt.Printf("http response: %v %v\n", resp.StatusCode,
 			http.StatusText(resp.StatusCode))
 	}
@@ -264,7 +265,7 @@ func RaiseIssueOld(conf Config) {
 		fmt.Fprintf(os.Stderr, "HEAD failed : %s\n", resp.Status)
 	}
 
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode != http.StatusCreated {
 		fmt.Fprintf(os.Stderr, "Issue creation failed: %s\n", resp.Status)
 	}
 
@@ -283,7 +284,13 @@ func writeIssue() *bytes.Buffer {
 	body = strings.Replace(body, "\n", "", -1)
 
 	str := `{"title":"` + title + `","body":"` + body + `"}`
-	data := bytes.NewBufferString(str)
+	json := bytes.NewBufferString(str)
+
+	return json
+}
+
+// Marshal issue struct data into json.
+func issueToJson(data Issue) *bytes.Buffer {
 
 	buff, err := json.Marshal(data)
 	if err != nil {
@@ -291,7 +298,6 @@ func writeIssue() *bytes.Buffer {
 		return nil
 	}
 	json := bytes.NewBuffer(buff)
-
 	return json
 }
 
