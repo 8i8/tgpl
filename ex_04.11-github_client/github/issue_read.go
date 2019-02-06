@@ -4,7 +4,7 @@ import "fmt"
 
 func ReadIssue(conf Config) {
 
-	issue, err := SearchIssues(conf)
+	issue, err := searchIssues(conf)
 	if err != nil {
 		Log.Printf("Issue %s not found.", conf.Number)
 		return

@@ -7,9 +7,7 @@ import (
 	"tgpl/ex_04.11-github_client/github"
 )
 
-var (
-	conf github.Config
-)
+var conf github.Config
 
 func init() {
 	const def = "def"
@@ -46,6 +44,9 @@ func main() {
 	github.SetState(&conf)
 
 	switch conf.Mode {
+	// TODO make user and login name concise, there is a
+	// descrepancy in the behaviour at this time. Auto search in
+	// URL designiation.
 	case "list":
 		github.ListIssues(conf)
 	case "read":

@@ -26,6 +26,7 @@
 package github
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -152,7 +153,7 @@ func setUrl(conf Config) (string, string, error) {
 }
 
 // SearchIssues queries the GitHub issue tracker.
-func SearchIssues(conf Config) ([]*Issue, error) {
+func searchIssues(conf Config) ([]*Issue, error) {
 
 	// Set the appropriate URL.
 	HTTP, URL, err := setUrl(conf)
@@ -213,19 +214,12 @@ func SearchIssues(conf Config) ([]*Issue, error) {
 }
 
 // Generate a new issue.
-func RaiseIssue(conf Config) {
+func raiseIssue(conf Config, json *bytes.Buffer) {
 
 	// Set the appropriate URL.
 	HTTP, URL, err := setUrl(conf)
 	if err != nil {
 		fmt.Printf("%v\n", err.Error())
-		return
-	}
-
-	// Get user input.
-	json, err := writeIssue(conf)
-	if err != nil {
-		Log.Printf("error: %v", err.Error())
 		return
 	}
 
@@ -254,7 +248,7 @@ func RaiseIssue(conf Config) {
 	resp.Body.Close()
 }
 
-func EditIssue(conf Config) {
+func editIssue(conf Config) {
 
 	// // Set the appropriate URL.
 	// HTTP, URL, err := setUrl(conf)

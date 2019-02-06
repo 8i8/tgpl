@@ -9,6 +9,20 @@ import (
 	"strings"
 )
 
+// Raise a new issue on a github repository.
+func RaiseIssue(conf Config) {
+
+	// Get user input.
+	json, err := writeIssue(conf)
+	if err != nil {
+		Log.Printf("error: %v", err.Error())
+		return
+	}
+
+	// Make http request.
+	raiseIssue(conf, json)
+}
+
 // Compose issues for the designated repo.
 func writeIssue(conf Config) (*bytes.Buffer, error) {
 

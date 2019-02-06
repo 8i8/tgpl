@@ -6,15 +6,8 @@ import (
 	"time"
 )
 
-// Print to terminal order by date, separating newer than one month and within
-// a year.
-func PrintIssues(results IssueMap) {
-
-	// Check that records exist to print.
-	if results.Len() == 0 {
-		fmt.Println("Empty result string.")
-		return
-	}
+// Print a list of single line issues, ordered and grouped by date.
+func printIssues(results IssueMap) {
 
 	issue := *results.M
 	index := *results.I
@@ -53,14 +46,16 @@ func PrintIssues(results IssueMap) {
 	}
 }
 
+// Print out a single issue including the message body.
 func printIssue(item Issue) {
-	fmt.Printf("#%-6d %6.6s %6.6s %40.40s %10.10s\n",
+	fmt.Printf("number: #%-6d\nuser: %s\nrepo: %s\ntitle: %s\ncreated: %10.10s\n",
 		item.Number, item.User.Login,
 		item.Repo[strings.LastIndex(item.Repo, "/")+1:],
 		item.Title, item.CreatedAt.String())
-	fmt.Printf("%v\n", item.Body)
+	fmt.Printf("message:\n%v\n", item.Body)
 }
 
+// Print out a single line issue with only the title and details.
 func printLine(item Issue) {
 	fmt.Printf("#%-6d %6.6s %6.6s %40.40s %10.10s\n",
 		item.Number, item.User.Login,
