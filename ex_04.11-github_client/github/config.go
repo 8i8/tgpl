@@ -101,6 +101,7 @@ func setConfig(c Config) error {
 			err.Error())
 		return err
 	}
+	file.Close()
 
 	return nil
 }

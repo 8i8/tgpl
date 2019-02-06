@@ -38,10 +38,11 @@ type User struct {
 *  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
 type Config struct {
-	Login  string
-	Token  string
-	Editor string
-	Mode   string
+	Login   string
+	Token   string
+	Editor  string
+	Mode    string
+	Verbose bool
 	Request
 }
 

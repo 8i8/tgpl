@@ -26,13 +26,11 @@
 package github
 
 import (
-	"bufio"
-	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
-	"os"
 	"strings"
 )
 
@@ -55,7 +53,7 @@ func checkAddress(c Config) bool {
 // uses inferred from available information.
 func SetState(c *Config) int {
 
-	// If there is a number given and all paramiters exist for a direct
+	// If there is a number given and all parameters exist for a direct
 	// HTTP access then do so, else add the number to the query listing and
 	// search.
 	if len(c.Number) > 0 {
@@ -82,9 +80,10 @@ func SetState(c *Config) int {
 }
 
 // Structure an https request from the available data given.
-func setUrl(conf Config) (string, string) {
+func setUrl(conf Config) (string, string, error) {
 
 	var HTTP string
+	var err error
 	URL := "https://api.github.com/"
 
 	switch conf.Mode {
@@ -121,7 +120,7 @@ func setUrl(conf Config) (string, string) {
 		} else if len(conf.Org) > 0 && len(conf.Repo) > 0 && len(conf.Number) > 0 {
 			URL = URL + "orgs/" + conf.Org + "/" + conf.Repo + "/issues/" + conf.Number
 		} else {
-			fmt.Println("Please provide owner, repo and number information.")
+			err = errors.New("Please provide owner, repo and number information.")
 		}
 
 	case "raise":
@@ -135,7 +134,7 @@ func setUrl(conf Config) (string, string) {
 		} else if len(conf.Org) > 0 && len(conf.Repo) > 0 {
 			URL = URL + "orgs/" + conf.Org + "/" + conf.Repo + "/issues"
 		} else {
-			fmt.Println("Please provide owner, repo and number information.")
+			err = errors.New("Please provide owner, repo and number information.")
 		}
 	}
 
@@ -145,14 +144,22 @@ func setUrl(conf Config) (string, string) {
 		URL = URL + "?q=" + q
 	}
 
-	return HTTP, URL
+	if conf.Verbose {
+		fmt.Println(HTTP, URL)
+	}
+
+	return HTTP, URL, err
 }
 
 // SearchIssues queries the GitHub issue tracker.
 func SearchIssues(conf Config) ([]*Issue, error) {
 
-	HTTP, URL := setUrl(conf)
-	fmt.Println(HTTP, URL)
+	// Set the appropriate URL.
+	HTTP, URL, err := setUrl(conf)
+	if err != nil {
+		fmt.Printf("%v\n", err.Error())
+		return nil, err
+	}
 
 	// Generate request.
 	req, err := http.NewRequest(HTTP, URL, nil)
@@ -208,10 +215,19 @@ func SearchIssues(conf Config) ([]*Issue, error) {
 // Generate a new issue.
 func RaiseIssue(conf Config) {
 
-	HTTP, URL := setUrl(conf)
-	fmt.Println(HTTP, URL)
+	// Set the appropriate URL.
+	HTTP, URL, err := setUrl(conf)
+	if err != nil {
+		fmt.Printf("%v\n", err.Error())
+		return
+	}
 
-	json := writeIssue()
+	// Get user input.
+	json, err := writeIssue(conf)
+	if err != nil {
+		Log.Printf("error: %v", err.Error())
+		return
+	}
 
 	// Formulate post request
 	req, err := http.NewRequest(HTTP, URL, json)
@@ -229,7 +245,7 @@ func RaiseIssue(conf Config) {
 		return
 	}
 
-	// If responce not successful report it.
+	// If response not successful report it.
 	if resp.StatusCode != http.StatusCreated {
 		fmt.Printf("http response: %v %v\n", resp.StatusCode,
 			http.StatusText(resp.StatusCode))
@@ -238,75 +254,12 @@ func RaiseIssue(conf Config) {
 	resp.Body.Close()
 }
 
-func RaiseIssueOld(conf Config) {
+func EditIssue(conf Config) {
 
-	HTTP, URL := setUrl(conf)
-
-	str := `{"title": "Hello","body": "World"}`
-	json := bytes.NewBufferString(str)
-
-	// str, err := json.Marshal(data)
+	// // Set the appropriate URL.
+	// HTTP, URL, err := setUrl(conf)
 	// if err != nil {
-	// 	fmt.Fprintf(os.Stderr, "Json Marshal failed : %s\n", err)
-	// }
-	// json := bytes.NewBuffer(str)
-
-	// Formulate post request
-	req, err := http.NewRequest(HTTP, URL, json)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "POST failed : %s\n", err)
-	}
-
-	// Set header.
-	req.Header.Set("Accept", "application/json")
-	req.Header.Set("Authorization", "token "+conf.Token)
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "HEAD failed : %s\n", resp.Status)
-	}
-
-	if resp.StatusCode != http.StatusCreated {
-		fmt.Fprintf(os.Stderr, "Issue creation failed: %s\n", resp.Status)
-	}
-
-	resp.Body.Close()
-}
-
-// Compose issues for the designated repo.
-func writeIssue() *bytes.Buffer {
-
-	reader := bufio.NewReader(os.Stdin)
-	fmt.Print("title: ")
-	title, _ := reader.ReadString('\n')
-	title = strings.Replace(title, "\n", "", -1)
-	fmt.Print("message: ")
-	body, _ := reader.ReadString('\n')
-	body = strings.Replace(body, "\n", "", -1)
-
-	str := `{"title":"` + title + `","body":"` + body + `"}`
-	json := bytes.NewBufferString(str)
-
-	return json
-}
-
-// Marshal issue struct data into json.
-func issueToJson(data Issue) *bytes.Buffer {
-
-	buff, err := json.Marshal(data)
-	if err != nil {
-		Log.Printf("error: %v", err.Error())
-		return nil
-	}
-	json := bytes.NewBuffer(buff)
-	return json
-}
-
-func EditIssue() {
-	//cmd := exec.Command(c.Editor, "temp.md")
-	// if err := cmd.Run(); err != nil {
-	// 	_, file, line, _ := runtime.Caller(0)
-	// 	msg := "Failed to open tempory file"
-	// 	fmt.Fprintf(os.Stderr, "error: %s: %v %v: %s\n", msg, file, line, err.Error())
-	// 	fmt.Println(c.Editor)
+	// 	fmt.Printf("%v\n", err.Error())
+	// 	return
 	// }
 }

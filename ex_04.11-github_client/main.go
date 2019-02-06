@@ -8,8 +8,7 @@ import (
 )
 
 var (
-	conf                                                   github.Config
-	Login, Owner, Author, Org, Repo, Token, Editor, Number *string
+	conf github.Config
 )
 
 func init() {
@@ -25,34 +24,22 @@ func init() {
 	flag.StringVar(&conf.Mode, "m", def,
 		"Raise a new issue (shorthand) requires an option argument.")
 
-	Login = flag.String("l", "", "set user name")
-	Owner = flag.String("u", "", "set user name")
-	Author = flag.String("a", "", "set user name")
-	Org = flag.String("o", "", "set organisation name")
-	Repo = flag.String("r", "", "set repo name")
-	Token = flag.String("t", "", "set token")
-	Editor = flag.String("e", "", "set editor")
-	Number = flag.String("n", "", "set issue number")
-}
+	flag.StringVar(&conf.Login, "l", "", "set user name")
+	flag.StringVar(&conf.Owner, "u", "", "set user name")
+	flag.StringVar(&conf.Author, "a", "", "set user name")
+	flag.StringVar(&conf.Org, "o", "", "set organisation name")
+	flag.StringVar(&conf.Repo, "r", "", "set repo name")
+	flag.StringVar(&conf.Token, "t", "", "set token")
+	flag.StringVar(&conf.Editor, "e", "", "set editor")
+	flag.StringVar(&conf.Number, "n", "", "set issue number")
 
-// Store command line arguments in the config struct.
-func setFlags() {
-	flag.Parse()
-	conf.Login = *Login
-	conf.Owner = *Owner
-	conf.Author = *Author
-	conf.Org = *Org
-	conf.Repo = *Repo
-	conf.Token = *Token
-	conf.Editor = *Editor
-	conf.Number = *Number
-	conf.Queries = flag.Args()
+	flag.BoolVar(&conf.Verbose, "v", false, "Verbose mode")
 }
 
 func main() {
 
 	// Command line input.
-	setFlags()
+	flag.Parse()
 
 	// Setup programming for selected mode, in some cases the program mode
 	// is altered here.
@@ -64,18 +51,13 @@ func main() {
 	case "read":
 		github.ReadIssue(conf)
 	case "raise":
-		// TODO 2 implement writing issues.
 		github.RaiseIssue(conf)
 	case "edit":
-		// TODO 1 set the correct URL.
-		// TODO 2 implement writing issues.
-		github.EditIssue()
+		// TODO 2 implement editing issues.
+		github.EditIssue(conf)
 	case "resolved":
 		// TODO 1 set the correct URL.
 		// TODO 2 implement writing issues.
 		fmt.Println(conf.Mode)
-	case "raw":
-		// TODO 1
-		github.ListIssues(conf)
 	}
 }
