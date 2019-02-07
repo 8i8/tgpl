@@ -27,13 +27,13 @@ func (v IssueMap) Len() int {
 
 // listIssues Retrieves a list of issues from the given repo that meet the
 // search criteria.
-func ListIssues(conf Config) {
+func ListIssues(conf Config) error {
 
+	var err error
 	// Retrieve data
 	result, err := searchIssues(conf)
 	if err != nil {
-		fmt.Printf("no issues returned.")
-		return
+		return fmt.Errorf("no issues returned.")
 	}
 
 	// Prepare data structure.
@@ -48,8 +48,7 @@ func ListIssues(conf Config) {
 
 	// Check that there is a responst to print.
 	if resp.Len() == 0 {
-		fmt.Println("Empty result string.")
-		return
+		return fmt.Errorf("Empty result string.")
 	}
 
 	// Construct index.
@@ -68,5 +67,5 @@ func ListIssues(conf Config) {
 	// If there is something to print, print it.
 	printIssues(resp)
 
-	return
+	return err
 }

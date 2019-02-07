@@ -43,22 +43,27 @@ func main() {
 	// is altered here.
 	github.SetState(&conf)
 
+	var err error
 	switch conf.Mode {
-	// TODO make user and login name concise, there is a
-	// descrepancy in the behaviour at this time. Auto search in
-	// URL designiation.
+	// TODO make user and login name concise, there is a descrepancy in the
+	// behaviour at this time; See auto search in URL designiation.
 	case "list":
-		github.ListIssues(conf)
+		err = github.ListIssues(conf)
 	case "read":
-		github.ReadIssue(conf)
+		err = github.ReadIssue(conf)
 	case "raise":
-		github.RaiseIssue(conf)
+		err = github.RaiseIssue(conf)
 	case "edit":
+		// TODO 1 set the correct URL.
 		// TODO 2 implement editing issues.
-		github.EditIssue(conf)
+		err = github.EditIssue(conf)
 	case "resolved":
 		// TODO 1 set the correct URL.
 		// TODO 2 implement writing issues.
 		fmt.Println(conf.Mode)
 	}
+	if err != nil {
+		fmt.Println(err)
+	}
+
 }

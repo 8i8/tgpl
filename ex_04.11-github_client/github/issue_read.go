@@ -2,17 +2,16 @@ package github
 
 import "fmt"
 
-func ReadIssue(conf Config) {
+func ReadIssue(conf Config) error {
 
+	// Serch for requested issue.
 	issue, err := searchIssues(conf)
 	if err != nil {
-		Log.Printf("Issue %s not found.", conf.Number)
-		return
+		return fmt.Errorf("searchIssue: %v", err)
 	}
 
-	if len(issue) == 0 {
-		fmt.Println("No issue returned.")
-		return
-	}
+	// Display.
 	printIssue(*issue[0])
+
+	return err
 }

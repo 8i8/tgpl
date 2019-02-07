@@ -3,65 +3,73 @@ package github
 import (
 	"bufio"
 	"bytes"
-	"errors"
 	"fmt"
 	"os"
 	"strings"
 )
 
 // Raise a new issue on a github repository.
-func RaiseIssue(conf Config) {
+func RaiseIssue(conf Config) error {
 
-	// Get user input.
-	json, err := writeIssue(conf)
+	// Fill io.Buffer with json data.
+	var json *bytes.Buffer
+	var err error
+	json, err = composeIssue(conf)
 	if err != nil {
-		Log.Printf("error: %v", err.Error())
-		return
+		return fmt.Errorf("composeIssue: %v", err)
 	}
 
 	// Make http request.
-	raiseIssue(conf, json)
+	err = raiseIssue(conf, json)
+	return err
 }
 
 // Compose issues for the designated repo.
-func writeIssue(conf Config) (*bytes.Buffer, error) {
+func composeIssue(conf Config) (*bytes.Buffer, error) {
 
 	var err error
-	reader := bufio.NewReader(os.Stdin)
+	sc := bufio.NewScanner(os.Stdin)
 
-	// Get insist that title be entered.
+	// Insist that a title be entered.
 	var title string
-	for title == "" {
+	for title == "" && err == nil {
 		fmt.Print("title: ")
-		title, _ = reader.ReadString('\n')
-		title = strings.Replace(title, "\n", "", -1)
-		if title == "" {
+		sc.Scan()
+		title += sc.Text()
+		title = strings.TrimSpace(title)
+		err = sc.Err()
+		if title == "" && err == nil {
 			fmt.Print("Please provide a title.\n")
 		}
+	}
+	if err != nil {
+		return nil, fmt.Errorf("title scanner: %+v", err)
 	}
 
 	// Require that a message body be entered, open an editor if desired.
 	var body string
 	if len(conf.Editor) > 0 {
-		body, err = editorWrite(conf)
-		if err != nil {
-			return nil, err
-		}
+		body, err = openEditor(conf)
 	} else {
+		fmt.Println("An empty line after the message will end the message.")
 		for body == "" {
 			fmt.Print("message: ")
-			body, _ = reader.ReadString('\n')
-			body = strings.Replace(body, "\n", "", -1)
-			if body == "" {
-				fmt.Print("Please provide some details.\n")
+			for sc.Scan() {
+				line := sc.Text()
+				if len(line) == 0 {
+					break
+				}
+				body += line
+			}
+			body = strings.TrimSpace(body)
+			err = sc.Err()
+			if body == "" && err == nil {
+				fmt.Println("Please provide some details.")
 			}
 		}
 	}
-
-	// If either field are empty, refuse to generate.
-	if len(title) == 0 || len(body) == 0 {
-		err = errors.New("Issue fields are empty, refusing to send request.")
-		return nil, err
+	if err != nil {
+		return nil, fmt.Errorf("message scanner: %+v", err)
 	}
 
 	str := `{"title":"` + title + `","body":"` + body + `"}`

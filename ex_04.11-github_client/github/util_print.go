@@ -52,7 +52,7 @@ func printIssue(item Issue) {
 		item.Number, item.User.Login,
 		item.Repo[strings.LastIndex(item.Repo, "/")+1:],
 		item.Title, item.CreatedAt.String())
-	fmt.Printf("message:\n%v\n", item.Body)
+	fmt.Printf("message: %v\n", item.Body)
 }
 
 // Print out a single line issue with only the title and details.

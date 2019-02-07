@@ -26,11 +26,8 @@
 package github
 
 import (
-	"bytes"
-	"encoding/json"
 	"errors"
 	"fmt"
-	"net/http"
 	"net/url"
 	"strings"
 )
@@ -43,7 +40,7 @@ const (
 
 var state int = NONE
 
-// Check whether all requirements are met to enter ADDRESS mode.
+// Check if requirements have been met to enter ADDRESS mode.
 func checkAddress(c Config) bool {
 	return (len(c.Login) > 0 || len(c.Author) > 0 ||
 		len(c.Owner) > 0 || len(c.Org) > 0) &&
@@ -51,12 +48,12 @@ func checkAddress(c Config) bool {
 }
 
 // Define a state by which to run the program, from the selection of possible
-// uses inferred from available information.
+// uses inferred from the given flags.
 func SetState(c *Config) int {
 
-	// If there is a number given and all parameters exist for a direct
-	// HTTP access then do so, else add the number to the query listing and
-	// search.
+	// If an issue number has been given and all parameters exist for a
+	// direct HTTP access then do so, else add the number to the query
+	// listing as a search paramiter.
 	if len(c.Number) > 0 {
 		if checkAddress(*c) {
 			c.Mode = "read"
@@ -80,7 +77,7 @@ func SetState(c *Config) int {
 	return state
 }
 
-// Structure an https request from the available data given.
+// Structure an http request from available data.
 func setUrl(conf Config) (string, string, error) {
 
 	var HTTP string
@@ -89,27 +86,33 @@ func setUrl(conf Config) (string, string, error) {
 
 	switch conf.Mode {
 
+	// Prepare URL for API search functionaltiy, add falg designated
+	// information to the query list.
 	case "list":
 		HTTP = "GET"
 		URL = URL + "search/issues"
-		if conf.Owner != "" && conf.Repo != "" {
+		if len(conf.Owner) > 0 && len(conf.Repo) > 0 {
 			conf.Queries = append(conf.Queries, "repo:"+conf.Owner+"/"+conf.Repo)
-		} else if conf.Owner != "" {
+		} else if len(conf.Owner) > 0 {
 			conf.Queries = append(conf.Queries, "user:"+conf.Owner)
-		} else if conf.Org != "" && conf.Repo != "" {
-			conf.Queries = append(conf.Queries, "org:"+conf.Repo+"/"+conf.Repo)
-		} else if conf.Org != "" {
+		} else if len(conf.Org) > 0 && len(conf.Repo) > 0 {
+			conf.Queries = append(conf.Queries, "org:"+conf.Org+"/"+conf.Repo)
+		} else if len(conf.Org) > 0 {
 			conf.Queries = append(conf.Queries, "org:"+conf.Org)
-		} else if conf.Author != "" && conf.Repo != "" {
+		} else if len(conf.Author) > 0 && len(conf.Repo) > 0 {
 			conf.Queries = append(conf.Queries, "repo:"+conf.Author+"/"+conf.Repo)
-		} else if conf.Author != "" {
+		} else if len(conf.Author) > 0 {
 			conf.Queries = append(conf.Queries, "author:"+conf.Author)
-		} else if conf.Login != "" && conf.Repo != "" {
+		} else if len(conf.Login) > 0 && len(conf.Repo) > 0 {
 			conf.Queries = append(conf.Queries, "repo:"+conf.Login+"/"+conf.Repo)
-		} else if conf.Login != "" {
+		} else if len(conf.Login) > 0 {
 			conf.Queries = append(conf.Queries, "author:"+conf.Login)
+		} else {
+			err = errors.New("state list; definition requirments were not completed.")
 		}
 
+	// Prepare URL for API readin repo issues directly by full address and
+	// issue number.
 	case "read":
 		HTTP = "GET"
 		if len(conf.Owner) > 0 && len(conf.Repo) > 0 && len(conf.Number) > 0 {
@@ -121,9 +124,11 @@ func setUrl(conf Config) (string, string, error) {
 		} else if len(conf.Org) > 0 && len(conf.Repo) > 0 && len(conf.Number) > 0 {
 			URL = URL + "orgs/" + conf.Org + "/" + conf.Repo + "/issues/" + conf.Number
 		} else {
-			err = errors.New("Please provide owner, repo and number information.")
+			err = errors.New("state read; Please provide owner, repository and issue number.")
 		}
 
+	// Prepare URL for issue creation by way of a compleet issue address
+	// and the use of the POST function.
 	case "raise":
 		HTTP = "POST"
 		if len(conf.Owner) > 0 && len(conf.Repo) > 0 {
@@ -135,7 +140,7 @@ func setUrl(conf Config) (string, string, error) {
 		} else if len(conf.Org) > 0 && len(conf.Repo) > 0 {
 			URL = URL + "orgs/" + conf.Org + "/" + conf.Repo + "/issues"
 		} else {
-			err = errors.New("Please provide owner, repo and number information.")
+			err = errors.New("state raise; Please provide owner and repository details.")
 		}
 	}
 
@@ -145,115 +150,10 @@ func setUrl(conf Config) (string, string, error) {
 		URL = URL + "?q=" + q
 	}
 
+	// If verbose flag is set print the address used.
 	if conf.Verbose {
 		fmt.Println(HTTP, URL)
 	}
 
 	return HTTP, URL, err
-}
-
-// SearchIssues queries the GitHub issue tracker.
-func searchIssues(conf Config) ([]*Issue, error) {
-
-	// Set the appropriate URL.
-	HTTP, URL, err := setUrl(conf)
-	if err != nil {
-		fmt.Printf("%v\n", err.Error())
-		return nil, err
-	}
-
-	// Generate request.
-	req, err := http.NewRequest(HTTP, URL, nil)
-	if err != nil {
-		Log.Printf("error: %v", err.Error())
-		return nil, err
-	}
-
-	// Add header to request.
-	req.Header.Set(
-		"Accept", "application/vnd.github.v3.text-match+json")
-	//"Accept", "application/vnd.github.machine-man-preview")
-	if conf.Token != "" {
-		req.Header.Set("Authorization", "token "+conf.Token)
-	}
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		Log.Printf("error: %v: http response: %v %v", err.Error(),
-			resp.StatusCode, http.StatusText(resp.StatusCode))
-		return nil, err
-	}
-
-	var result []*Issue
-
-	// Close without decoding.
-	if resp.StatusCode != http.StatusOK {
-		fmt.Printf("http response: %v %v\n", resp.StatusCode,
-			http.StatusText(resp.StatusCode))
-		resp.Body.Close()
-		return result, err
-	}
-
-	// Decode reply ADDRESS for a direct http request and SEARCH using the
-	// API search function.
-	if state == ADDRESS {
-		var issue Issue
-		if err := json.NewDecoder(resp.Body).Decode(&issue); err != nil {
-			Log.Printf("error: %v", err.Error())
-		}
-		result = append(result, &issue)
-	} else if state == SEARCH {
-		var resultStruct IssuesSearchResult
-		if err := json.NewDecoder(resp.Body).Decode(&resultStruct); err != nil {
-			Log.Printf("error: %v", err.Error())
-		}
-		result = resultStruct.Items
-	}
-
-	resp.Body.Close()
-	return result, err
-}
-
-// Generate a new issue.
-func raiseIssue(conf Config, json *bytes.Buffer) {
-
-	// Set the appropriate URL.
-	HTTP, URL, err := setUrl(conf)
-	if err != nil {
-		fmt.Printf("%v\n", err.Error())
-		return
-	}
-
-	// Formulate post request
-	req, err := http.NewRequest(HTTP, URL, json)
-	if err != nil {
-		Log.Printf("error: %v", err.Error())
-		return
-	}
-
-	// Set header.
-	req.Header.Set("Accept", "application/vnd.github.v3.json")
-	req.Header.Set("Authorization", "token "+conf.Token)
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		Log.Printf("error: %v", err.Error())
-		return
-	}
-
-	// If response not successful report it.
-	if resp.StatusCode != http.StatusCreated {
-		fmt.Printf("http response: %v %v\n", resp.StatusCode,
-			http.StatusText(resp.StatusCode))
-	}
-
-	resp.Body.Close()
-}
-
-func editIssue(conf Config) {
-
-	// // Set the appropriate URL.
-	// HTTP, URL, err := setUrl(conf)
-	// if err != nil {
-	// 	fmt.Printf("%v\n", err.Error())
-	// 	return
-	// }
 }

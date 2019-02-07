@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"runtime"
 )
 
 var config = Config{}
@@ -31,7 +30,7 @@ func LoadConfig(c Config) error {
 	if err != nil {
 		// If not present create file
 		if err = setConfig(def); err != nil {
-			return err
+			return fmt.Errorf("setConfig: ", err)
 		}
 	}
 
@@ -39,10 +38,7 @@ func LoadConfig(c Config) error {
 	decoder := json.NewDecoder(file)
 	err = decoder.Decode(&config)
 	if err != nil {
-		_, file, line, _ := runtime.Caller(0)
-		msg := "Config struct not created"
-		fmt.Fprintf(os.Stderr, "error: %s: %v %v: %s\n", msg, file,
-			line, err.Error())
+		return fmt.Errorf("decoder: %v", err)
 	}
 
 	// Check for modifications, with input settings, resave if required.
@@ -53,17 +49,15 @@ func LoadConfig(c Config) error {
 
 // Compaire and update the configuration as required.
 func compConfig(c, def Config) {
-	if c.Repo == "" {
-		c.Repo = def.Repo
+
+	if len(c.Login) == 0 {
+		c.Login = def.Login
 	}
-	if len(c.Queries) == 0 {
-		c.Queries = def.Queries
-	}
-	if c.Token == "" {
-		c.Token = def.Token
-	}
-	if c.Editor == "" {
+	if len(c.Editor) == 0 {
 		c.Editor = def.Editor
+	}
+	if len(c.Mode) == 0 {
+		c.Mode = def.Mode
 	}
 	setConfig(c)
 }
@@ -73,35 +67,26 @@ func setConfig(c Config) error {
 
 	var data []byte
 
-	// Set the config from input.
+	// Set the global config from the input.
 	config = c
 
 	// Make the file.
 	file, err := os.Create("config.json")
 	if err != nil {
-		_, file, line, _ := runtime.Caller(0)
-		fmt.Fprintf(os.Stderr, "error: %v %v: %s\n", file, line,
-			err.Error())
-		return err
+		return fmt.Errorf("File create failed: %v", err)
 	}
+	defer file.Close()
 
 	// Prepare the json in readable fashon.
 	c.Token = ""
 	if data, err = json.MarshalIndent(config, "", "	"); err != nil {
-		_, file, line, _ := runtime.Caller(0)
-		fmt.Fprintf(os.Stderr, "error: %v %v: %s\n", file, line,
-			err.Error())
-		return err
+		return fmt.Errorf("MarshalIndent: %v", err)
 	}
 
 	// Write json to file.
 	if _, err = file.Write(data); err != nil {
-		_, file, line, _ := runtime.Caller(0)
-		fmt.Fprintf(os.Stderr, "error: %v %v: %s\n", file, line,
-			err.Error())
-		return err
+		return fmt.Errorf("File write failed: %v", err)
 	}
-	file.Close()
 
-	return nil
+	return err
 }
