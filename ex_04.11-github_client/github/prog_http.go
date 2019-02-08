@@ -37,7 +37,8 @@ func searchIssues(conf Config) ([]*Issue, error) {
 	// Close without decoding if not ok.
 	if resp.StatusCode != http.StatusOK {
 		resp.Body.Close()
-		return nil, fmt.Errorf("http response: %v", http.StatusText(resp.StatusCode))
+		return nil, fmt.Errorf("http response: %d %v", resp.StatusCode,
+			http.StatusText(resp.StatusCode))
 	}
 
 	// Decode reply ADDRESS for a direct http request and SEARCH using the
@@ -86,7 +87,8 @@ func raiseIssue(conf Config, json *bytes.Buffer) error {
 
 	// If response not successful report it.
 	if resp.StatusCode != http.StatusCreated {
-		return fmt.Errorf("http response: %v.", http.StatusText(resp.StatusCode))
+		return fmt.Errorf("http response: %d %v", resp.StatusCode,
+			http.StatusText(resp.StatusCode))
 	}
 
 	resp.Body.Close()
@@ -118,7 +120,8 @@ func editIssue(conf Config, json *bytes.Buffer) error {
 
 	// If response not successful report it.
 	if resp.StatusCode != http.StatusCreated {
-		return fmt.Errorf("http response: %v.", http.StatusText(resp.StatusCode))
+		return fmt.Errorf("http response: %d %v", resp.StatusCode,
+			http.StatusText(resp.StatusCode))
 	}
 
 	resp.Body.Close()

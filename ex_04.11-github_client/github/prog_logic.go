@@ -49,12 +49,13 @@ func checkAddress(c Config) bool {
 
 // Define a state by which to run the program, from the selection of possible
 // uses inferred from the given flags.
-func SetState(c *Config) int {
+func SetState(c *Config) error {
 
+	var err error
 	// If an issue number has been given and all parameters exist for a
 	// direct HTTP access then do so, else add the number to the query
 	// listing as a search paramiter.
-	if len(c.Number) > 0 {
+	if len(c.Number) > 0 && c.Mode != "edit" {
 		if checkAddress(*c) {
 			c.Mode = "read"
 		} else {
@@ -73,8 +74,14 @@ func SetState(c *Config) int {
 		state = ADDRESS
 	} else if c.Mode == "raise" {
 		state = ADDRESS
+	} else if c.Mode == "edit" {
+		if len(c.Editor) == 0 {
+			err = errors.New("Please designate an external editor `-e <command>` and try again.")
+			c.Mode = "error"
+		}
+		state = ADDRESS
 	}
-	return state
+	return err
 }
 
 // Structure an http request from available data.
@@ -111,21 +118,16 @@ func setUrl(conf Config) (string, string, error) {
 			err = errors.New("state list; definition requirments were not completed.")
 		}
 
-	// Prepare URL for API readin repo issues directly by full address and
+	// Prepare URL for API reading repo issues directly by full address and
 	// issue number.
 	case "read":
 		HTTP = "GET"
-		if len(conf.Owner) > 0 && len(conf.Repo) > 0 && len(conf.Number) > 0 {
-			URL = URL + "repos/" + conf.Owner + "/" + conf.Repo + "/issues/" + conf.Number
-		} else if len(conf.Login) > 0 && len(conf.Repo) > 0 && len(conf.Number) > 0 {
-			URL = URL + "repos/" + conf.Login + "/" + conf.Repo + "/issues/" + conf.Number
-		} else if len(conf.Author) > 0 && len(conf.Repo) > 0 && len(conf.Number) > 0 {
-			URL = URL + "repos/" + conf.Author + "/" + conf.Repo + "/issues/" + conf.Number
-		} else if len(conf.Org) > 0 && len(conf.Repo) > 0 && len(conf.Number) > 0 {
-			URL = URL + "orgs/" + conf.Org + "/" + conf.Repo + "/issues/" + conf.Number
-		} else {
-			err = errors.New("state read; Please provide owner, repository and issue number.")
-		}
+		URL, err = urlAddressNumber(conf, URL)
+
+	// Prepare for editing a preexisting repo.
+	case "edit":
+		HTTP = "PATCH"
+		URL, err = urlAddressNumber(conf, URL)
 
 	// Prepare URL for issue creation by way of a compleet issue address
 	// and the use of the POST function.
@@ -156,4 +158,22 @@ func setUrl(conf Config) (string, string, error) {
 	}
 
 	return HTTP, URL, err
+}
+
+func urlAddressNumber(conf Config, URL string) (string, error) {
+
+	var err error
+	if len(conf.Owner) > 0 && len(conf.Repo) > 0 && len(conf.Number) > 0 {
+		URL = URL + "repos/" + conf.Owner + "/" + conf.Repo + "/issues/" + conf.Number
+	} else if len(conf.Login) > 0 && len(conf.Repo) > 0 && len(conf.Number) > 0 {
+		URL = URL + "repos/" + conf.Login + "/" + conf.Repo + "/issues/" + conf.Number
+	} else if len(conf.Author) > 0 && len(conf.Repo) > 0 && len(conf.Number) > 0 {
+		URL = URL + "repos/" + conf.Author + "/" + conf.Repo + "/issues/" + conf.Number
+	} else if len(conf.Org) > 0 && len(conf.Repo) > 0 && len(conf.Number) > 0 {
+		URL = URL + "orgs/" + conf.Org + "/" + conf.Repo + "/issues/" + conf.Number
+	} else {
+		err = errors.New("state read; Please provide owner, repository and issue number.")
+	}
+
+	return URL, err
 }

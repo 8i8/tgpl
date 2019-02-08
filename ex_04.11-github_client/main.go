@@ -41,12 +41,9 @@ func main() {
 
 	// Setup programming for selected mode, in some cases the program mode
 	// is altered here.
-	github.SetState(&conf)
+	err := github.SetState(&conf)
 
-	var err error
 	switch conf.Mode {
-	// TODO make user and login name concise, there is a descrepancy in the
-	// behaviour at this time; See auto search in URL designiation.
 	case "list":
 		err = github.ListIssues(conf)
 	case "read":
@@ -54,16 +51,15 @@ func main() {
 	case "raise":
 		err = github.RaiseIssue(conf)
 	case "edit":
-		// TODO 1 set the correct URL.
-		// TODO 2 implement editing issues.
 		err = github.EditIssue(conf)
 	case "resolved":
 		// TODO 1 set the correct URL.
 		// TODO 2 implement writing issues.
 		fmt.Println(conf.Mode)
 	}
+
+	// Signal any program failure.
 	if err != nil {
 		fmt.Println(err)
 	}
-
 }
