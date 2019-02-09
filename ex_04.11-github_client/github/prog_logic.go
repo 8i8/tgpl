@@ -23,6 +23,7 @@
 	https://api.github.com/search/issues
 
 */
+
 package github
 
 import (
@@ -33,59 +34,73 @@ import (
 )
 
 const (
-	NONE = iota
-	SEARCH
-	ADDRESS
+	cNone = iota
+	cSearch
+	cAddress
+	cLock
 )
 
-var state int = NONE
+var state = cNone
 
-// Check if requirements have been met to enter ADDRESS mode.
+// Check if requirements have been met to enter cAddress mode.
 func checkAddress(c Config) bool {
 	return (len(c.Login) > 0 || len(c.Author) > 0 ||
 		len(c.Owner) > 0 || len(c.Org) > 0) &&
 		len(c.Repo) > 0
 }
 
-// Define a state by which to run the program, from the selection of possible
-// uses inferred from the given flags.
+// SetState defines a state by which to run the program, from the selection of
+// possible uses inferred from the given flags.
 func SetState(c *Config) error {
 
 	var err error
+	// If a lock type has been set, force lock mode.
+	if len(c.Lock) > 0 {
+		c.Mode = "lock"
+	}
 	// If an issue number has been given and all parameters exist for a
 	// direct HTTP access then do so, else add the number to the query
 	// listing as a search paramiter.
-	if len(c.Number) > 0 && c.Mode != "edit" {
+	if len(c.Number) > 0 && c.Mode != "edit" && c.Mode != "lock" {
 		if checkAddress(*c) {
 			c.Mode = "read"
 		} else {
 			c.Queries = append(c.Queries, c.Number)
 		}
 	}
-	// Set to the default mode if no other mode has been set.
+	// Set to the default mode if none designated.
 	if c.Mode == "def" {
 		c.Mode = "list"
 	}
-
 	// Set the run state.
 	if c.Mode == "list" {
-		state = SEARCH
+		state = cSearch
 	} else if c.Mode == "read" {
-		state = ADDRESS
+		state = cAddress
 	} else if c.Mode == "raise" {
-		state = ADDRESS
-	} else if c.Mode == "edit" {
-		if len(c.Editor) == 0 {
-			err = errors.New("Please designate an external editor `-e <command>` and try again.")
+		state = cAddress
+	} else if c.Mode == "lock" {
+		if len(c.Lock) == 0 {
+			err = errors.New("please designate a reason for locking the thread using the -k flag")
 			c.Mode = "error"
 		}
-		state = ADDRESS
+		state = cLock
+	} else if c.Mode == "edit" {
+		if len(c.Editor) == 0 {
+			err = errors.New("please designate an external editor `-e <command>` and try again")
+			c.Mode = "error"
+		}
+		state = cAddress
+	}
+
+	if c.Verbose {
+		fmt.Printf("Setting mode: %v\n", c.Mode)
 	}
 	return err
 }
 
 // Structure an http request from available data.
-func setUrl(conf Config) (string, string, error) {
+func setURL(conf Config) (string, string, error) {
 
 	var HTTP string
 	var err error
@@ -115,7 +130,7 @@ func setUrl(conf Config) (string, string, error) {
 		} else if len(conf.Login) > 0 {
 			conf.Queries = append(conf.Queries, "author:"+conf.Login)
 		} else {
-			err = errors.New("state list; definition requirments were not completed.")
+			err = errors.New("state list; definition requirments were not completed")
 		}
 
 	// Prepare URL for API reading repo issues directly by full address and
@@ -130,7 +145,7 @@ func setUrl(conf Config) (string, string, error) {
 		URL, err = urlAddressNumber(conf, URL)
 
 	// Prepare URL for issue creation by way of a compleet issue address
-	// and the use of the POST function.
+	// and the use of the POST function, requires login aurorisation.
 	case "raise":
 		HTTP = "POST"
 		if len(conf.Owner) > 0 && len(conf.Repo) > 0 {
@@ -142,24 +157,37 @@ func setUrl(conf Config) (string, string, error) {
 		} else if len(conf.Org) > 0 && len(conf.Repo) > 0 {
 			URL = URL + "orgs/" + conf.Org + "/" + conf.Repo + "/issues"
 		} else {
-			err = errors.New("state raise; Please provide owner and repository details.")
+			err = errors.New("state raise; Please provide owner and repository details")
 		}
+
+	// Prepare a URL to set the current issue status to resolved, requires
+	// login.
+	case "lock":
+		// PUT /repos/:owner/:repo/issues/:number/lock
+		HTTP = "PUT"
+		URL, err = urlAddressNumber(conf, URL)
+		URL += "/lock"
 	}
 
 	// Add queries to url.
-	if len(conf.Queries) > 0 {
+	if len(conf.Queries) > 0 && state != cLock {
 		q := url.QueryEscape(strings.Join(conf.Queries, " "))
 		URL = URL + "?q=" + q
 	}
 
+	if state == cLock {
+		URL = URL + "?lock_reason=" + conf.Lock
+	}
+
 	// If verbose flag is set print the address used.
 	if conf.Verbose {
-		fmt.Println(HTTP, URL)
+		fmt.Printf("Setting URL: %v: %v\n", HTTP, URL)
 	}
 
 	return HTTP, URL, err
 }
 
+// urlAddressNumber sets the url.
 func urlAddressNumber(conf Config, URL string) (string, error) {
 
 	var err error
@@ -172,7 +200,7 @@ func urlAddressNumber(conf Config, URL string) (string, error) {
 	} else if len(conf.Org) > 0 && len(conf.Repo) > 0 && len(conf.Number) > 0 {
 		URL = URL + "orgs/" + conf.Org + "/" + conf.Repo + "/issues/" + conf.Number
 	} else {
-		err = errors.New("state read; Please provide owner, repository and issue number.")
+		err = errors.New("state read; Please provide owner, repository and issue number")
 	}
 
 	return URL, err

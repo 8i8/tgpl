@@ -11,7 +11,7 @@ import (
 func searchIssues(conf Config) ([]*Issue, error) {
 
 	// Set the appropriate URL.
-	HTTP, URL, err := setUrl(conf)
+	HTTP, URL, err := setURL(conf)
 	if err != nil {
 		return nil, fmt.Errorf("serUrl failed: %v", err)
 	}
@@ -37,20 +37,19 @@ func searchIssues(conf Config) ([]*Issue, error) {
 	// Close without decoding if not ok.
 	if resp.StatusCode != http.StatusOK {
 		resp.Body.Close()
-		return nil, fmt.Errorf("http response: %d %v", resp.StatusCode,
-			http.StatusText(resp.StatusCode))
+		return nil, fmt.Errorf("http response: %d %v", resp.StatusCode, http.StatusText(resp.StatusCode))
 	}
 
-	// Decode reply ADDRESS for a direct http request and SEARCH using the
+	// Decode reply cAddress for a direct http request and cSearch using the
 	// API search function.
 	var result []*Issue
-	if state == ADDRESS {
+	if state == cAddress {
 		var issue Issue
 		if err := json.NewDecoder(resp.Body).Decode(&issue); err != nil {
 			return nil, fmt.Errorf("json decoder failed: %v", err)
 		}
 		result = append(result, &issue)
-	} else if state == SEARCH {
+	} else if state == cSearch {
 		var issue IssuesSearchResult
 		if err := json.NewDecoder(resp.Body).Decode(&issue); err != nil {
 			return nil, fmt.Errorf("json decoder failed: %v", err)
@@ -66,7 +65,7 @@ func searchIssues(conf Config) ([]*Issue, error) {
 func raiseIssue(conf Config, json *bytes.Buffer) error {
 
 	// Set the appropriate URL.
-	HTTP, URL, err := setUrl(conf)
+	HTTP, URL, err := setURL(conf)
 	if err != nil {
 		return fmt.Errorf("raiseIssue : %v", err)
 	}
@@ -99,9 +98,9 @@ func raiseIssue(conf Config, json *bytes.Buffer) error {
 func editIssue(conf Config, json *bytes.Buffer) error {
 
 	// Set the appropriate URL.
-	HTTP, URL, err := setUrl(conf)
+	HTTP, URL, err := setURL(conf)
 	if err != nil {
-		return fmt.Errorf("setUrl: %v", err)
+		return fmt.Errorf("setURL: %v", err)
 	}
 
 	// Formulate post request

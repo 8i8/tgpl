@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-// Open and edit and existing issue.
+// EditIssue opens and edits and existing issue.
 func EditIssue(conf Config) error {
 
 	// Serch for requested issue.
@@ -17,9 +17,13 @@ func EditIssue(conf Config) error {
 	// If issue not found or to many.
 	l := len(issue)
 	if l == 0 {
-		return fmt.Errorf("Issue %s not found.", conf.Number)
+		return fmt.Errorf("issue %s not found", conf.Number)
 	} else if l > 1 {
-		return fmt.Errorf("Multiple issues returned.")
+		return fmt.Errorf("multiple issues returned")
+	}
+
+	if issue[0].Locked {
+		return fmt.Errorf("the issue is currently locked")
 	}
 
 	// Edit existing data.
@@ -28,7 +32,10 @@ func EditIssue(conf Config) error {
 		return fmt.Errorf("editIssueData: %v", err)
 	}
 
-	editIssue(conf, json)
+	err = editIssue(conf, json)
+	if err != nil {
+		return fmt.Errorf("editIssue: %v", err)
+	}
 
 	return nil
 }

@@ -52,6 +52,11 @@ func printIssue(item Issue) {
 		item.Number, item.User.Login,
 		item.Repo[strings.LastIndex(item.Repo, "/")+1:],
 		item.Title, item.CreatedAt.String())
+	if item.Locked {
+		fmt.Printf("status: closed %v\n", item.Reason)
+	} else {
+		fmt.Println("status: open")
+	}
 	fmt.Printf("message: %v\n", item.Body)
 }
 

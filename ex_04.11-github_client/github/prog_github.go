@@ -6,17 +6,20 @@ import (
 	"time"
 )
 
-var Log = log.New(os.Stderr, "github: ", log.Lshortfile)
+var errlog = log.New(os.Stderr, "github: ", log.Lshortfile)
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Search request.
+   Search request.
 *  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
+// IssuesSearchResult is a json object that contains an array of github issues.
 type IssuesSearchResult struct {
-	TotalCount int `json:"total_count"`
-	Items      []*Issue
+	TotalCount int      `json:"total_count"`
+	Items      []*Issue // Github issues.
 }
 
+// Issue represents a json object which contains the data from a github
+// repository issue.
 type Issue struct {
 	Number    int
 	HTMLURL   string `json:"html_url"`
@@ -26,31 +29,39 @@ type Issue struct {
 	CreatedAt time.Time `json:"created_at"`
 	Body      string    `json:"body"` // in Markdown format
 	Repo      string    `json:"repository_url"`
+	Locked    bool      `json:"locked"`
+	Reason    string    `json:"active_lock_reason"`
 }
 
+// User represents a json object which contains a github user details.
 type User struct {
 	Login   string
 	HTMLURL string `json:"html_url"`
 }
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Configuration and requests
+   Configuration and requests
 *  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
+// Config is a struct specific to the program that contains the principal
+// program settings.
 type Config struct {
-	Login   string
-	Token   string
-	Editor  string
-	Mode    string
-	Verbose bool
-	Request
+	Login   string // Login user name.
+	Token   string // Flag defined Oath token.
+	Editor  string // Flag defined external editor.
+	Mode    string // Program running mode.
+	Lock    string // Lock type.
+	Verbose bool   // Signals the program print out extra detail.
+	Request        // Stores the users request data.
 }
 
+// Request is a struct that is specific to the program, it contains the details
+// of the current user request.
 type Request struct {
-	Owner   string
-	Author  string
-	Org     string
-	Repo    string
-	Number  string
-	Queries []string
+	Owner   string   // Repository owner,
+	Author  string   // Repository author.
+	Org     string   // Organisation.
+	Repo    string   // Repository name.
+	Number  string   // Issue number.
+	Queries []string // GET queries retrieved from the Args[] array.
 }

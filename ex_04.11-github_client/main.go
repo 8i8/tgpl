@@ -18,9 +18,20 @@ func init() {
 	'edit' an existing issue.
 	'raise' a new issue.
 	'raw' test raw input.
-	'resolved' set the issue status to resolved.`)
+	'lock' set the issue status to resolved.`)
+
 	flag.StringVar(&conf.Mode, "m", def,
-		"Raise a new issue (shorthand) requires an option argument.")
+		"Raise a new issue (shorthand), requires an optional argument.")
+
+	flag.StringVar(&conf.Lock, "lock", "",
+		`Set the current issue's lock status, requires an optional argument.
+	'topic' a list of active issue's, following the given search creiteria.
+	'heated' a designated issue, followed by the specific issue number.
+	'resolved' an existing issue.
+	'spam' a new issue.`)
+
+	flag.StringVar(&conf.Lock, "k", "",
+		"Set the current issue's lock status (shorthand), requires an optional argument.")
 
 	flag.StringVar(&conf.Login, "l", "", "set user name")
 	flag.StringVar(&conf.Owner, "u", "", "set user name")
@@ -52,10 +63,12 @@ func main() {
 		err = github.RaiseIssue(conf)
 	case "edit":
 		err = github.EditIssue(conf)
-	case "resolved":
+	case "lock":
 		// TODO 1 set the correct URL.
 		// TODO 2 implement writing issues.
-		fmt.Println(conf.Mode)
+		err = github.ReadIssue(conf)
+	default:
+		fmt.Println("Run with -h flag for user instructions.")
 	}
 
 	// Signal any program failure.

@@ -60,7 +60,7 @@ func composeIssue(conf Config) (*bytes.Buffer, error) {
 	}
 
 	// Marshal into json format.
-	json, err := issueToJson(title, body)
+	json, err := issueToJSON(title, body)
 
 	return json, err
 }
@@ -97,13 +97,13 @@ func editIssueData(conf Config, issue Issue) (*bytes.Buffer, error) {
 	}
 
 	// Marshal into json format.
-	json, err := issueToJson(title, body)
+	json, err := issueToJSON(title, body)
 
 	return json, nil
 }
 
-// Marshal data into json format.
-func issueToJson(title, body string) (*bytes.Buffer, error) {
+// issueToJSON marshals data into json format.
+func issueToJSON(title, body string) (*bytes.Buffer, error) {
 
 	// Write data into a struct.
 	var issue Issue

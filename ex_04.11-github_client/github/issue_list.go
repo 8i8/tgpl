@@ -14,18 +14,18 @@ type date struct {
 	p bool
 }
 
-// Struct for sorting issue map with an index.
+// IssueMap is a struct for maintaining an issue map with its index.
 type IssueMap struct {
 	M *map[int]Issue
 	I *[]date
 }
 
-// Length of issue map.
+// Len outputs the length of an issue map.
 func (v IssueMap) Len() int {
 	return len(*v.M)
 }
 
-// listIssues Retrieves a list of issues from the given repo that meet the
+// ListIssues retrieves a list of issues from the given repo that meet the;
 // search criteria.
 func ListIssues(conf Config) error {
 
@@ -33,7 +33,7 @@ func ListIssues(conf Config) error {
 	// Retrieve data
 	result, err := searchIssues(conf)
 	if err != nil {
-		return fmt.Errorf("no issues returned.")
+		return fmt.Errorf("no issues returned")
 	}
 
 	// Prepare data structure.
@@ -48,7 +48,7 @@ func ListIssues(conf Config) error {
 
 	// Check that there is a responst to print.
 	if resp.Len() == 0 {
-		return fmt.Errorf("Empty result string.")
+		return fmt.Errorf("empty result string")
 	}
 
 	// Construct index.

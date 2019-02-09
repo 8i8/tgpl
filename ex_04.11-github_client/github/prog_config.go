@@ -21,8 +21,8 @@ func init() {
 	def.Queries = queries
 }
 
-// Load the last saved config, if no file exists create with the default
-// settings.
+// LoadConfig load the last saved config, if no file exists create with the
+// default settings.
 func LoadConfig(c Config) error {
 
 	// Open file for reading if present.
@@ -30,7 +30,7 @@ func LoadConfig(c Config) error {
 	if err != nil {
 		// If not present create file
 		if err = setConfig(def); err != nil {
-			return fmt.Errorf("setConfig: ", err)
+			return fmt.Errorf("setConfig: %v", err)
 		}
 	}
 
@@ -59,10 +59,10 @@ func compConfig(c, def Config) {
 	if len(c.Mode) == 0 {
 		c.Mode = def.Mode
 	}
-	setConfig(c)
+	_ = setConfig(c)
 }
 
-// Create a base Config file, used in the case that no config file is present.
+// Create a base Config file, used incase that no config file is present.
 func setConfig(c Config) error {
 
 	var data []byte
