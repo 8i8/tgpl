@@ -1,96 +1,138 @@
 /*
-	       |GET  |POST |PATCH|PUT
-	-------|-----|-----|-----|-----
-	list   | 1   |     |     |
-	-------|-----|-----|-----|-----
-	read   | 1   |     |     |
-	-------|-----|-----|-----|-----
-	raise  |     | 1   |     |
-	-------|-----|-----|-----|-----
-	edit   |     |     | 1   |
-	-------|-----|-----|-----|-----
-	resolve|     |     |     | 1
+NAME
+	gitspoke
 
-	GET /issues                                  // all issues, make explicit to avout waste
- 	GET /user/issues                             // all issues for user
- 	GET /orgs/:org/issues                        // all issues for organisation
- 	GET /repos/:owner/:repo/issues               // all issues for reps
- 	GET /repos/:owner/:repo/issues/:number       // single issue
- 	POST /repos/:owner/:repo/issues              // Create issue
- 	PATCH /repos/:owner/:repo/issues/:number     // edit issue
- 	PUT /repos/:owner/:repo/issues/:number/lock  // Lock or delete an issue
+SYNOPSIS
+	gitspoke [user|repo|number][orth2][options]
+
+DESCRIPTION
+	gitspoke is a github client designed for raising and tracking and
+	updating github issues on the github platform from the users command
+	line by way of the github HTTP API. Giving the user access from the
+	command line or their favorite editor application.
+
+GITHUB API HTTP
+	┌───────┬───────┬───────┬───────┬───────┬───────┐
+	│       │ GET   │ POST  │ PATCH │ PUT   │DELETE │
+	├───────┼───────┼───────┼───────┼───────┼───────┤
+	│ list  │   1   │       │       │       │       │
+	├───────┼───────┼───────┼───────┼───────┼───────┤
+	│ read  │   1   │       │       │       │       │
+	├───────┼───────┼───────┼───────┼───────┼───────┤
+	│ raise │       │   1   │       │       │       │
+	├───────┼───────┼───────┼───────┼───────┼───────┤
+	│ edit  │       │       │   1   │       │       │
+	├───────┼───────┼───────┼───────┼───────┼───────┤
+	│ lock  │       │       │       │   1   │       │
+	├───────┼───────┼───────┼───────┼───────┼───────┤
+        │unlock │       │       │       │       │   1   │
+	└───────┴───────┴───────┴───────┴───────┴───────┘
+
+	GET    /search/issues?q= user:[user] | repo:[repo] | author:[author]
+	GET    /issues
+ 	GET    /user/issues
+ 	GET    /orgs/:org/issues
+ 	GET    /repos/:owner/:repo/issues
+ 	GET    /repos/:owner/:repo/issues/:number
+ 	POST   /repos/:owner/:repo/issues
+ 	PATCH  /repos/:owner/:repo/issues/:number
+ 	PUT    /repos/:owner/:repo/issues/:number/lock?lock_reason=[reason]
+	DELETE /repos/:owner/:repo/issues/:number/lock
 
 	https://api.github.com/search/issues
 
-*/
+PROGRAM STATE TABLE
+	Table representation of program states, the program has essentially two
+	different primary states, the first of which is prevalent in the main
+	function, designating the programs initial running mode to establish the
+	type of HTTP request to be made. The second defines the formation of
+	the URL for the request.
 
+	┌────────┬────────┬────────┬────────┬──────────┬────────┬────────────┐
+	│-o org  │        │        │        │-k ?      │        │            │
+	│-a auth │        │        │        │-l lock[r]│        │   State    │
+	│-u user │-r repo │-n numb │-t token│-e edit   │-d[exec]│            │
+	├────────┼────────┼────────┼────────┼──────────┼────────┼────────────┤
+	│ yes    │        │        │ N/A    │ N/A      │ all    │ list  sear │
+	├────────┼────────┼────────┼────────┼──────────┼────────┼────────────┤
+	│        │ yes    │        │ N/A    │ N/A      │ all    │ list  sear │
+	├────────┼────────┼────────┼────────┼──────────┼────────┼────────────┤
+	│ yes    │ yes    │        │ N/A    │ N/A      │ all    │ list  sear │
+	├────────┼────────┼────────┼────────┼──────────┼────────┼────────────┤
+	│ yes    │ no/fill│ yes    │ N/A    │ N/A      │ all    │ list  sear │
+	├────────┼────────┼────────┼────────┼──────────┼────────┼────────────┤
+	│ no/fill│ yes    │ yes    │ N/A    │ N/A      │ all    │ list  sear │
+	├────────┼────────┼────────┼────────┼──────────┼────────┼────────────┤
+	│ yes    │ yes    │ yes    │ N/A    │ N/A      │ all    │ read  addr │
+	├────────┼────────┼────────┼────────┼──────────┼────────┼────────────┤
+	│ yes    │ yes    │ yes    │ yes    │ -e       │ all    │ edit  addr │
+	├────────┼────────┼────────┼────────┼──────────┼────────┼────────────┤
+	│ yes    │ yes    │ yes    │ yes    │ -l       │ all    │ edit  lock │
+	├────────┼────────┼────────┼────────┼──────────┼────────┼────────────┤
+	│ yes    │ yes    │ yes    │ yes    │ -k       │ all    │ edit  unlk │
+	└────────┴────────┴────────┴────────┴──────────┴────────┴────────────┘
+*/
 package github
 
 import (
-	"errors"
 	"fmt"
 	"net/url"
 	"strings"
 )
 
 const (
-	cNone = iota
-	cSearch
-	cAddress
-	cLock
+	urlNone = iota
+	urlSear
+	urlAddr
+	urlLock
+	urlEdit
+	urlRead
 )
 
-var state = cNone
+var state = urlNone
 
-// Check if requirements have been met to enter cAddress mode.
+// Check if the requirements have been met to enter urlAddr mode.
 func checkAddress(c Config) bool {
-	return (len(c.Login) > 0 || len(c.Author) > 0 ||
-		len(c.Owner) > 0 || len(c.Org) > 0) &&
+	return (len(c.Author) > 0 || len(c.User) > 0 || len(c.Org) > 0) &&
 		len(c.Repo) > 0
 }
 
-// SetState defines a state by which to run the program, from the selection of
-// possible uses inferred from the given flags.
-func SetState(c *Config) error {
+// InitState defines the state in which to run the program, set by the
+// configuration of user input flags and data.
+func InitState(c *Config) error {
 
 	var err error
-	// If a lock type has been set, force lock mode.
-	if len(c.Lock) > 0 {
-		c.Mode = "lock"
+	if c.Edit {
+		c.Mode = MoEdit
+		state = urlEdit
 	}
-	// If an issue number has been given and all parameters exist for a
-	// direct HTTP access then do so, else add the number to the query
-	// listing as a search paramiter.
-	if len(c.Number) > 0 && c.Mode != "edit" && c.Mode != "lock" {
+	// If a lock type has been set, force lock mode.
+	if c.Lock {
+		c.Mode = MoEdit
+		state = urlLock
+	}
+	// If an issue number has been given and all parameters exist for
+	// a direct HTTP access then do so, else add the number to the
+	// query listing as a search parameter.
+	if len(c.Number) > 0 && state != urlEdit && state != urlLock {
 		if checkAddress(*c) {
-			c.Mode = "read"
+			c.Mode = MoRead
+			state = urlRead
 		} else {
 			c.Queries = append(c.Queries, c.Number)
 		}
 	}
 	// Set to the default mode if none designated.
-	if c.Mode == "def" {
-		c.Mode = "list"
+	if c.Mode == MoNone {
+		c.Mode = MoList
 	}
 	// Set the run state.
-	if c.Mode == "list" {
-		state = cSearch
-	} else if c.Mode == "read" {
-		state = cAddress
-	} else if c.Mode == "raise" {
-		state = cAddress
-	} else if c.Mode == "lock" {
-		if len(c.Lock) == 0 {
-			err = errors.New("please designate a reason for locking the thread using the -k flag")
-			c.Mode = "error"
-		}
-		state = cLock
-	} else if c.Mode == "edit" {
-		if len(c.Editor) == 0 {
-			err = errors.New("please designate an external editor `-e <command>` and try again")
-			c.Mode = "error"
-		}
-		state = cAddress
+	if c.Mode == MoList {
+		state = urlSear
+	} else if c.Mode == MoRead {
+		state = urlAddr
+	} else if c.Mode == MoRaise {
+		state = urlAddr
 	}
 
 	if c.Verbose {
@@ -108,75 +150,88 @@ func setURL(conf Config) (string, string, error) {
 
 	switch conf.Mode {
 
-	// Prepare URL for API search functionaltiy, add falg designated
+	// Prepare URL for API search functionality, add flag designated
 	// information to the query list.
-	case "list":
+	case MoList:
 		HTTP = "GET"
 		URL = URL + "search/issues"
-		if len(conf.Owner) > 0 && len(conf.Repo) > 0 {
-			conf.Queries = append(conf.Queries, "repo:"+conf.Owner+"/"+conf.Repo)
-		} else if len(conf.Owner) > 0 {
-			conf.Queries = append(conf.Queries, "user:"+conf.Owner)
+		if len(conf.User) > 0 && len(conf.Repo) > 0 {
+			conf.Queries = append(
+				conf.Queries, "repo:"+conf.User+"/"+conf.Repo)
+		} else if len(conf.User) > 0 {
+			conf.Queries = append(
+				conf.Queries, "user:"+conf.User)
 		} else if len(conf.Org) > 0 && len(conf.Repo) > 0 {
-			conf.Queries = append(conf.Queries, "org:"+conf.Org+"/"+conf.Repo)
+			conf.Queries = append(
+				conf.Queries, "org:"+conf.Org+"/"+conf.Repo)
 		} else if len(conf.Org) > 0 {
 			conf.Queries = append(conf.Queries, "org:"+conf.Org)
 		} else if len(conf.Author) > 0 && len(conf.Repo) > 0 {
-			conf.Queries = append(conf.Queries, "repo:"+conf.Author+"/"+conf.Repo)
+			conf.Queries = append(
+				conf.Queries, "repo:"+conf.Author+"/"+conf.Repo)
 		} else if len(conf.Author) > 0 {
-			conf.Queries = append(conf.Queries, "author:"+conf.Author)
-		} else if len(conf.Login) > 0 && len(conf.Repo) > 0 {
-			conf.Queries = append(conf.Queries, "repo:"+conf.Login+"/"+conf.Repo)
-		} else if len(conf.Login) > 0 {
-			conf.Queries = append(conf.Queries, "author:"+conf.Login)
+			conf.Queries = append(
+				conf.Queries, "author:"+conf.Author)
 		} else {
-			err = errors.New("state list; definition requirments were not completed")
+			err = fmt.Errorf("%v: url definition requirements "+
+				"were not met", conf.Mode)
 		}
 
 	// Prepare URL for API reading repo issues directly by full address and
 	// issue number.
-	case "read":
+	case MoRead:
 		HTTP = "GET"
-		URL, err = urlAddressNumber(conf, URL)
+		str := "Please specify owner, repository and issue number."
+		URL, err = urlAddrIssues(conf, URL, "read", str)
+		if err != nil {
+			return HTTP, URL, err
+		}
+		URL += conf.Number
 
-	// Prepare for editing a preexisting repo.
-	case "edit":
-		HTTP = "PATCH"
-		URL, err = urlAddressNumber(conf, URL)
+	case MoEdit:
+		switch state {
+		// Prepare for editing a preexisting repo.
+		case urlEdit:
+			HTTP = "PATCH"
+			str := "Please specify owner, repository and issue number."
+			URL, err = urlAddrIssues(conf, URL, "edit", str)
+			if err != nil {
+				return HTTP, URL, err
+			}
+			URL += conf.Number
 
-	// Prepare URL for issue creation by way of a compleet issue address
-	// and the use of the POST function, requires login aurorisation.
-	case "raise":
-		HTTP = "POST"
-		if len(conf.Owner) > 0 && len(conf.Repo) > 0 {
-			URL = URL + "repos/" + conf.Owner + "/" + conf.Repo + "/issues"
-		} else if len(conf.Login) > 0 && len(conf.Repo) > 0 {
-			URL = URL + "repos/" + conf.Login + "/" + conf.Repo + "/issues"
-		} else if len(conf.Author) > 0 && len(conf.Repo) > 0 {
-			URL = URL + "repos/" + conf.Author + "/" + conf.Repo + "/issues"
-		} else if len(conf.Org) > 0 && len(conf.Repo) > 0 {
-			URL = URL + "orgs/" + conf.Org + "/" + conf.Repo + "/issues"
-		} else {
-			err = errors.New("state raise; Please provide owner and repository details")
+		// Prepare a URL to set the current issue status to resolved,
+		// requires login.
+		case urlLock:
+			HTTP = "PUT"
+			str := "Please specify owner, repository and issue number."
+			URL, err = urlAddrIssues(conf, URL, "lock", str)
+			if err != nil {
+				return HTTP, URL, err
+			}
+			URL += conf.Number + "/lock"
 		}
 
-	// Prepare a URL to set the current issue status to resolved, requires
-	// login.
-	case "lock":
-		// PUT /repos/:owner/:repo/issues/:number/lock
-		HTTP = "PUT"
-		URL, err = urlAddressNumber(conf, URL)
-		URL += "/lock"
+	// Prepare URL for issue creation by way of a complete issue address
+	// and the use of the POST function, requires login authorisation.
+	case MoRaise:
+		HTTP = "POST"
+		str := "Please specify owner and repository details"
+		URL, err = urlAddrIssues(conf, URL, "raise", str)
+		if err != nil {
+			return HTTP, URL, err
+		}
 	}
 
 	// Add queries to url.
-	if len(conf.Queries) > 0 && state != cLock {
+	if len(conf.Queries) > 0 && state != urlLock {
 		q := url.QueryEscape(strings.Join(conf.Queries, " "))
 		URL = URL + "?q=" + q
 	}
 
-	if state == cLock {
-		URL = URL + "?lock_reason=" + conf.Lock
+	// If lock required, add query.
+	if state == urlLock {
+		URL = URL + "?lock_reason=" + conf.Reason
 	}
 
 	// If verbose flag is set print the address used.
@@ -187,20 +242,24 @@ func setURL(conf Config) (string, string, error) {
 	return HTTP, URL, err
 }
 
-// urlAddressNumber sets the url.
-func urlAddressNumber(conf Config, URL string) (string, error) {
+// urlAddrIssues sets the url.
+func urlAddrIssues(conf Config, URL, mode, e string) (string, error) {
 
 	var err error
-	if len(conf.Owner) > 0 && len(conf.Repo) > 0 && len(conf.Number) > 0 {
-		URL = URL + "repos/" + conf.Owner + "/" + conf.Repo + "/issues/" + conf.Number
-	} else if len(conf.Login) > 0 && len(conf.Repo) > 0 && len(conf.Number) > 0 {
-		URL = URL + "repos/" + conf.Login + "/" + conf.Repo + "/issues/" + conf.Number
+	if len(conf.User) > 0 && len(conf.Repo) > 0 && len(conf.Number) > 0 {
+
+		URL = URL + "repos/" + conf.User + "/" + conf.Repo + "/issues/"
+
 	} else if len(conf.Author) > 0 && len(conf.Repo) > 0 && len(conf.Number) > 0 {
-		URL = URL + "repos/" + conf.Author + "/" + conf.Repo + "/issues/" + conf.Number
+
+		URL = URL + "repos/" + conf.Author + "/" + conf.Repo + "/issues/"
+
 	} else if len(conf.Org) > 0 && len(conf.Repo) > 0 && len(conf.Number) > 0 {
-		URL = URL + "orgs/" + conf.Org + "/" + conf.Repo + "/issues/" + conf.Number
+
+		URL = URL + "orgs/" + conf.Org + "/" + conf.Repo + "/issues/"
+
 	} else {
-		err = errors.New("state read; Please provide owner, repository and issue number")
+		err = fmt.Errorf("%v: %v", mode, e)
 	}
 
 	return URL, err

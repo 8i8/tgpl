@@ -36,7 +36,7 @@ func composeIssue(conf Config) (*bytes.Buffer, error) {
 	// Require that a message body be entered, open an editor if desired.
 	var body string
 	if len(conf.Editor) > 0 {
-		body, err = openEditor(conf, body)
+		body, err = openInEditor(conf, body)
 	} else {
 		fmt.Println("An empty line after the message will end the message.")
 		for body == "" {
@@ -66,7 +66,7 @@ func composeIssue(conf Config) (*bytes.Buffer, error) {
 }
 
 // Edit an existing issue.
-func editIssueData(conf Config, issue Issue) (*bytes.Buffer, error) {
+func editIssue(conf Config, issue Issue) (*bytes.Buffer, error) {
 
 	var err error
 	// Retreive data from issue.
@@ -91,9 +91,9 @@ func editIssueData(conf Config, issue Issue) (*bytes.Buffer, error) {
 
 	// Message body, open an editor if specified.
 	var body string
-	body, err = openEditor(conf, currentBody)
+	body, err = openInEditor(conf, currentBody)
 	if err != nil {
-		return nil, fmt.Errorf("openEditorBody: %+v", err)
+		return nil, fmt.Errorf("openInEditor: %+v", err)
 	}
 
 	// Marshal into json format.
@@ -124,7 +124,7 @@ func issueToJSON(title, body string) (*bytes.Buffer, error) {
 }
 
 // Get user input by way of the flag designated editor.
-func openEditor(conf Config, text string) (string, error) {
+func openInEditor(conf Config, text string) (string, error) {
 
 	// Create a temporary file for text editing.
 	tmpfile, err := ioutil.TempFile("", "issue.*.md")

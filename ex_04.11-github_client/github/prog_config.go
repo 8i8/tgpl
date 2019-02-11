@@ -8,10 +8,9 @@ import (
 
 var config = Config{}
 var def = Config{
-	Login:   "8i8",
+	Author:  "8i8",
 	Editor:  "gvim",
-	Mode:    "list",
-	Request: Request{Owner: "8i8", Repo: "test"},
+	Request: Request{Mode: MoList, User: "8i8", Repo: "test"},
 }
 
 func init() {
@@ -42,25 +41,25 @@ func LoadConfig(c Config) error {
 	}
 
 	// Check for modifications, with input settings, resave if required.
-	compConfig(c, def)
+	//compConfig(c, def)
 
 	return err
 }
 
-// Compaire and update the configuration as required.
-func compConfig(c, def Config) {
+// // Compaire and update the configuration as required.
+// func compConfig(c, def Config) {
 
-	if len(c.Login) == 0 {
-		c.Login = def.Login
-	}
-	if len(c.Editor) == 0 {
-		c.Editor = def.Editor
-	}
-	if len(c.Mode) == 0 {
-		c.Mode = def.Mode
-	}
-	_ = setConfig(c)
-}
+// 	if len(c.Author) == 0 {
+// 		c.Author = def.Author
+// 	}
+// 	if len(c.Editor) == 0 {
+// 		c.Editor = def.Editor
+// 	}
+// 	if len(c.Mode) == 0 {
+// 		c.Mode = def.Mode
+// 	}
+// 	_ = setConfig(c)
+// }
 
 // Create a base Config file, used incase that no config file is present.
 func setConfig(c Config) error {

@@ -8,6 +8,18 @@ import (
 
 var errlog = log.New(os.Stderr, "github: ", log.Lshortfile)
 
+// The run state of the program, interpreted by commandline flags. This
+// variable is set as in integer within the configuration sturct, by the
+// function InitState(c Config) at program start.
+const (
+	MoNone = iota
+	MoList
+	MoRead
+	MoEdit
+	MoLock
+	MoRaise
+)
+
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    Search request.
 *  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -35,7 +47,7 @@ type Issue struct {
 
 // User represents a json object which contains a github user details.
 type User struct {
-	Login   string
+	Author   string
 	HTMLURL string `json:"html_url"`
 }
 
@@ -46,20 +58,20 @@ type User struct {
 // Config is a struct specific to the program that contains the principal
 // program settings.
 type Config struct {
-	Login   string // Login user name.
+	Author   string // Author user name.
 	Token   string // Flag defined Oath token.
 	Editor  string // Flag defined external editor.
-	Mode    string // Program running mode.
-	Lock    string // Lock type.
+	Edit    bool   // Signal request to edit an issue.
+	Lock    bool   // Lock state.
+	Reason  string // Reason for lock.
 	Verbose bool   // Signals the program print out extra detail.
 	Request        // Stores the users request data.
 }
 
-// Request is a struct that is specific to the program, it contains the details
-// of the current user request.
+// Request is a struct containing the details of a particular request.
 type Request struct {
-	Owner   string   // Repository owner,
-	Author  string   // Repository author.
+	Mode    int      // Program running mode.
+	User   string   // Repository owner,
 	Org     string   // Organisation.
 	Repo    string   // Repository name.
 	Number  string   // Issue number.

@@ -7,6 +7,18 @@ import (
 	"net/http"
 )
 
+type Header struct {
+	Key, Value string
+}
+
+type Status struct {
+	Code   int
+	Reason string
+}
+
+func WriteResponce() {
+}
+
 // SearchIssues queries the GitHub issue tracker.
 func searchIssues(conf Config) ([]*Issue, error) {
 
@@ -25,7 +37,6 @@ func searchIssues(conf Config) ([]*Issue, error) {
 	// Add header to request.
 	req.Header.Set(
 		"Accept", "application/vnd.github.v3.text-match+json")
-	//"Accept", "application/vnd.github.machine-man-preview")
 	if conf.Token != "" {
 		req.Header.Set("Authorization", "token "+conf.Token)
 	}
@@ -40,16 +51,16 @@ func searchIssues(conf Config) ([]*Issue, error) {
 		return nil, fmt.Errorf("http response: %d %v", resp.StatusCode, http.StatusText(resp.StatusCode))
 	}
 
-	// Decode reply cAddress for a direct http request and cSearch using the
+	// Decode reply urlAddr for a direct http request and urlSear using the
 	// API search function.
 	var result []*Issue
-	if state == cAddress {
+	if state == urlAddr {
 		var issue Issue
 		if err := json.NewDecoder(resp.Body).Decode(&issue); err != nil {
 			return nil, fmt.Errorf("json decoder failed: %v", err)
 		}
 		result = append(result, &issue)
-	} else if state == cSearch {
+	} else if state == urlSear {
 		var issue IssuesSearchResult
 		if err := json.NewDecoder(resp.Body).Decode(&issue); err != nil {
 			return nil, fmt.Errorf("json decoder failed: %v", err)
@@ -94,8 +105,8 @@ func raiseIssue(conf Config, json *bytes.Buffer) error {
 	return err
 }
 
-// Edit an existing issue.
-func editIssue(conf Config, json *bytes.Buffer) error {
+// overwrite the existing issue.
+func writeIssue(conf Config, json *bytes.Buffer) error {
 
 	// Set the appropriate URL.
 	HTTP, URL, err := setURL(conf)

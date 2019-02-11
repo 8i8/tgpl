@@ -46,7 +46,7 @@ func ListIssues(conf Config) error {
 		issue[item.Number] = *item
 	}
 
-	// Check that there is a responst to print.
+	// Check that there is a response to print.
 	if resp.Len() == 0 {
 		return fmt.Errorf("empty result string")
 	}
