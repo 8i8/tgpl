@@ -1,4 +1,4 @@
-package github
+package gitish
 
 /*
    1) The same calendar year and month.

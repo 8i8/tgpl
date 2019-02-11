@@ -10,17 +10,17 @@ import (
 var conf github.Config
 
 func init() {
-	flag.StringVar(&conf.Author, "l", "", "set login name")
-	flag.StringVar(&conf.Token, "t", "", "set token")
-	flag.StringVar(&conf.Editor, "d", "", "set editor")
 	flag.StringVar(&conf.User, "u", "", "set user name")
+	flag.StringVar(&conf.Author, "a", "", "set author's name")
 	flag.StringVar(&conf.Org, "o", "", "set organisation name")
 	flag.StringVar(&conf.Repo, "r", "", "set repo name")
 	flag.StringVar(&conf.Number, "n", "", "set issue number")
+	flag.StringVar(&conf.Token, "t", "", "provide Oauth token")
+	flag.StringVar(&conf.Editor, "d", "", "set prefered editor")
 
-	flag.BoolVar(&conf.Lock, "k", false, "Lock the issue")
+	flag.BoolVar(&conf.Lock, "k", false, "Lock/unlock mode")
 	flag.BoolVar(&conf.Verbose, "v", false, "Verbose mode")
-	flag.BoolVar(&conf.Edit, "e", false, "Edit issue")
+	flag.BoolVar(&conf.Edit, "e", false, "Edit mode")
 }
 
 func main() {

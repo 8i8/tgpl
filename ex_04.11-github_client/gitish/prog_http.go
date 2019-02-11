@@ -1,4 +1,4 @@
-package github
+package gitish
 
 import (
 	"bytes"

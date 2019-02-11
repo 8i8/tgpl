@@ -1,12 +1,12 @@
 /*
 NAME
-	gitspoke
+	gitish - Command line client for the github issue API.
 
 SYNOPSIS
-	gitspoke [user|repo|number][orth2][options]
+	gitish [ user | repo | number ][Oauth2][options]
 
 DESCRIPTION
-	gitspoke is a github client designed for raising and tracking and
+	gitish is a github client designed for raising and tracking and
 	updating github issues on the github platform from the users command
 	line by way of the github HTTP API. Giving the user access from the
 	command line or their favorite editor application.
@@ -49,9 +49,10 @@ PROGRAM STATE TABLE
 	the URL for the request.
 
 	┌────────┬────────┬────────┬────────┬──────────┬────────┬────────────┐
-	│-o org  │        │        │        │-k ?      │        │            │
-	│-a auth │        │        │        │-l lock[r]│        │   State    │
-	│-u user │-r repo │-n numb │-t token│-e edit   │-d[exec]│            │
+	│        │        │        │        │-k ?      │        │            │
+	│-o org  │        │        │        │-l lock[r]│        │            │
+	│-a auth │        │        │        │-e edit   │        │   State    │
+	│-u user │-r repo │-n numb │-t token│-x raise  │-d[exec]│            │
 	├────────┼────────┼────────┼────────┼──────────┼────────┼────────────┤
 	│ yes    │        │        │ N/A    │ N/A      │ all    │ list  sear │
 	├────────┼────────┼────────┼────────┼──────────┼────────┼────────────┤
@@ -65,6 +66,8 @@ PROGRAM STATE TABLE
 	├────────┼────────┼────────┼────────┼──────────┼────────┼────────────┤
 	│ yes    │ yes    │ yes    │ N/A    │ N/A      │ all    │ read  addr │
 	├────────┼────────┼────────┼────────┼──────────┼────────┼────────────┤
+	│ yes    │ yes    │ yes    │ yes    │ -x       │ all    │ raise addr │
+	├────────┼────────┼────────┼────────┼──────────┼────────┼────────────┤
 	│ yes    │ yes    │ yes    │ yes    │ -e       │ all    │ edit  addr │
 	├────────┼────────┼────────┼────────┼──────────┼────────┼────────────┤
 	│ yes    │ yes    │ yes    │ yes    │ -l       │ all    │ edit  lock │
@@ -72,7 +75,7 @@ PROGRAM STATE TABLE
 	│ yes    │ yes    │ yes    │ yes    │ -k       │ all    │ edit  unlk │
 	└────────┴────────┴────────┴────────┴──────────┴────────┴────────────┘
 */
-package github
+package gitish
 
 import (
 	"fmt"
