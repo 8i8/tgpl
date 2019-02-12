@@ -1,5 +1,3 @@
-/*
- */
 package main
 
 import (
@@ -56,23 +54,11 @@ func main() {
 	flag.Parse()
 
 	// Setup programming for selected mode, in some cases the program mode
-	// is altered here.
+	// is altered here, as such we pass in a pointer.
 	err := gitish.SetState(&conf)
 
-	switch conf.Mode {
-	case gitish.MoList:
-		err = gitish.ListIssues(conf)
-	case gitish.MoRead:
-		err = gitish.ReadIssue(conf)
-	case gitish.MoEdit:
-		err = gitish.EditIssue(conf)
-	case gitish.MoLock:
-		err = gitish.ReadIssue(conf)
-	case gitish.MoRaise:
-		err = gitish.RaiseIssue(conf)
-	default:
-		fmt.Println("Run with -h flag for user instructions.")
-	}
+	// Run with defined configuration.
+	err = gitish.MakeRequest(conf)
 
 	// Signal any program failure.
 	if err != nil {

@@ -1,91 +1,121 @@
 package gitish
 
-import (
-	"encoding/json"
-	"fmt"
-	"os"
-)
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   Configuration
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-var config = Config{}
-var def = Config{
-	Author:  "8i8",
-	Editor:  "gvim",
-	Request: Request{Mode: MoList, User: "8i8", Repo: "test"},
+// Config is a struct specific to the program that contains the principal
+// program settings.
+type Config struct {
+	User    string // Repository owner,
+	Token   string // Flag defined Oauth token.
+	Editor  string // Flag defined external editor.
+	Request        // Stores the users request data.
+	State          // The state of the program.
 }
 
-func init() {
-	var queries []string
-	queries = append(queries, "json")
-	queries = append(queries, "decoder")
-	def.Queries = queries
+// State is an anonymous struct of only one single instance per request, it is
+// contained within the Config struct.
+type State struct {
+	Mode    int    // Program running mode.
+	Edit    bool   // Signal request to edit an issue.
+	Lock    bool   // Lock state.
+	Reason  string // Reason for lock.
+	Verbose bool   // Signals the program print out extra detail.
 }
 
-// LoadConfig load the last saved config, if no file exists create with the
-// default settings.
-func LoadConfig(c Config) error {
-
-	// Open file for reading if present.
-	file, err := os.Open("config.json")
-	if err != nil {
-		// If not present create file
-		if err = setConfig(def); err != nil {
-			return fmt.Errorf("setConfig: %v", err)
-		}
-	}
-
-	// decode json from within the file.
-	decoder := json.NewDecoder(file)
-	err = decoder.Decode(&config)
-	if err != nil {
-		return fmt.Errorf("decoder: %v", err)
-	}
-
-	// Check for modifications, with input settings, resave if required.
-	//compConfig(c, def)
-
-	return err
+// Request is a struct containing the details of a particular request.
+type Request struct {
+	Author  string   // Author user name.
+	Org     string   // Organisation.
+	Repo    string   // Repository name.
+	Number  string   // Issue number.
+	Queries []string // GET queries retrieved from the Args[] array.
 }
 
-// // Compaire and update the configuration as required.
-// func compConfig(c, def Config) {
+// // config holds the programs global configuration.
+// var config = Config{}
 
-// 	if len(c.Author) == 0 {
-// 		c.Author = def.Author
-// 	}
-// 	if len(c.Editor) == 0 {
-// 		c.Editor = def.Editor
-// 	}
-// 	if len(c.Mode) == 0 {
-// 		c.Mode = def.Mode
-// 	}
-// 	_ = setConfig(c)
+// // def: Default configuration.
+// var def = Config{
+// 	User:    "8i8",
+// 	Editor:  "gvim",
+// 	Request: Request{Author: "8i8", Repo: "test"},
 // }
 
-// Create a base Config file, used incase that no config file is present.
-func setConfig(c Config) error {
+// func init() {
+// 	var queries []string
+// 	queries = append(queries, "json")
+// 	queries = append(queries, "decoder")
+// 	def.Queries = queries
+// }
 
-	var data []byte
+// // LoadConfig load the last saved config, if no file exists create with the
+// // default settings.
+// func LoadConfig(c Config) error {
 
-	// Set the global config from the input.
-	config = c
+// 	// Open file for reading if present.
+// 	file, err := os.Open("config.json")
+// 	if err != nil {
+// 		// If not present create file
+// 		if err = setConfig(def); err != nil {
+// 			return fmt.Errorf("setConfig: %v", err)
+// 		}
+// 	}
 
-	// Make the file.
-	file, err := os.Create("config.json")
-	if err != nil {
-		return fmt.Errorf("File create failed: %v", err)
-	}
-	defer file.Close()
+// 	// decode json from within the file.
+// 	decoder := json.NewDecoder(file)
+// 	err = decoder.Decode(&config)
+// 	if err != nil {
+// 		return fmt.Errorf("decoder: %v", err)
+// 	}
 
-	// Prepare the json in readable fashon.
-	c.Token = ""
-	if data, err = json.MarshalIndent(config, "", "	"); err != nil {
-		return fmt.Errorf("MarshalIndent: %v", err)
-	}
+// 	// Check for modifications, with input settings, re-save if required.
+// 	// compConfig(c, def)
 
-	// Write json to file.
-	if _, err = file.Write(data); err != nil {
-		return fmt.Errorf("File write failed: %v", err)
-	}
+// 	return err
+// }
 
-	return err
-}
+// // // Compare and update the configuration as required.
+// // func compConfig(c, def Config) {
+
+// // 	if len(c.Author) == 0 {
+// // 		c.Author = def.Author
+// // 	}
+// // 	if len(c.Editor) == 0 {
+// // 		c.Editor = def.Editor
+// // 	}
+// // 	if len(c.Mode) == 0 {
+// // 		c.Mode = def.Mode
+// // 	}
+// // 	_ = setConfig(c)
+// // }
+
+// // Create a base Config file, use in the case that no configuration file present.
+// func setConfig(c Config) error {
+
+// 	var data []byte
+
+// 	// Set the global configuration from the input.
+// 	config = c
+
+// 	// Make the file.
+// 	file, err := os.Create("config.json")
+// 	if err != nil {
+// 		return fmt.Errorf("File create failed: %v", err)
+// 	}
+// 	defer file.Close()
+
+// 	// Prepare the json in readable fashon.
+// 	c.Token = ""
+// 	if data, err = json.MarshalIndent(config, "", "	"); err != nil {
+// 		return fmt.Errorf("MarshalIndent: %v", err)
+// 	}
+
+// 	// Write json to file.
+// 	if _, err = file.Write(data); err != nil {
+// 		return fmt.Errorf("File write failed: %v", err)
+// 	}
+
+// 	return err
+// }

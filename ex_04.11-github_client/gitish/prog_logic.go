@@ -1,9 +1,8 @@
 /*
-NAME
-	gitish - Command line client for the github issue API.
+Package gitish - Command line client for the github issue API.
 
 SYNOPSIS
-	gitish [ user | repo | number ][Oauth2][options]
+	gitish [user | repo | number][Oauth2][options]
 
 DESCRIPTION
 	gitish is a github client designed for raising and tracking and
@@ -111,12 +110,12 @@ func SetState(c *Config) error {
 
 	var err error
 	if c.Edit {
-		c.Mode = MoEdit
+		c.Mode = mEdit
 		state = urlEdit
 	}
 	// If a lock type has been set, force lock mode.
 	if c.Lock {
-		c.Mode = MoEdit
+		c.Mode = mEdit
 		state = urlLock
 	}
 	// If an issue number has been given and all parameters exist for
@@ -124,7 +123,7 @@ func SetState(c *Config) error {
 	// query listing as a search parameter.
 	if len(c.Number) > 0 && state != urlEdit && state != urlLock {
 		if checkAddress(*c) {
-			c.Mode = MoRead
+			c.Mode = mRead
 			state = urlRead
 		} else {
 			c.Queries = append(c.Queries, c.Number)
@@ -132,14 +131,14 @@ func SetState(c *Config) error {
 	}
 	// Set to the default mode if none designated.
 	if c.Mode == MoNone {
-		c.Mode = MoList
+		c.Mode = mList
 	}
 	// Set the run state.
-	if c.Mode == MoList {
+	if c.Mode == mList {
 		state = urlSear
-	} else if c.Mode == MoRead {
+	} else if c.Mode == mRead {
 		state = urlAddr
-	} else if c.Mode == MoRaise {
+	} else if c.Mode == mRaise {
 		state = urlAddr
 	}
 
@@ -160,7 +159,7 @@ func setURL(conf Config) (string, string, error) {
 
 	// Prepare URL for API search functionality, add flag designated
 	// information to the query list.
-	case MoList:
+	case mList:
 		HTTP = "GET"
 		URL = URL + "search/issues"
 		if len(conf.User) > 0 && len(conf.Repo) > 0 {
@@ -187,7 +186,7 @@ func setURL(conf Config) (string, string, error) {
 
 	// Prepare URL for API reading repo issues directly by full address and
 	// issue number.
-	case MoRead:
+	case mRead:
 		HTTP = "GET"
 		str := "Please specify owner, repository and issue number."
 		URL, err = urlAddrIssues(conf, URL, "read", str)
@@ -196,7 +195,7 @@ func setURL(conf Config) (string, string, error) {
 		}
 		URL += conf.Number
 
-	case MoEdit:
+	case mEdit:
 		switch state {
 		// Prepare for editing a preexisting repo.
 		case urlEdit:
@@ -222,7 +221,7 @@ func setURL(conf Config) (string, string, error) {
 
 	// Prepare URL for issue creation by way of a complete issue address
 	// and the use of the POST function, requires login authorisation.
-	case MoRaise:
+	case mRaise:
 		HTTP = "POST"
 		str := "Please specify owner and repository details"
 		URL, err = urlAddrIssues(conf, URL, "raise", str)

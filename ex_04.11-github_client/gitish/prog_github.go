@@ -13,11 +13,11 @@ var errlog = log.New(os.Stderr, "github: ", log.Lshortfile)
 // function SetState(c Config) at program start.
 const (
 	MoNone = iota
-	MoList
-	MoRead
-	MoEdit
-	MoLock
-	MoRaise
+	mList
+	mRead
+	mEdit
+	mLock
+	mRaise
 )
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -47,33 +47,6 @@ type Issue struct {
 
 // User represents a json object which contains a github user details.
 type User struct {
-	Author   string
+	Author  string
 	HTMLURL string `json:"html_url"`
-}
-
-/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   Configuration and requests
-*  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-
-// Config is a struct specific to the program that contains the principal
-// program settings.
-type Config struct {
-	Author   string // Author user name.
-	Token   string // Flag defined Oath token.
-	Editor  string // Flag defined external editor.
-	Edit    bool   // Signal request to edit an issue.
-	Lock    bool   // Lock state.
-	Reason  string // Reason for lock.
-	Verbose bool   // Signals the program print out extra detail.
-	Request        // Stores the users request data.
-}
-
-// Request is a struct containing the details of a particular request.
-type Request struct {
-	Mode    int      // Program running mode.
-	User   string   // Repository owner,
-	Org     string   // Organisation.
-	Repo    string   // Repository name.
-	Number  string   // Issue number.
-	Queries []string // GET queries retrieved from the Args[] array.
 }

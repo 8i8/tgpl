@@ -7,18 +7,6 @@ import (
 	"net/http"
 )
 
-type Header struct {
-	Key, Value string
-}
-
-type Status struct {
-	Code   int
-	Reason string
-}
-
-func WriteResponce() {
-}
-
 // SearchIssues queries the GitHub issue tracker.
 func searchIssues(conf Config) ([]*Issue, error) {
 
