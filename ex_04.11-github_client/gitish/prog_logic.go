@@ -11,7 +11,12 @@ DESCRIPTION
 	line by way of the github HTTP API. Giving the user access from the
 	command line or their favorite editor application.
 
-GITHUB API HTTP
+MAIN
+	The gitish program has essentially four running modes, the mode is set
+	from the main function according to the state defined in the
+	SetState() function.
+
+HTTP REQUESTS
 	┌───────┬───────┬───────┬───────┬───────┬───────┐
 	│       │ GET   │ POST  │ PATCH │ PUT   │DELETE │
 	├───────┼───────┼───────┼───────┼───────┼───────┤
@@ -28,10 +33,10 @@ GITHUB API HTTP
 	│unlock │       │       │       │       │   1   │
 	└───────┴───────┴───────┴───────┴───────┴───────┘
 
-	GET    /search/issues?q= user:[user] | repo:[repo] | author:[author]
 	GET    /issues
  	GET    /user/issues
  	GET    /orgs/:org/issues
+	GET    /search/issues?q= user:[user] | repo:[repo] | author:[author]
  	GET    /repos/:owner/:repo/issues
  	GET    /repos/:owner/:repo/issues/:number
  	POST   /repos/:owner/:repo/issues
@@ -41,7 +46,7 @@ GITHUB API HTTP
 
 	https://api.github.com/search/issues
 
-PROGRAM STATE TABLE
+PROGRAM STATES
 	Table representation of program states, the program has essentially two
 	different primary states, the first of which is prevalent in the main
 	function, designating the programs initial running mode to establish the
@@ -94,15 +99,15 @@ const (
 
 var state = urlNone
 
-// Check if the requirements have been met to enter urlAddr mode.
+// checkAddress checks if the requirements have been met to enter urlAddr mode.
 func checkAddress(c Config) bool {
 	return (len(c.Author) > 0 || len(c.User) > 0 || len(c.Org) > 0) &&
 		len(c.Repo) > 0
 }
 
-// InitState defines the state in which to run the program, set by the
-// configuration of user input flags and data.
-func InitState(c *Config) error {
+// SetState defines the state in which to run the program, set by the
+// configuration the of users input data.
+func SetState(c *Config) error {
 
 	var err error
 	if c.Edit {
