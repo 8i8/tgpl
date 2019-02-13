@@ -87,19 +87,18 @@ import (
 	"strings"
 )
 
+// Mode of the expected http response type.
 const (
-	urlNone = iota
-	urlSear
-	urlAddr
-	urlLock
-	urlEdit
-	urlRead
+	respNone = iota
+	respLone
+	respMult
 )
 
-var state = urlNone
+var state = respNone
 
-// checkAddress checks if the requirements have been met to enter urlAddr mode.
-func checkAddress(c Config) bool {
+// isFullAddress checks if the requirements have been met to enter respLone
+// mode.
+func isFullAddress(c Config) bool {
 	return (len(c.Author) > 0 || len(c.User) > 0 || len(c.Org) > 0) &&
 		len(c.Repo) > 0
 }
@@ -111,35 +110,36 @@ func SetState(c *Config) error {
 	var err error
 	if c.Edit {
 		c.Mode = mEdit
-		state = urlEdit
+		state = respLone
 	}
 	// If a lock type has been set, force lock mode.
 	if c.Lock {
 		c.Mode = mEdit
-		state = urlLock
+		state = respLone
 	}
 	// If an issue number has been given and all parameters exist for
 	// a direct HTTP access then do so, else add the number to the
-	// query listing as a search parameter.
-	if len(c.Number) > 0 && state != urlEdit && state != urlLock {
-		if checkAddress(*c) {
+	// query listing as a search parameter and expect multiple results.
+	if len(c.Number) > 0 && !c.Edit && !c.Lock {
+		if isFullAddress(*c) {
 			c.Mode = mRead
-			state = urlRead
+			state = respLone
 		} else {
 			c.Queries = append(c.Queries, c.Number)
+			state = respMult
 		}
 	}
 	// Set to the default mode if none designated.
-	if c.Mode == MoNone {
+	if c.Mode == mNone {
 		c.Mode = mList
 	}
 	// Set the run state.
 	if c.Mode == mList {
-		state = urlSear
+		state = respMult
 	} else if c.Mode == mRead {
-		state = urlAddr
+		state = respLone
 	} else if c.Mode == mRaise {
-		state = urlAddr
+		state = respNone
 	}
 
 	if c.Verbose {
@@ -149,19 +149,19 @@ func SetState(c *Config) error {
 }
 
 // Structure an http request from available data.
-func setURL(conf Config) (string, string, error) {
+func setURL(conf Config) (Address, error) {
 
-	var HTTP string
+	var addr Address
 	var err error
-	URL := "https://api.github.com/"
+	addr.Url = "https://api.github.com/"
 
 	switch conf.Mode {
 
 	// Prepare URL for API search functionality, add flag designated
 	// information to the query list.
 	case mList:
-		HTTP = "GET"
-		URL = URL + "search/issues"
+		addr.Http = "GET"
+		addr.Url = addr.Url + "search/issues"
 		if len(conf.User) > 0 && len(conf.Repo) > 0 {
 			conf.Queries = append(
 				conf.Queries, "repo:"+conf.User+"/"+conf.Repo)
@@ -187,66 +187,63 @@ func setURL(conf Config) (string, string, error) {
 	// Prepare URL for API reading repo issues directly by full address and
 	// issue number.
 	case mRead:
-		HTTP = "GET"
+		addr.Http = "GET"
 		str := "Please specify owner, repository and issue number."
-		URL, err = urlAddrIssues(conf, URL, "read", str)
+		addr.Url, err = urlAddrIssues(conf, addr.Url, "read", str)
 		if err != nil {
-			return HTTP, URL, err
+			return addr, err
 		}
-		URL += conf.Number
+		addr.Url += conf.Number
 
 	case mEdit:
-		switch state {
 		// Prepare for editing a preexisting repo.
-		case urlEdit:
-			HTTP = "PATCH"
-			str := "Please specify owner, repository and issue number."
-			URL, err = urlAddrIssues(conf, URL, "edit", str)
-			if err != nil {
-				return HTTP, URL, err
-			}
-			URL += conf.Number
+		addr.Http = "PATCH"
+		str := "Please specify owner, repository and issue number."
+		addr.Url, err = urlAddrIssues(conf, addr.Url, "edit", str)
+		if err != nil {
+			return addr, err
+		}
+		addr.Url += conf.Number
 
+	case mLock:
 		// Prepare a URL to set the current issue status to resolved,
 		// requires login.
-		case urlLock:
-			HTTP = "PUT"
-			str := "Please specify owner, repository and issue number."
-			URL, err = urlAddrIssues(conf, URL, "lock", str)
-			if err != nil {
-				return HTTP, URL, err
-			}
-			URL += conf.Number + "/lock"
+		addr.Http = "PUT"
+		str := "Please specify owner, repository and issue number."
+		addr.Url, err = urlAddrIssues(conf, addr.Url, "lock", str)
+		if err != nil {
+			return addr, err
 		}
+		addr.Url += conf.Number + "/lock"
 
 	// Prepare URL for issue creation by way of a complete issue address
 	// and the use of the POST function, requires login authorisation.
 	case mRaise:
-		HTTP = "POST"
+		addr.Http = "POST"
 		str := "Please specify owner and repository details"
-		URL, err = urlAddrIssues(conf, URL, "raise", str)
+		addr.Url, err = urlAddrIssues(conf, addr.Url, "raise", str)
 		if err != nil {
-			return HTTP, URL, err
+			return addr, err
 		}
 	}
 
 	// Add queries to url.
-	if len(conf.Queries) > 0 && state != urlLock {
+	if len(conf.Queries) > 0 && conf.Mode != mLock {
 		q := url.QueryEscape(strings.Join(conf.Queries, " "))
-		URL = URL + "?q=" + q
+		addr.Url = addr.Url + "?q=" + q
 	}
 
 	// If lock required, add query.
-	if state == urlLock {
-		URL = URL + "?lock_reason=" + conf.Reason
+	if conf.Mode != mLock {
+		addr.Url = addr.Url + "?lock_reason=" + conf.Reason
 	}
 
 	// If verbose flag is set print the address used.
 	if conf.Verbose {
-		fmt.Printf("Setting URL: %v: %v\n", HTTP, URL)
+		fmt.Printf("Setting URL: %v: %v\n", addr.Http, addr.Url)
 	}
 
-	return HTTP, URL, err
+	return addr, err
 }
 
 // urlAddrIssues sets the url.
@@ -254,15 +251,12 @@ func urlAddrIssues(conf Config, URL, mode, e string) (string, error) {
 
 	var err error
 	if len(conf.User) > 0 && len(conf.Repo) > 0 && len(conf.Number) > 0 {
-
 		URL = URL + "repos/" + conf.User + "/" + conf.Repo + "/issues/"
 
 	} else if len(conf.Author) > 0 && len(conf.Repo) > 0 && len(conf.Number) > 0 {
-
 		URL = URL + "repos/" + conf.Author + "/" + conf.Repo + "/issues/"
 
 	} else if len(conf.Org) > 0 && len(conf.Repo) > 0 && len(conf.Number) > 0 {
-
 		URL = URL + "orgs/" + conf.Org + "/" + conf.Repo + "/issues/"
 
 	} else {

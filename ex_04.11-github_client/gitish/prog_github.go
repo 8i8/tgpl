@@ -12,7 +12,7 @@ var errlog = log.New(os.Stderr, "github: ", log.Lshortfile)
 // variable is set as in integer within the configuration sturct, by the
 // function SetState(c Config) at program start.
 const (
-	MoNone = iota
+	mNone = iota
 	mList
 	mRead
 	mEdit

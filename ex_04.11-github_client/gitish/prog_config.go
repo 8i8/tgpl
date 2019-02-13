@@ -7,11 +7,11 @@ package gitish
 // Config is a struct specific to the program that contains the principal
 // program settings.
 type Config struct {
-	User    string // Repository owner,
-	Token   string // Flag defined Oauth token.
-	Editor  string // Flag defined external editor.
-	Request        // Stores the users request data.
-	State          // The state of the program.
+	User   string // Repository owner,
+	Token  string // Flag defined Oauth token.
+	Editor string // Flag defined external editor.
+	Req           // Stores the users request data.
+	State         // The state of the program.
 }
 
 // State is an anonymous struct of only one single instance per request, it is
@@ -25,7 +25,7 @@ type State struct {
 }
 
 // Request is a struct containing the details of a particular request.
-type Request struct {
+type Req struct {
 	Author  string   // Author user name.
 	Org     string   // Organisation.
 	Repo    string   // Repository name.
