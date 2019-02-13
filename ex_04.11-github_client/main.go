@@ -46,7 +46,7 @@ func init() {
 	flag.StringVar(&conf.Number, "n", "", number)
 	flag.StringVar(&conf.Token, "t", "", token)
 	flag.StringVar(&conf.Editor, "d", "", editor)
-	flag.StringVar(&conf.Lock, "k", "resolved", lock)
+	flag.BoolVar(&conf.Lock, "k", false, lock)
 	flag.BoolVar(&conf.Edit, "e", false, edit)
 	flag.BoolVar(&conf.Raise, "x", false, raise)
 	flag.BoolVar(&conf.Verbose, "v", false, verbose)
@@ -56,6 +56,7 @@ func main() {
 
 	// Command line input.
 	flag.Parse()
+	conf.Queries = flag.Args()
 
 	// Setup programming for selected mode, in some cases the program mode
 	// is altered here, as such we pass in a pointer.
@@ -66,8 +67,20 @@ func main() {
 	}
 
 	// Run with defined configuration.
-	err = github.MakeRequest(conf)
+	result, err := github.MakeRequest(conf, nil)
 	if err != nil {
 		fmt.Println(err)
+		return
 	}
+
+	// If edits are to be been made, edit and then post them to the server.
+	if conf.Edit {
+		json, err := github.EditIssue(conf, result.(github.Issue))
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		github.MakeRequest(conf, json)
+	}
+
 }

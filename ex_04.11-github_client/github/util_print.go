@@ -48,7 +48,7 @@ func printIssues(results IssueMap) {
 
 // Print out a single issue including the message body.
 func printIssue(item Issue) {
-	fmt.Printf("number: #%-6d\nuser: %s\nrepo: %s\ntitle: %s\ncreated: %10.10s\n",
+	fmt.Printf("number: #%-6d\nuser: %v\nrepo: %v\ntitle: %v\ncreated: %10.10v\n",
 		item.Number, item.User.Author,
 		item.Repo[strings.LastIndex(item.Repo, "/")+1:],
 		item.Title, item.CreatedAt.String())

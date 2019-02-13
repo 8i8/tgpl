@@ -3,6 +3,7 @@ package github
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 )
 
@@ -21,9 +22,9 @@ type Status struct {
 	Message string
 }
 
-func sendRequest(conf Config, addr Address) (*http.Response, error) {
+func sendRequest(conf Config, addr Address, json io.Reader) (*http.Response, error) {
 
-	req, err := http.NewRequest(addr.Http, addr.Url, nil)
+	req, err := http.NewRequest(addr.Http, addr.Url, json)
 	if err != nil {
 		return nil, fmt.Errorf("NewRequest: %v", err)
 	}
@@ -106,31 +107,31 @@ func treatResponce(c Config, I interface{}) error {
 }
 
 // MakeRequest orchestrates an http request.
-func MakeRequest(conf Config) error {
+func MakeRequest(conf Config, json io.Reader) (interface{}, error) {
 
 	addr, err := setURL(conf)
 	if err != nil {
-		return fmt.Errorf("setUrl failed: %v", err)
+		return nil, fmt.Errorf("setUrl failed: %v", err)
 	}
 
-	resp, err := sendRequest(conf, addr)
+	resp, err := sendRequest(conf, addr, json)
 	if err != nil {
-		return fmt.Errorf("sendRequest: %v", err)
+		return nil, fmt.Errorf("sendRequest: %v", err)
 	}
 
 	_, err = getStatus(resp)
 	if err != nil {
-		return fmt.Errorf("getStatus: %v", err)
+		return nil, fmt.Errorf("getStatus: %v", err)
 	}
 
 	result, err := respDecode(conf, resp)
 	if err != nil {
-		return fmt.Errorf("respDecode: %v", err)
+		return nil, fmt.Errorf("respDecode: %v", err)
 	}
 
 	resp.Body.Close()
 
 	err = treatResponce(conf, result)
 
-	return err
+	return result, err
 }
