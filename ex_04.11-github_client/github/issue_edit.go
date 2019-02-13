@@ -1,4 +1,4 @@
-package gitish
+package github
 
 // EditIssue opens and edits and existing issue.
 // TODO NOW is it possible to have only one result possibele and negate the need

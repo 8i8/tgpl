@@ -4,10 +4,10 @@ import (
 	"flag"
 	"fmt"
 
-	"tgpl/ex_04.11-github_client/gitish"
+	"tgpl/ex_04.11-github_client/github"
 )
 
-var conf gitish.Config
+var conf github.Config
 
 func init() {
 	user := `Login user name:
@@ -59,14 +59,14 @@ func main() {
 
 	// Setup programming for selected mode, in some cases the program mode
 	// is altered here, as such we pass in a pointer.
-	err := gitish.SetState(&conf)
+	err := github.SetState(&conf)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
 	// Run with defined configuration.
-	err = gitish.MakeRequest(conf)
+	err = github.MakeRequest(conf)
 	if err != nil {
 		fmt.Println(err)
 	}

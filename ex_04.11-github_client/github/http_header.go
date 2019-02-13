@@ -1,4 +1,4 @@
-package gitish
+package github
 
 func accept(c Config) Header {
 	var h Header

@@ -26,7 +26,7 @@
 // query = append(query, "is:open")
 // q := url.QueryEscape(strings.Join(terms, " "))
 
-package gitish
+package github
 
 import (
 	"encoding/json"

@@ -1,17 +1,17 @@
 /*
-Package gitish - Command line client for the github issue API.
+Package github - Command line client for the github issue API.
 
 SYNOPSIS
-	gitish [user | repo | number][Oauth2][options]
+	github [user | repo | number][Oauth2][options]
 
 DESCRIPTION
-	gitish is a github client designed for raising and tracking and
+	github is a github client designed for raising and tracking and
 	updating github issues on the github platform from the users command
 	line by way of the github HTTP API. Giving the user access from the
 	command line or their favorite editor application.
 
 MAIN
-	The gitish program has essentially five running modes, the mode is set
+	The github program has essentially five running modes, the mode is set
 	from the main function according to the flags set state, defined in the
 	SetState() function.
 
@@ -80,7 +80,7 @@ PROGRAM STATES
 	-m defines the external editor to be used in editing.
 
 */
-package gitish
+package github
 
 import (
 	"fmt"

@@ -1,4 +1,4 @@
-package gitish
+package github
 
 import (
 	"encoding/json"

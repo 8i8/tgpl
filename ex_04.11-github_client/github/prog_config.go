@@ -1,4 +1,4 @@
-package gitish
+package github
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    Configuration
@@ -34,6 +34,7 @@ type Req struct {
 	Queries []string // GET queries retrieved from the Args[] array.
 }
 
+// TODO NOW clean up the configs role
 // // config holds the programs global configuration.
 // var config = Config{}
 

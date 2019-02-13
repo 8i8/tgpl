@@ -1,6 +1,7 @@
-package gitish
+package github
 
 // RaiseIssue raise a new issue on a github repository.
+// TODO NOW impliment editing.
 func RaiseIssue(conf Config) error {
 
 	// Fill io.Buffer with json data.
