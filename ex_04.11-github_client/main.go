@@ -28,6 +28,9 @@ func init() {
 	Specify an editor to use for your issue editing request.`
 	lock := `Lock mode:
 	Set lock mode, edit the lock status of an issue, requires user authentication.`
+	raise := `Raise mode:
+	Set raise mode to raise a new issue, requires a full repsitory address
+	and Oauth2 authorisation.`
 	verbose := `Verbose mode:
 	Print information where available, explicitly describes the programs
 	current state of operation.`
@@ -43,9 +46,10 @@ func init() {
 	flag.StringVar(&conf.Number, "n", "", number)
 	flag.StringVar(&conf.Token, "t", "", token)
 	flag.StringVar(&conf.Editor, "d", "", editor)
-	flag.BoolVar(&conf.Lock, "k", false, lock)
-	flag.BoolVar(&conf.Verbose, "v", false, verbose)
+	flag.StringVar(&conf.Lock, "k", "resolved", lock)
 	flag.BoolVar(&conf.Edit, "e", false, edit)
+	flag.BoolVar(&conf.Raise, "x", false, raise)
+	flag.BoolVar(&conf.Verbose, "v", false, verbose)
 }
 
 func main() {
@@ -56,11 +60,13 @@ func main() {
 	// Setup programming for selected mode, in some cases the program mode
 	// is altered here, as such we pass in a pointer.
 	err := gitish.SetState(&conf)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 
 	// Run with defined configuration.
 	err = gitish.MakeRequest(conf)
-
-	// Signal any program failure.
 	if err != nil {
 		fmt.Println(err)
 	}

@@ -11,8 +11,8 @@ DESCRIPTION
 	command line or their favorite editor application.
 
 MAIN
-	The gitish program has essentially four running modes, the mode is set
-	from the main function according to the state defined in the
+	The gitish program has essentially five running modes, the mode is set
+	from the main function according to the flags set state, defined in the
 	SetState() function.
 
 HTTP REQUESTS
@@ -52,32 +52,33 @@ PROGRAM STATES
 	type of HTTP request to be made. The second defines the formation of
 	the URL for the request.
 
-	┌────────┬────────┬────────┬────────┬──────────┬────────┬────────────┐
-	│        │        │        │        │-k ?      │        │            │
-	│-o org  │        │        │        │-l lock[r]│        │            │
-	│-a auth │        │        │        │-e edit   │        │   State    │
-	│-u user │-r repo │-n numb │-t token│-x raise  │-d[exec]│            │
-	├────────┼────────┼────────┼────────┼──────────┼────────┼────────────┤
-	│ yes    │        │        │ N/A    │ N/A      │ all    │ list  sear │
-	├────────┼────────┼────────┼────────┼──────────┼────────┼────────────┤
-	│        │ yes    │        │ N/A    │ N/A      │ all    │ list  sear │
-	├────────┼────────┼────────┼────────┼──────────┼────────┼────────────┤
-	│ yes    │ yes    │        │ N/A    │ N/A      │ all    │ list  sear │
-	├────────┼────────┼────────┼────────┼──────────┼────────┼────────────┤
-	│ yes    │ no/fill│ yes    │ N/A    │ N/A      │ all    │ list  sear │
-	├────────┼────────┼────────┼────────┼──────────┼────────┼────────────┤
-	│ no/fill│ yes    │ yes    │ N/A    │ N/A      │ all    │ list  sear │
-	├────────┼────────┼────────┼────────┼──────────┼────────┼────────────┤
-	│ yes    │ yes    │ yes    │ N/A    │ N/A      │ all    │ read  addr │
-	├────────┼────────┼────────┼────────┼──────────┼────────┼────────────┤
-	│ yes    │ yes    │ yes    │ yes    │ -x       │ all    │ raise addr │
-	├────────┼────────┼────────┼────────┼──────────┼────────┼────────────┤
-	│ yes    │ yes    │ yes    │ yes    │ -e       │ all    │ edit  addr │
-	├────────┼────────┼────────┼────────┼──────────┼────────┼────────────┤
-	│ yes    │ yes    │ yes    │ yes    │ -l       │ all    │ edit  lock │
-	├────────┼────────┼────────┼────────┼──────────┼────────┼────────────┤
-	│ yes    │ yes    │ yes    │ yes    │ -k       │ all    │ edit  unlk │
-	└────────┴────────┴────────┴────────┴──────────┴────────┴────────────┘
+	┌────────┬────────┬────────┬────────┬────────┬────────┬──────────────┐
+	│-o org  │        │        │        │-l lock │        │              │
+	│-a auth │        │        │        │-e edit │        │    State     │
+	│-u user │-r repo │-n numb │-t token│-x raise│-d[exec]│              │
+	├────────┼────────┼────────┼────────┼────────┼────────┼──────────────┤
+	│ yes    │        │        │ N/A    │ N/A    │ all    │ mList  rMany │
+	├────────┼────────┼────────┼────────┼────────┼────────┼──────────────┤
+	│        │ yes    │        │ N/A    │ N/A    │ all    │ mList  rMany │
+	├────────┼────────┼────────┼────────┼────────┼────────┼──────────────┤
+	│ yes    │ yes    │        │ N/A    │ N/A    │ all    │ mList  rMany │
+	├────────┼────────┼────────┼────────┼────────┼────────┼──────────────┤
+	│ yes    │ no/fill│ yes    │ N/A    │ N/A    │ all    │ mList  rMany │
+	├────────┼────────┼────────┼────────┼────────┼────────┼──────────────┤
+	│ no/fill│ yes    │ yes    │ N/A    │ N/A    │ all    │ mList  rMany │
+	├────────┼────────┼────────┼────────┼────────┼────────┼──────────────┤
+	│ yes    │ yes    │ yes    │ N/A    │ N/A    │ all    │ mRead  rLone │
+	├────────┼────────┼────────┼────────┼────────┼────────┼──────────────┤
+	│ yes    │ yes    │ yes    │ yes    │ -e     │ all    │ mEdit  rLone │
+	├────────┼────────┼────────┼────────┼────────┼────────┼──────────────┤
+	│ yes    │ yes    │ yes    │ yes    │ -x     │ all    │ mRais  rNone │
+	├────────┼────────┼────────┼────────┼────────┼────────┼──────────────┤
+	│ yes    │ yes    │ yes    │ yes    │ -l     │ all    │ mLock  rNone │
+	└────────┴────────┴────────┴────────┴────────┴────────┴──────────────┘
+
+	-v displays verbose report of the programs actions.
+	-m defines the external editor to be used in editing.
+
 */
 package gitish
 
@@ -87,20 +88,49 @@ import (
 	"strings"
 )
 
-// Mode of the expected http response type.
+// The run state of the program, interpreted by commandline flags. This
+// variable is set as in integer within the configuration sturct, by the
+// function SetState(c Config) at program start.
 const (
-	respNone = iota
-	respLone
-	respMult
+	mList = iota
+	mRead
+	mEdit
+	mLock
+	mRais
 )
 
-var state = respNone
+// Mode of the expected http response type.
+const (
+	rNone = iota
+	rLone
+	rMany
+)
 
-// isFullAddress checks if the requirements have been met to enter respLone
+var state = rNone
+
+// isFullAddress checks if the requirements have been met to enter rLone
 // mode.
 func isFullAddress(c Config) bool {
 	return (len(c.Author) > 0 || len(c.User) > 0 || len(c.Org) > 0) &&
 		len(c.Repo) > 0
+}
+
+// checkMode verifies that there are not two contradicting flags set.
+func checkMode(c Config) bool {
+	tally := 0
+	if c.Edit {
+		tally++
+	}
+	if c.Lock {
+		tally++
+	}
+	if c.Raise {
+		tally++
+	}
+	if tally > 1 {
+		return true
+	}
+	return false
 }
 
 // SetState defines the state in which to run the program, set by the
@@ -108,38 +138,41 @@ func isFullAddress(c Config) bool {
 func SetState(c *Config) error {
 
 	var err error
+	c.Mode = mList
+
+	if checkMode(*c) {
+		str := "Please provide only one of the following flags x e or l"
+		return fmt.Errorf(str)
+	}
+
 	if c.Edit {
 		c.Mode = mEdit
-		state = respLone
-	}
-	// If a lock type has been set, force lock mode.
-	if c.Lock {
+		state = rLone
+	} else if c.Lock {
 		c.Mode = mEdit
-		state = respLone
+		state = rLone
+	} else if c.Raise {
+		c.Mode = mRais
+		state = rNone
 	}
 	// If an issue number has been given and all parameters exist for
 	// a direct HTTP access then do so, else add the number to the
-	// query listing as a search parameter and expect multiple results.
-	if len(c.Number) > 0 && !c.Edit && !c.Lock {
+	// query listing as a search parameter, expect multiple results.
+	if len(c.Number) > 0 && (!c.Edit || !c.Lock) {
 		if isFullAddress(*c) {
 			c.Mode = mRead
-			state = respLone
 		} else {
 			c.Queries = append(c.Queries, c.Number)
-			state = respMult
+			c.Mode = mList
 		}
-	}
-	// Set to the default mode if none designated.
-	if c.Mode == mNone {
-		c.Mode = mList
 	}
 	// Set the run state.
 	if c.Mode == mList {
-		state = respMult
+		state = rMany
 	} else if c.Mode == mRead {
-		state = respLone
-	} else if c.Mode == mRaise {
-		state = respNone
+		state = rLone
+	} else if c.Mode == mRais {
+		state = rNone
 	}
 
 	if c.Verbose {
@@ -218,7 +251,7 @@ func setURL(conf Config) (Address, error) {
 
 	// Prepare URL for issue creation by way of a complete issue address
 	// and the use of the POST function, requires login authorisation.
-	case mRaise:
+	case mRais:
 		addr.Http = "POST"
 		str := "Please specify owner and repository details"
 		addr.Url, err = urlAddrIssues(conf, addr.Url, "raise", str)
@@ -234,13 +267,13 @@ func setURL(conf Config) (Address, error) {
 	}
 
 	// If lock required, add query.
-	if conf.Mode != mLock {
+	if conf.Mode == mLock {
 		addr.Url = addr.Url + "?lock_reason=" + conf.Reason
 	}
 
 	// If verbose flag is set print the address used.
 	if conf.Verbose {
-		fmt.Printf("Setting URL: %v: %v\n", addr.Http, addr.Url)
+		fmt.Printf("Setting URL: %v %v\n", addr.Http, addr.Url)
 	}
 
 	return addr, err

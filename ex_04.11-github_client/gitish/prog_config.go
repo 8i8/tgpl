@@ -19,7 +19,8 @@ type Config struct {
 type State struct {
 	Mode    int    // Program running mode.
 	Edit    bool   // Signal request to edit an issue.
-	Lock    bool   // Lock state.
+	Lock    bool   // Lock a repository.
+	Raise   bool   // Raise a new issue.
 	Reason  string // Reason for lock.
 	Verbose bool   // Signals the program print out extra detail.
 }

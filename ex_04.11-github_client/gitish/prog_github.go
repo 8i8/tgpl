@@ -8,18 +8,6 @@ import (
 
 var errlog = log.New(os.Stderr, "github: ", log.Lshortfile)
 
-// The run state of the program, interpreted by commandline flags. This
-// variable is set as in integer within the configuration sturct, by the
-// function SetState(c Config) at program start.
-const (
-	mNone = iota
-	mList
-	mRead
-	mEdit
-	mLock
-	mRaise
-)
-
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    Search request.
 *  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */

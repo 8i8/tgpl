@@ -1,3 +1,0 @@
-package gitish
-
-func readRequest() {}

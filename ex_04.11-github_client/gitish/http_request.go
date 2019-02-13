@@ -1,50 +1,136 @@
 package gitish
 
-func accept(c Config) Header {
-	var h Header
-	h.Key = "Accept"
-	h.Value = "application/vnd.github.v3.text-match+json"
-	return h
+import (
+	"encoding/json"
+	"fmt"
+	"net/http"
+)
+
+type Address struct {
+	Http, Url string
 }
 
-func authorize(conf Config) Header {
-	var h Header
-	h.Key = "Authorization"
-	h.Value = "token " + conf.Token
-	return h
+// Header contains header request key paires.
+type Header struct {
+	Key, Value string
 }
 
-// SearchIssues queries the GitHub issue tracker.
-func basicRequest(c Config, h []Header) []Header {
-
-	// Add header to request.
-	h = append(h, accept(c))
-
-	return h
+// Status contains an http responce status, both the text and the code.
+type Status struct {
+	Code    int
+	Message string
 }
 
-// Generate a new issue.
-func authRequest(c Config, h []Header) []Header {
+func sendRequest(conf Config, addr Address) (*http.Response, error) {
 
-	// Set header.
-	h = append(h, accept(c))
-	h = append(h, authorize(c))
-
-	return h
-}
-
-func composeHeader(c Config) ([]Header, error) {
-
-	var h []Header
-
-	// Get header.
-	switch state {
-	case respMult:
-		h = basicRequest(c, h)
-	case respLone:
-		h = basicRequest(c, h)
-	case respNone:
-		h = authRequest(c, h)
+	req, err := http.NewRequest(addr.Http, addr.Url, nil)
+	if err != nil {
+		return nil, fmt.Errorf("NewRequest: %v", err)
 	}
-	return h, nil
+
+	headers, err := composeHeader(conf)
+	if err != nil {
+		return nil, fmt.Errorf("composeHeader: %v", err)
+	}
+
+	for _, h := range headers {
+		req.Header.Set(h.Key, h.Value)
+	}
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("DefaultClient: %v", err)
+	}
+	return resp, err
+}
+
+func getStatus(resp *http.Response) (*Status, error) {
+
+	s := &Status{}
+	s.Code = resp.StatusCode
+	s.Message = http.StatusText(resp.StatusCode)
+
+	if (state == rLone || state == rMany) && s.Code != http.StatusOK {
+		resp.Body.Close()
+		return nil, fmt.Errorf("response: %v %v", s.Code, s.Message)
+	} else if state == rNone && s.Code != http.StatusOK {
+		resp.Body.Close()
+		return nil, fmt.Errorf("response: %v %v", s.Code, s.Message)
+	}
+
+	return s, nil
+}
+
+func respDecode(c Config, resp *http.Response) (interface{}, error) {
+
+	var err error
+	// Decode reply urlAddr for a direct http request and urlSear using the
+	// API search function.
+	if state == rLone {
+		if c.Verbose {
+			fmt.Println("respDecode: single issue decode")
+		}
+		var issue Issue
+		if err = json.NewDecoder(resp.Body).Decode(&issue); err != nil {
+			return nil, fmt.Errorf("json decoder failed: %v", err)
+		}
+		return issue, err
+
+	} else if state == rMany {
+		if c.Verbose {
+			fmt.Println("respDecode: multiple issue decode")
+		}
+		var issue IssuesSearchResult
+		if err = json.NewDecoder(resp.Body).Decode(&issue); err != nil {
+			return nil, fmt.Errorf("json decoder failed: %v", err)
+		}
+		result := issue.Items
+		return result, err
+	}
+
+	return nil, nil
+}
+
+func treatResponce(c Config, I interface{}) error {
+
+	var err error
+	switch v := I.(type) {
+	case []*Issue:
+		err = listIssues(c, v)
+	case Issue:
+		printIssue(v)
+	default:
+		err = fmt.Errorf("unknown type")
+	}
+	return err
+}
+
+// MakeRequest orchestrates an http request.
+func MakeRequest(conf Config) error {
+
+	addr, err := setURL(conf)
+	if err != nil {
+		return fmt.Errorf("setUrl failed: %v", err)
+	}
+
+	resp, err := sendRequest(conf, addr)
+	if err != nil {
+		return fmt.Errorf("sendRequest: %v", err)
+	}
+
+	_, err = getStatus(resp)
+	if err != nil {
+		return fmt.Errorf("getStatus: %v", err)
+	}
+
+	result, err := respDecode(conf, resp)
+	if err != nil {
+		return fmt.Errorf("respDecode: %v", err)
+	}
+
+	resp.Body.Close()
+
+	err = treatResponce(conf, result)
+
+	return err
 }
