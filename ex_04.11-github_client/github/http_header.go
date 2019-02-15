@@ -1,5 +1,6 @@
 package github
 
+// accept is a standtard header line.
 func accept(c Config) Header {
 	var h Header
 	h.Key = "Accept"
@@ -7,6 +8,7 @@ func accept(c Config) Header {
 	return h
 }
 
+// authorize is the standard header Oath2 authorisation.
 func authorize(conf Config) Header {
 	var h Header
 	h.Key = "Authorization"
@@ -14,7 +16,7 @@ func authorize(conf Config) Header {
 	return h
 }
 
-// SearchIssues queries the GitHub issue tracker.
+// basicRequest generates the most basic hearder for the program.
 func basicRequest(c Config, h []Header) []Header {
 
 	// Add header to request.
@@ -23,7 +25,7 @@ func basicRequest(c Config, h []Header) []Header {
 	return h
 }
 
-// Generate a new issue.
+// authRequest generates a request header that uses oauth2 authorisation.
 func authRequest(c Config, h []Header) []Header {
 
 	// Set header.
@@ -33,12 +35,13 @@ func authRequest(c Config, h []Header) []Header {
 	return h
 }
 
+// composeHeader uses the current confiuration to set the correct header for
+// the required HTTP request.
 func composeHeader(c Config) ([]Header, error) {
 
 	var h []Header
 
-	// Get header.
-	switch state {
+	switch rState {
 	case rMany:
 		h = basicRequest(c, h)
 	case rLone:

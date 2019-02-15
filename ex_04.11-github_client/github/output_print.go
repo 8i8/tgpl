@@ -67,3 +67,30 @@ func printLine(item Issue) {
 		item.Repo[strings.LastIndex(item.Repo, "/")+1:],
 		item.Title, item.CreatedAt.String())
 }
+
+// OutputResponce prints the resultset to the terminal.
+func OutputResponce(c Config, I interface{}) error {
+
+	if c.Verbose {
+		fmt.Println("Program output start\n~~~\n")
+	}
+
+	// Print out either a date ordered list of many issues else a detailed
+	// print of one issue.
+	var err error
+	if I != nil {
+		switch v := I.(type) {
+		case []*Issue:
+			err = listIssues(c, v)
+		case Issue:
+			printIssue(v)
+		default:
+			err = fmt.Errorf("unknown type")
+		}
+	}
+
+	if c.Verbose {
+		fmt.Println("\n~~~\nProgram output end\n")
+	}
+	return err
+}

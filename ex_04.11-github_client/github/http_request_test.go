@@ -1,31 +1,3 @@
-// GET https://api.github.com/repos/golang/go/issues?q=json+decoder
-
-// var query1 []string
-// var query2 []string
-
-// func init() {
-// 	query1 = append(query1, "is:open")
-// 	query2 = append(query2, "repo:golang/go")
-// 	query2 = append(query2, "is:open")
-// }
-
-//URL := "https://api.github.com/users/octocat/orgs"
-//URL := "https://api.github.com/orgs/octokit/repos"
-//URL := "https://api.github.com/search/issues?q=repo:8i8/test"
-//URL := "https://api.github.com/repos/8i8/test/issues"
-//URL := "https://api.github.com/repos/8i8/test/issues"
-
-//URL := "https://api.github.com/users/octocat/orgs"
-//URL := "https://api.github.com/orgs/octokit/repos"
-//URL := "https://api.github.com/search/issues?q=repo:8i8/test"
-//URL := "https://api.github.com/repos/8i8/test/issues"
-//URL := "https://api.github.com/repos/8i8/test/issues"
-
-// var query []string
-// query = append(query, "repo:8i8/test")
-// query = append(query, "is:open")
-// q := url.QueryEscape(strings.Join(terms, " "))
-
 package github
 
 import (

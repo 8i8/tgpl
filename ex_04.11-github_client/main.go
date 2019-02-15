@@ -66,21 +66,10 @@ func main() {
 		return
 	}
 
-	// Run with defined configuration.
-	result, err := github.MakeRequest(conf, nil)
+	// Run the program with given configuration.
+	err = github.Run(conf)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-
-	// If edits are to be been made, edit and then post them to the server.
-	if conf.Edit {
-		json, err := github.EditIssue(conf, result.(github.Issue))
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-		github.MakeRequest(conf, json)
-	}
-
 }

@@ -6,6 +6,8 @@ import (
 	"time"
 )
 
+// date is a struct used to translate a time.Time object into a sortable date
+// format.
 type date struct {
 	r int
 	y int

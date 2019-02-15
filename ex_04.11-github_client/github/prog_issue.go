@@ -65,7 +65,7 @@ func composeIssue(conf Config) (*bytes.Buffer, error) {
 	return json, err
 }
 
-// Edit an existing issue.
+// editIssue opens and edits and existing issue.
 func editIssue(conf Config, issue Issue) (*bytes.Buffer, error) {
 
 	var err error
@@ -102,7 +102,7 @@ func editIssue(conf Config, issue Issue) (*bytes.Buffer, error) {
 	return json, nil
 }
 
-// issueToJSON marshals data into json format.
+// issueToJSON marshals data into json format and returns it in a bytes buffer.
 func issueToJSON(title, body string) (*bytes.Buffer, error) {
 
 	// Write data into a struct.

@@ -25,7 +25,7 @@ type State struct {
 	Verbose bool   // Signals the program print out extra detail.
 }
 
-// Request is a struct containing the details of a particular request.
+// Req request is a struct containing the details of a particular request.
 type Req struct {
 	Author  string   // Author user name.
 	Org     string   // Organisation.
