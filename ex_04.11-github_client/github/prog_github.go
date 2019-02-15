@@ -35,6 +35,7 @@ type Issue struct {
 
 // User represents a json object which contains a github user details.
 type User struct {
-	Author  string
+	Author  string `json:"login"`
+	Login   string
 	HTMLURL string `json:"html_url"`
 }

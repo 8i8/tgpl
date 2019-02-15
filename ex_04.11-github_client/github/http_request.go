@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-// Header contains header request key paires.
+// Header contains header request key pairs.
 type Header struct {
 	Key, Value string
 }
@@ -34,7 +34,7 @@ func sendRequest(conf Config, addr Address, json io.Reader) (*http.Response, err
 		return nil, fmt.Errorf("NewRequest: %v", err)
 	}
 
-	// Load the key value paires into the request.
+	// Load the key value pairs into the request.
 	for _, h := range addr.header {
 		req.Header.Set(h.Key, h.Value)
 	}
@@ -115,10 +115,10 @@ func makeRequest(conf Config, json io.Reader) (interface{}, error) {
 	// Set the correct url for the request.
 	addr, err := setURL(conf)
 	if err != nil {
-		return nil, fmt.Errorf("setURL failed: %v", err)
+		return nil, fmt.Errorf("setURL: %v", err)
 	}
 
-	// Compose an array of header key value paires.
+	// Compose an array of header key value pairs.
 	addr.header, err = composeHeader(conf)
 	if err != nil {
 		return nil, fmt.Errorf("composeHeader: %v", err)

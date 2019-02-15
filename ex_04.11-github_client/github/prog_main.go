@@ -23,8 +23,15 @@ func DisplayIssue(c Config) error {
 
 // RaiseIssue raises a new issue.
 func RaiseIssue(c Config) error {
+
+	// Compose a new issue.
+	json, err := composeIssue(c)
+	if err != nil {
+		return fmt.Errorf("composeIssue: %v", err)
+	}
+
 	// Run with defined configuration.
-	_, err := makeRequest(c, nil)
+	_, err = makeRequest(c, json)
 	if err != nil {
 		return fmt.Errorf("makeRequest: %v", err)
 	}
@@ -65,6 +72,7 @@ func LockIssue(c Config) error {
 	return nil
 }
 
+// Program entry point as commandline client.
 func Run(c Config) error {
 
 	switch c.Mode {

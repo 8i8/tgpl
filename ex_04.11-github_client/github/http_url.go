@@ -30,7 +30,7 @@ func setURLSearchQuery(c *Config, e string) error {
 		c.Queries = append(
 			c.Queries, "author:"+c.Author)
 	} else {
-		err = fmt.Errorf("%v: %v", mState[c.Mode], e)
+		err = fmt.Errorf("%v: setURLSearchQuery: %v", mState[c.Mode], e)
 	}
 	return err
 }
@@ -40,14 +40,14 @@ func setURLSearchQuery(c *Config, e string) error {
 func setURLAddress(c Config, URL, e string) (string, error) {
 
 	var err error
-	if len(c.User) > 0 && len(c.Repo) > 0 && len(c.Number) > 0 {
-		URL = URL + "repos/" + c.User + "/" + c.Repo + "/issues/"
-	} else if len(c.Author) > 0 && len(c.Repo) > 0 && len(c.Number) > 0 {
-		URL = URL + "repos/" + c.Author + "/" + c.Repo + "/issues/"
-	} else if len(c.Org) > 0 && len(c.Repo) > 0 && len(c.Number) > 0 {
-		URL = URL + "orgs/" + c.Org + "/" + c.Repo + "/issues/"
+	if len(c.User) > 0 && len(c.Repo) > 0 {
+		URL = URL + "repos/" + c.User + "/" + c.Repo + "/issues"
+	} else if len(c.Author) > 0 && len(c.Repo) > 0 {
+		URL = URL + "repos/" + c.Author + "/" + c.Repo + "/issues"
+	} else if len(c.Org) > 0 && len(c.Repo) > 0 {
+		URL = URL + "orgs/" + c.Org + "/" + c.Repo + "/issues"
 	} else {
-		err = fmt.Errorf("%v: %v", mState[c.Mode], e)
+		err = fmt.Errorf("%v: setURLAddress: %v", mState[c.Mode], e)
 	}
 
 	return URL, err
@@ -85,7 +85,7 @@ func setURL(c Config) (Address, error) {
 		if err != nil {
 			return addr, err
 		}
-		addr.URL += c.Number
+		addr.URL += "/" + c.Number
 
 	case mEdit:
 		// Prepare for editing a preexisting repo.
@@ -95,7 +95,7 @@ func setURL(c Config) (Address, error) {
 		if err != nil {
 			return addr, err
 		}
-		addr.URL += c.Number
+		addr.URL += "/" + c.Number
 
 	case mLock:
 		// Prepare a URL to set the current issue status to resolved,
@@ -106,7 +106,7 @@ func setURL(c Config) (Address, error) {
 		if err != nil {
 			return addr, err
 		}
-		addr.URL += c.Number + "/lock"
+		addr.URL += "/" + c.Number + "/lock"
 
 	// Prepare URL for issue creation by way of a complete issue address
 	// and the use of the POST function, requires login authorisation.
