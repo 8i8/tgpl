@@ -1,7 +1,6 @@
 package github
 
 import (
-	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -67,46 +66,6 @@ func getStatus(resp *http.Response) (Status, error) {
 	}
 
 	return s, nil
-}
-
-// respDecode decodes an http responce dependant on the expected responce
-// state, into a single issue or an array of issues as required.
-func respDecode(c Config, resp *http.Response) (interface{}, error) {
-
-	var err error
-
-	if c.Verbose {
-		fmt.Println("respDecode: attempting decode")
-	}
-
-	// Decode into either an issue struct or an array of issue structs.
-	if rState == rLone {
-
-		// Single issue.
-		var issue Issue
-		if err = json.NewDecoder(resp.Body).Decode(&issue); err != nil {
-			return nil, fmt.Errorf("json decoder failed: %v", err)
-		}
-		if c.Verbose {
-			fmt.Println("respDecode: single issue decode")
-		}
-		return issue, err
-
-	} else if rState == rMany {
-
-		// Array of issues.
-		var issue IssuesSearchResult
-		if err = json.NewDecoder(resp.Body).Decode(&issue); err != nil {
-			return nil, fmt.Errorf("json decoder failed: %v", err)
-		}
-		if c.Verbose {
-			fmt.Println("respDecode: multiple issue decode")
-		}
-		result := issue.Items
-		return result, err
-	}
-
-	return nil, nil
 }
 
 // makeRequest orchestrates an http request.

@@ -3,7 +3,6 @@ package github
 import (
 	"bufio"
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -100,27 +99,6 @@ func editIssue(conf Config, issue Issue) (*bytes.Buffer, error) {
 	json, err := issueToJSON(title, body)
 
 	return json, nil
-}
-
-// issueToJSON marshals data into json format and returns it in a bytes buffer.
-func issueToJSON(title, body string) (*bytes.Buffer, error) {
-
-	// Write data into a struct.
-	var issue Issue
-	issue.Title = title
-	issue.Body = body
-
-	// Marshal the struct
-	json, err := json.Marshal(issue)
-	if err != nil {
-		return nil, fmt.Errorf("Marshal: %v", err)
-	}
-
-	// Write into a byte buffer.
-	var b bytes.Buffer
-	b.Write(json)
-
-	return &b, err
 }
 
 // Get user input by way of the flag designated editor.

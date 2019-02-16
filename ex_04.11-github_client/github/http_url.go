@@ -117,6 +117,17 @@ func setURL(c Config) (Address, error) {
 		if err != nil {
 			return addr, err
 		}
+	case iRaw:
+		if len(c.Queries) < 2 {
+			str := "Please provide http request type and address."
+			return addr, fmt.Errorf(str)
+		}
+		// Fill the address fields from the command line query
+		// arguments.
+		addr.HTTP = c.Queries[0]
+		addr.URL = c.Queries[1]
+		// Remove the first two queries.
+		c.Queries = c.Queries[2:]
 	}
 
 	// Add queries to url.

@@ -48,6 +48,8 @@ func composeHeader(c Config) ([]Header, error) {
 		h = basicRequest(c, h)
 	case rNone:
 		h = authRequest(c, h)
+	default:
+		h = basicRequest(c, h)
 	}
 	return h, nil
 }

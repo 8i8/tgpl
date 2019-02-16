@@ -30,9 +30,12 @@ URL MODE
 	is defined and search values are given by way of query key vale pares.
 
 	┌─────┬─────┬─────┬─────┬─────┬─────┬───────┬───────┬───────┐
+	│     │     │     │     │-r   │     │       │       │       │
 	│-o or│     │     │     │-l lo│     │       │       │       │
 	│-a au│repo │numbe│token│-e ed│edito│ State │ url   │ Respo │
 	│-u us│-r   │-n   │-t   │-x ra│-d   │       │ type  │       │
+	├─────┼─────┼─────┼─────┼─────┼─────┼───────┼───────┼───────┤
+	│ N/A │ N/A │ N/A │     │ -r  │ all │ iRaw  │ user  │ input │
 	├─────┼─────┼─────┼─────┼─────┼─────┼───────┼───────┼───────┤
 	│ yes │     │     │ N/A │ N/A │ all │ mList │ uSear │ rMany │
 	├─────┼─────┼─────┼─────┼─────┼─────┼───────┼───────┼───────┤

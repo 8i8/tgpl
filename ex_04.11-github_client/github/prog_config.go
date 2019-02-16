@@ -21,6 +21,7 @@ type State struct {
 	Edit    bool   // Signal request to edit an issue.
 	Lock    bool   // Lock a repository.
 	Raise   bool   // Raise a new issue.
+	Raw     bool   // Raw request input.
 	Reason  string // Reason for lock.
 	Verbose bool   // Signals the program print out extra detail.
 }
@@ -31,7 +32,7 @@ type Req struct {
 	Org     string   // Organisation.
 	Repo    string   // Repository name.
 	Number  string   // Issue number.
-	Queries []string // GET queries retrieved from the Args[] array.
+	Queries []string // Queries that have been retrieved from the Args[] array.
 }
 
 // TODO NOW clean up the configs role

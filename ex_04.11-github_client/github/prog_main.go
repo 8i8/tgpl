@@ -86,8 +86,11 @@ func Run(c Config) error {
 		return EditIssue(c)
 	case mLock:
 		return LockIssue(c)
+	case iRaw:
+		return DisplayIssue(c)
 	default:
-		return fmt.Errorf("Run: c.Mode error hit end of switch statment")
+		str := "Run: c.Mode error hit end of switch statment"
+		return fmt.Errorf(str)
 	}
 	return nil
 }

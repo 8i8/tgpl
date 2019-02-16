@@ -13,16 +13,17 @@ const (
 	mRais
 	mEdit
 	mLock
+	iRaw
 )
 
 // Mode of the expected http response type.
 const (
-	rNone = iota
+	rMany = iota
 	rLone
-	rMany
+	rNone
 )
 
-var mState [5]string
+var mState [6]string
 var rStateName [3]string
 
 func init() {
@@ -32,6 +33,7 @@ func init() {
 	mState[mEdit] = "mEdit"
 	mState[mRais] = "mRais"
 	mState[mLock] = "mLock"
+	mState[iRaw] = "iRaw"
 	// response
 	rStateName[rNone] = "rNone"
 	rStateName[rLone] = "rLone"
@@ -77,6 +79,8 @@ func setRunMode(c *Config) {
 		c.Mode = mEdit
 	} else if c.Raise {
 		c.Mode = mRais
+	} else if c.Raw {
+		c.Mode = iRaw
 	}
 
 	// In the case where a number is explicitly provided and the required
