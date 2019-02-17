@@ -12,6 +12,13 @@ var errlog = log.New(os.Stderr, "github: ", log.Lshortfile)
    Search request.
 *  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
+// Reply is an evelope that encapsulates all the programs http
+// responces, the struct contained in the Msg is defined by the type.
+type Reply struct {
+	Type Resp
+	Msg  interface{}
+}
+
 // IssuesSearchResult is a json object that contains an array of github issues.
 type IssuesSearchResult struct {
 	TotalCount int      `json:"total_count"`

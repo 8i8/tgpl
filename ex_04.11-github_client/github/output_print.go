@@ -47,7 +47,8 @@ func printIssues(results IssueMap) {
 }
 
 // Print out a single issue including the message body.
-func printIssue(item Issue) {
+func printIssue(reply Reply) {
+	item := reply.Msg.(Issue)
 	fmt.Printf("number: #%-6d\nuser: %v\nrepo: %v\ntitle: %v\ncreated: %10.10v\n",
 		item.Number, item.User.Login,
 		item.Repo[strings.LastIndex(item.Repo, "/")+1:],
@@ -69,7 +70,7 @@ func printLine(item Issue) {
 }
 
 // OutputResponce prints the resultset to the terminal.
-func OutputResponce(c Config, I interface{}) error {
+func OutputResponce(c Config, reply Reply) error {
 
 	if c.Verbose {
 		fmt.Println("Program output start\n~~~\n")
@@ -78,15 +79,13 @@ func OutputResponce(c Config, I interface{}) error {
 	// Print out either a date ordered list of many issues else a detailed
 	// print of one issue.
 	var err error
-	if I != nil {
-		switch v := I.(type) {
-		case []*Issue:
-			err = listIssues(c, v)
-		case Issue:
-			printIssue(v)
-		default:
-			err = fmt.Errorf("unknown type")
-		}
+	switch reply.Type {
+	case rMany:
+		err = listIssues(c, reply)
+	case rLone:
+		printIssue(reply)
+	default:
+		err = fmt.Errorf("unknown type")
 	}
 
 	if c.Verbose {

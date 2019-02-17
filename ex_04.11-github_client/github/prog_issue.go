@@ -65,9 +65,10 @@ func composeIssue(conf Config) (*bytes.Buffer, error) {
 }
 
 // editIssue opens and edits and existing issue.
-func editIssue(conf Config, issue Issue) (*bytes.Buffer, error) {
+func editIssue(conf Config, reply Reply) (*bytes.Buffer, error) {
 
 	var err error
+	issue := reply.Msg.(Issue)
 	// Retreive data from issue.
 	currentTitle, currentBody := issue.Title, issue.Body
 

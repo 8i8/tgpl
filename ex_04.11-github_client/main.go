@@ -49,7 +49,7 @@ func init() {
 	flag.BoolVar(&conf.Lock, "k", false, lock)
 	flag.BoolVar(&conf.Edit, "e", false, edit)
 	flag.BoolVar(&conf.Raise, "x", false, raise)
-	flag.BoolVar(&conf.Raw, "h", false, lock)
+	flag.BoolVar(&conf.Raw, "w", false, lock)
 	flag.BoolVar(&conf.Verbose, "v", false, verbose)
 }
 

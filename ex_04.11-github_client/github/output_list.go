@@ -29,7 +29,11 @@ func (v IssueMap) Len() int {
 
 // ListIssues retrieves a list of issues from the given repo that meet the;
 // search criteria.
-func listIssues(conf Config, result []*Issue) error {
+func listIssues(conf Config, reply Reply) error {
+
+	//fmt.Println(reply)
+	result := reply.Msg.(IssuesSearchResult).Items
+	fmt.Printf("test %+v\n", result)
 
 	// Prepare data structure.
 	issue := make(map[int]Issue)

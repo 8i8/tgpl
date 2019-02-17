@@ -27,6 +27,9 @@ const (
 	rNone
 )
 
+// The Programs main running state.
+var rState Resp
+
 var mState [6]string
 var rStateName [3]string
 
@@ -43,9 +46,6 @@ func init() {
 	rStateName[rLone] = "rLone"
 	rStateName[rMany] = "rMany"
 }
-
-// The Programs main running state.
-var rState Resp
 
 // isFullAddress checks if the requirements have been met to enter rLone
 // mode.

@@ -69,38 +69,39 @@ func getStatus(resp *http.Response) (Status, error) {
 }
 
 // makeRequest orchestrates an http request.
-func makeRequest(conf Config, json io.Reader) (interface{}, error) {
+func makeRequest(conf Config, json io.Reader) (Reply, error) {
 
+	var reply Reply
 	// Set the correct url for the request.
 	addr, err := setURL(conf)
 	if err != nil {
-		return nil, fmt.Errorf("setURL: %v", err)
+		return reply, fmt.Errorf("setURL: %v", err)
 	}
 
 	// Compose an array of header key value pairs.
 	addr.header, err = composeHeader(conf)
 	if err != nil {
-		return nil, fmt.Errorf("composeHeader: %v", err)
+		return reply, fmt.Errorf("composeHeader: %v", err)
 	}
 
 	// Make and send the request.
 	resp, err := sendRequest(conf, addr, json)
 	if err != nil {
-		return nil, fmt.Errorf("sendRequest: %v", err)
+		return reply, fmt.Errorf("sendRequest: %v", err)
 	}
 
 	// Record the responce return status.
 	addr.Status, err = getStatus(resp)
 	if err != nil {
-		return nil, fmt.Errorf("getStatus: %v", err)
+		return reply, fmt.Errorf("getStatus: %v", err)
 	}
 
 	// Decode the responce.
-	result, err := respDecode(conf, resp)
+	reply, err = respDecode(conf, resp)
 	if err != nil {
-		return nil, fmt.Errorf("respDecode: %v", err)
+		return reply, fmt.Errorf("respDecode: %v", err)
 	}
-
 	resp.Body.Close()
-	return result, err
+
+	return reply, err
 }

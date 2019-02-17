@@ -8,13 +8,13 @@ import (
 func DisplayIssue(c Config) error {
 
 	// Run with defined configuration.
-	result, err := makeRequest(c, nil)
+	reply, err := makeRequest(c, nil)
 	if err != nil {
 		return fmt.Errorf("makeRequest: %v", err)
 	}
 
 	// If an mode other than mNone print to terminal.
-	err = OutputResponce(c, result)
+	err = OutputResponce(c, reply)
 	if err != nil {
 		return fmt.Errorf("OutputResponce: %v", err)
 	}
@@ -42,13 +42,13 @@ func RaiseIssue(c Config) error {
 func EditIssue(c Config) error {
 
 	// Run with defined configuration.
-	result, err := makeRequest(c, nil)
+	reply, err := makeRequest(c, nil)
 	if err != nil {
 		return fmt.Errorf("makeRequest: %v", err)
 	}
 
 	// If edits are to be been made, edit and then post them to the server.
-	json, err := editIssue(c, result.(Issue))
+	json, err := editIssue(c, reply)
 	if err != nil {
 		return fmt.Errorf("editIssue: %v", err)
 	}
