@@ -7,20 +7,57 @@ import (
 	"net/http"
 )
 
-// respDecode decodes an http responce dependant upon the expected responce
+// respDecode decodes an http response dependant upon the expected response
 // state, into a single issue or an array of issues as required.
 func respDecode(c Config, resp *http.Response) (Reply, error) {
 
 	var reply Reply
+	var msg json.RawMessage
 	var err error
-	reply.Type = rState
 
 	if c.Verbose {
 		fmt.Println("respDecode: attempting decode")
 	}
 
-	if err = json.NewDecoder(resp.Body).Decode(&reply.Msg); err != nil {
-		return reply, fmt.Errorf("json decoder failed: %v", err)
+	// Decode the response into a raw holding variable, here it is stored
+	// as a map of key value pairs.
+	if err := json.NewDecoder(resp.Body).Decode(&msg); err != nil {
+		return reply, fmt.Errorf("json decoder body failed: %v", err)
+	}
+
+	// Set the Type of struct
+	reply.Type = rState
+
+	// Set the final decoding type dependant on the program state.
+	switch rState {
+	case rMany:
+		// Decode multiple issues, place into the envelope structs interface.
+		var issue IssuesSearchResult
+		if err := json.Unmarshal(msg, &issue); err != nil {
+			return reply, fmt.Errorf("json decoder Msg failed: %v", err)
+		}
+		reply.Msg = issue
+	case rLone:
+		// Decode a single issue, place	into the envelope struct interface.
+		var issue Issue
+		if err := json.Unmarshal(msg, &issue); err != nil {
+			return reply, fmt.Errorf("json decoder Msg failed: %v", err)
+		}
+		reply.Msg = issue
+	case rNone:
+		// Decode multiple issues, place into the envelope structs interface.
+		var issues IssuesSearchResult
+		err := json.Unmarshal(msg, &issues)
+		if err != nil {
+			// Decode a single issue, place	into the envelope struct interface.
+			var issue Issue
+			if err := json.Unmarshal(msg, &issue); err != nil {
+				return reply, fmt.Errorf("json decoder Msg failed: %v", err)
+			}
+			reply.Msg = issue
+			break
+		}
+		reply.Msg = issues
 	}
 
 	if c.Verbose {

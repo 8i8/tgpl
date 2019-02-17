@@ -59,7 +59,7 @@ func getStatus(resp *http.Response) (Status, error) {
 		// If data recieved.
 		resp.Body.Close()
 		return s, fmt.Errorf("response: %v %v", s.Code, s.Message)
-		// IfRecord was created.
+		// If a record was created.
 	} else if rState == rNone && s.Code != http.StatusCreated {
 		resp.Body.Close()
 		return s, fmt.Errorf("response: %v %v", s.Code, s.Message)

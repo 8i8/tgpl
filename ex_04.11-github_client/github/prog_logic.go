@@ -116,7 +116,7 @@ func setRespExp(c *Config) {
 	} else if c.Mode == mLock {
 		rState = rNone
 	} else if c.Mode == iRaw {
-		rState = rMany
+		rState = rNone
 	}
 }
 
