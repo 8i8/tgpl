@@ -13,7 +13,7 @@ func DisplayIssue(c Config) error {
 		return fmt.Errorf("makeRequest: %v", err)
 	}
 
-	// If an mode other than mNone print to terminal.
+	// Print to terminal.
 	err = OutputResponce(c, reply)
 	if err != nil {
 		return fmt.Errorf("OutputResponce: %v", err)
@@ -41,6 +41,10 @@ func RaiseIssue(c Config) error {
 // EditIssue edits an existing issue.
 func EditIssue(c Config) error {
 
+	// Set state to use GET
+	rState = rLone
+	c.Mode = mRead
+
 	// Run with defined configuration.
 	reply, err := makeRequest(c, nil)
 	if err != nil {
@@ -52,6 +56,10 @@ func EditIssue(c Config) error {
 	if err != nil {
 		return fmt.Errorf("editIssue: %v", err)
 	}
+
+	// Set state to use authentication.
+	rState = rNone
+	c.Mode = mEdit
 
 	// Post the newly edited issue.
 	_, err = makeRequest(c, json)
@@ -86,7 +94,7 @@ func Run(c Config) error {
 		return EditIssue(c)
 	case mLock:
 		return LockIssue(c)
-	case iRaw:
+	case mRaw:
 		return DisplayIssue(c)
 	default:
 		str := "Run: c.Mode error hit end of switch statment"

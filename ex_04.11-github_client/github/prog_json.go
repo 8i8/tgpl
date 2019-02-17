@@ -44,7 +44,7 @@ func respDecode(c Config, resp *http.Response) (Reply, error) {
 			return reply, fmt.Errorf("json decoder Msg failed: %v", err)
 		}
 		reply.Msg = issue
-	case rNone:
+	case rRaw:
 		// Decode multiple issues, place into the envelope structs interface.
 		var issues IssuesSearchResult
 		err := json.Unmarshal(msg, &issues)
@@ -52,12 +52,14 @@ func respDecode(c Config, resp *http.Response) (Reply, error) {
 			// Decode a single issue, place	into the envelope struct interface.
 			var issue Issue
 			if err := json.Unmarshal(msg, &issue); err != nil {
-				return reply, fmt.Errorf("json decoder Msg failed: %v", err)
+				return reply, fmt.Errorf("json decoder Raw failed: %v", err)
 			}
 			reply.Msg = issue
+			reply.Type = rLone
 			break
 		}
 		reply.Msg = issues
+		reply.Type = rMany
 	}
 
 	if c.Verbose {

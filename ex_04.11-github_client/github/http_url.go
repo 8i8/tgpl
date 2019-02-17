@@ -117,7 +117,7 @@ func setURL(c Config) (Address, error) {
 		if err != nil {
 			return addr, err
 		}
-	case iRaw:
+	case mRaw:
 		if len(c.Queries) < 2 {
 			str := "please provide http request type and address"
 			return addr, fmt.Errorf(str)

@@ -15,7 +15,7 @@ const (
 	mRais
 	mEdit
 	mLock
-	iRaw
+	mRaw
 )
 
 type Resp int
@@ -25,13 +25,14 @@ const (
 	rMany Resp = iota
 	rLone
 	rNone
+	rRaw
 )
 
 // The Programs main running state.
 var rState Resp
 
 var mState [6]string
-var rStateName [3]string
+var rStateName [4]string
 
 func init() {
 	// mode
@@ -40,11 +41,12 @@ func init() {
 	mState[mEdit] = "mEdit"
 	mState[mRais] = "mRais"
 	mState[mLock] = "mLock"
-	mState[iRaw] = "iRaw"
+	mState[mRaw] = "mRaw"
 	// response
 	rStateName[rNone] = "rNone"
 	rStateName[rLone] = "rLone"
 	rStateName[rMany] = "rMany"
+	rStateName[rRaw] = "rRaw"
 }
 
 // isFullAddress checks if the requirements have been met to enter rLone
@@ -84,7 +86,7 @@ func setRunMode(c *Config) {
 	} else if c.Raise {
 		c.Mode = mRais
 	} else if c.Raw {
-		c.Mode = iRaw
+		c.Mode = mRaw
 	}
 
 	// In the case where a number is explicitly provided and the required
@@ -115,8 +117,8 @@ func setRespExp(c *Config) {
 		rState = rLone
 	} else if c.Mode == mLock {
 		rState = rNone
-	} else if c.Mode == iRaw {
-		rState = rNone
+	} else if c.Mode == mRaw {
+		rState = rRaw
 	}
 }
 

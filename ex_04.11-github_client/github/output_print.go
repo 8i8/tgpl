@@ -85,7 +85,7 @@ func OutputResponce(c Config, reply Reply) error {
 	case rLone:
 		printIssue(reply)
 	default:
-		err = fmt.Errorf("unknown type")
+		err = fmt.Errorf("unknown rState")
 	}
 
 	if c.Verbose {

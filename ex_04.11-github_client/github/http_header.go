@@ -19,7 +19,7 @@ func authorize(conf Config) Header {
 // basicRequest generates the most basic hearder for the program.
 func basicRequest(c Config, h []Header) []Header {
 
-	// Add header to request.
+	// Set header.
 	h = append(h, accept(c))
 
 	return h
@@ -32,6 +32,16 @@ func authRequest(c Config, h []Header) []Header {
 	h = append(h, accept(c))
 	h = append(h, authorize(c))
 
+	return h
+}
+
+func checkTokenRequest(c Config, h []Header) []Header {
+
+	// Set header.
+	h = append(h, accept(c))
+	if len(c.Token) > 0 {
+		h = append(h, authorize(c))
+	}
 	return h
 }
 
@@ -48,6 +58,8 @@ func composeHeader(c Config) ([]Header, error) {
 		h = basicRequest(c, h)
 	case rNone:
 		h = authRequest(c, h)
+	case rRaw:
+		h = checkTokenRequest(c, h)
 	default:
 		h = basicRequest(c, h)
 	}
