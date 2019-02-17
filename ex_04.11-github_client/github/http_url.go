@@ -70,7 +70,7 @@ func setURL(c Config) (Address, error) {
 	case mList:
 		addr.HTTP = "GET"
 		addr.URL = addr.URL + "search/issues"
-		str := "url requirements not met were not met"
+		str := "url requirements were not met"
 		err := setURLSearchQuery(&c, str)
 		if err != nil {
 			return addr, err
@@ -80,7 +80,7 @@ func setURL(c Config) (Address, error) {
 	// issue number.
 	case mRead:
 		addr.HTTP = "GET"
-		str := "Please specify owner, repository and issue number."
+		str := "please specify owner, repository and issue number"
 		addr.URL, err = setURLAddress(c, addr.URL, str)
 		if err != nil {
 			return addr, err
@@ -90,7 +90,7 @@ func setURL(c Config) (Address, error) {
 	case mEdit:
 		// Prepare for editing a preexisting repo.
 		addr.HTTP = "PATCH"
-		str := "Please specify owner, repository and issue number."
+		str := "please specify owner, repository and issue number"
 		addr.URL, err = setURLAddress(c, addr.URL, str)
 		if err != nil {
 			return addr, err
@@ -101,7 +101,7 @@ func setURL(c Config) (Address, error) {
 		// Prepare a URL to set the current issue status to resolved,
 		// requires login.
 		addr.HTTP = "PUT"
-		str := "Please specify owner, repository and issue number."
+		str := "please specify owner, repository and issue number"
 		addr.URL, err = setURLAddress(c, addr.URL, str)
 		if err != nil {
 			return addr, err
@@ -112,14 +112,14 @@ func setURL(c Config) (Address, error) {
 	// and the use of the POST function, requires login authorisation.
 	case mRais:
 		addr.HTTP = "POST"
-		str := "Please specify owner and repository details"
+		str := "please specify owner and repository details"
 		addr.URL, err = setURLAddress(c, addr.URL, str)
 		if err != nil {
 			return addr, err
 		}
 	case iRaw:
 		if len(c.Queries) < 2 {
-			str := "Please provide http request type and address."
+			str := "please provide http request type and address"
 			return addr, fmt.Errorf(str)
 		}
 		// Fill the address fields from the command line query

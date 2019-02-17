@@ -17,7 +17,7 @@ type Config struct {
 // State is an anonymous struct of only one single instance per request, it is
 // contained within the Config struct.
 type State struct {
-	Mode    int    // Program running mode.
+	Mode    Mode   // Program running mode.
 	Edit    bool   // Signal request to edit an issue.
 	Lock    bool   // Lock a repository.
 	Raise   bool   // Raise a new issue.

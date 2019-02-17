@@ -7,8 +7,10 @@ import (
 // The run state of the program, interpreted by command line flags. This
 // variable is set as in integer within the configuration struct, by the
 // function SetState(c Config) at program start.
+type Mode int
+
 const (
-	mList = iota
+	mList Mode = iota
 	mRead
 	mRais
 	mEdit
@@ -16,9 +18,11 @@ const (
 	iRaw
 )
 
+type Resp int
+
 // Mode of the expected http response type.
 const (
-	rMany = iota
+	rMany Resp = iota
 	rLone
 	rNone
 )
@@ -41,7 +45,7 @@ func init() {
 }
 
 // The Programs main running state.
-var rState int
+var rState Resp
 
 // isFullAddress checks if the requirements have been met to enter rLone
 // mode.
@@ -111,6 +115,8 @@ func setRespExp(c *Config) {
 		rState = rLone
 	} else if c.Mode == mLock {
 		rState = rNone
+	} else if c.Mode == iRaw {
+		rState = rMany
 	}
 }
 

@@ -12,7 +12,6 @@ import (
 func respDecode(c Config, resp *http.Response) (interface{}, error) {
 
 	var err error
-
 	if c.Verbose {
 		fmt.Println("respDecode: attempting decode")
 	}

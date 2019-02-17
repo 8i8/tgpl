@@ -49,7 +49,7 @@ func printIssues(results IssueMap) {
 // Print out a single issue including the message body.
 func printIssue(item Issue) {
 	fmt.Printf("number: #%-6d\nuser: %v\nrepo: %v\ntitle: %v\ncreated: %10.10v\n",
-		item.Number, item.User.Author,
+		item.Number, item.User.Login,
 		item.Repo[strings.LastIndex(item.Repo, "/")+1:],
 		item.Title, item.CreatedAt.String())
 	if item.Locked {
@@ -63,7 +63,7 @@ func printIssue(item Issue) {
 // Print out a single line issue with only the title and details.
 func printLine(item Issue) {
 	fmt.Printf("#%-6d %6.6s %6.6s %40.40s %10.10s\n",
-		item.Number, item.User.Author,
+		item.Number, item.User.Login,
 		item.Repo[strings.LastIndex(item.Repo, "/")+1:],
 		item.Title, item.CreatedAt.String())
 }
