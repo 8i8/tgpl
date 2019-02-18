@@ -35,7 +35,6 @@ URL MODE
 	│-a au│repo │numbe│token│-e ed│edito│ State │ url   │ Respo │
 	│-u us│-r   │-n   │-t   │-x ra│-d   │       │ type  │       │
 	├─────┼─────┼─────┼─────┼─────┼─────┼───────┼───────┼───────┤
-	│ N/A │ N/A │ N/A │     │ -r  │ all │ mRaw  │ user  │ input │
 	├─────┼─────┼─────┼─────┼─────┼─────┼───────┼───────┼───────┤
 	│ yes │     │     │ N/A │ N/A │ all │ mList │ uSear │ rMany │
 	├─────┼─────┼─────┼─────┼─────┼─────┼───────┼───────┼───────┤
@@ -86,7 +85,7 @@ HTTP REQUESTS
 	│unlock │       │       │       │       │   1   │
 	└───────┴───────┴───────┴───────┴───────┴───────┘
 
-	GET    /issues
+	GET    /issues          (login required, lists all issues assigned to user)
  	GET    /user/issues
  	GET    /orgs/:org/issues
 	GET    /search/issues?q= user:[user] | repo:[repo] | author:[author]

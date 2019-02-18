@@ -3,6 +3,7 @@ package github
 import (
 	"bufio"
 	"bytes"
+	"encoding/base64"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -135,4 +136,27 @@ func openInEditor(conf Config, text string) (string, error) {
 	text = strings.TrimSpace(string(content))
 
 	return text, err
+}
+
+// getPass requests that the user enter their password and then returns it
+// encoded as a base64 string.
+func getPass(c Config) (string, error) {
+
+	// User input.
+	sc := bufio.NewScanner(os.Stdin)
+	var pass string
+	var err error
+	for pass == "" {
+		fmt.Println("Enter host password for user '%v':", c.User)
+		sc.Scan()
+		pass = sc.Text()
+		pass = strings.TrimSpace(pass)
+	}
+	if err != nil {
+		return pass, fmt.Errorf("pass scanner: %+v", err)
+	}
+	// Encode to base64.
+	pass = base64.StdEncoding.EncodeToString([]byte(pass))
+
+	return pass, nil
 }

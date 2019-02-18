@@ -32,13 +32,11 @@ func (v IssueMap) Len() int {
 func listIssues(conf Config, reply Reply) error {
 
 	//fmt.Println(reply)
-	fmt.Printf("test %+v\n", reply)
 	r, ok := reply.Msg.(IssuesSearchResult)
 	if !ok {
 		return fmt.Errorf("listIssues: type assertion failed")
 	}
 	result := r.Items
-	fmt.Printf("test %+v\n", result)
 
 	// Prepare data structure.
 	issue := make(map[int]Issue)

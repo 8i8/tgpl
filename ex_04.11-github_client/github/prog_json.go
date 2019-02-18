@@ -14,6 +14,7 @@ func respDecode(c Config, resp *http.Response) (Reply, error) {
 	var reply Reply
 	var msg json.RawMessage
 	var err error
+	var log string
 
 	if c.Verbose {
 		fmt.Println("respDecode: attempting decode")
@@ -37,6 +38,7 @@ func respDecode(c Config, resp *http.Response) (Reply, error) {
 			return reply, fmt.Errorf("json decoder Msg failed: %v", err)
 		}
 		reply.Msg = issue
+		log = "multiple"
 	case rLone:
 		// Decode a single issue, place	into the envelope struct interface.
 		var issue Issue
@@ -44,6 +46,7 @@ func respDecode(c Config, resp *http.Response) (Reply, error) {
 			return reply, fmt.Errorf("json decoder Msg failed: %v", err)
 		}
 		reply.Msg = issue
+		log = "single"
 	case rRaw:
 		// Decode multiple issues, place into the envelope structs interface.
 		var issues IssuesSearchResult
@@ -56,14 +59,18 @@ func respDecode(c Config, resp *http.Response) (Reply, error) {
 			}
 			reply.Msg = issue
 			reply.Type = rLone
+			log = "raw single"
 			break
 		}
 		reply.Msg = issues
 		reply.Type = rMany
+		log = "raw multiple"
+	default:
+		log = "empty"
 	}
 
 	if c.Verbose {
-		fmt.Println("respDecode: single issue decode")
+		fmt.Println("respDecode: attempt", log)
 	}
 
 	return reply, err

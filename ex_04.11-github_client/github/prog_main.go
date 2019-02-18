@@ -39,6 +39,7 @@ func RaiseIssue(c Config) error {
 }
 
 // EditIssue edits an existing issue.
+// TODO NOW state is being altered here, should it be?
 func EditIssue(c Config) error {
 
 	// Set state to use GET
