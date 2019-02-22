@@ -8,8 +8,10 @@ import (
 )
 
 var conf github.Config
+var fla uint
 
 func init() {
+
 	user := `Login user name:
 	The name used when logging into the github API, searches and requests
 	made that do not have the "author" specified will use this value in the
@@ -51,12 +53,16 @@ func init() {
 	flag.BoolVar(&conf.Raise, "x", false, raise)
 	flag.BoolVar(&conf.Raw, "w", false, lock)
 	flag.BoolVar(&conf.Verbose, "v", false, verbose)
+	flag.UintVar(&fla, "y", 0, "Set y flag on")
 }
 
 func main() {
 
-	// Command line input.
 	flag.Parse()
+	var f uint
+	f |= (1 << fla)
+	fmt.Println("flag: ", f)
+	// Command line input.
 	conf.Queries = flag.Args()
 
 	// Setup programming for selected mode, in some cases the program mode

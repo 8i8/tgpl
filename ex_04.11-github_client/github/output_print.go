@@ -7,10 +7,10 @@ import (
 )
 
 // Print a list of single line issues, ordered and grouped by date.
-func printIssues(results IssueMap) {
+func printIssues(retIssues IssueMap) {
 
-	issue := *results.M
-	index := *results.I
+	issue := *retIssues.M
+	index := *retIssues.I
 	now := date{}
 	now.y, now.m, now.d = time.Now().Date()
 	fmt.Printf("%d issues:\n", len(index))
@@ -69,8 +69,8 @@ func printLine(item Issue) {
 		item.Title, item.CreatedAt.String())
 }
 
-// OutputResponce prints the resultset to the terminal.
-func OutputResponce(c Config, reply Reply) error {
+// OutputResponse prints the resultset to the terminal.
+func OutputResponse(c Config, reply Reply) error {
 
 	if c.Verbose {
 		fmt.Println("Program output start\n~~~\n")
@@ -80,9 +80,9 @@ func OutputResponce(c Config, reply Reply) error {
 	// print of one issue.
 	var err error
 	switch reply.Type {
-	case rMany:
+	case rMANY:
 		err = listIssues(c, reply)
-	case rLone:
+	case rLONE:
 		printIssue(reply)
 	default:
 		err = fmt.Errorf("unknown rState")

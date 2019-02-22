@@ -36,15 +36,15 @@ func listIssues(conf Config, reply Reply) error {
 	if !ok {
 		return fmt.Errorf("listIssues: type assertion failed")
 	}
-	result := r.Items
+	retIssues := r.Items
 
 	// Prepare data structure.
 	issue := make(map[int]Issue)
-	index := make([]date, 0, len(result))
+	index := make([]date, 0, len(retIssues))
 	resp := IssueMap{&issue, &index}
 
 	// Fill map.
-	for _, item := range result {
+	for _, item := range retIssues {
 		issue[item.Number] = *item
 	}
 

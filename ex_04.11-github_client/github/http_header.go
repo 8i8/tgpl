@@ -70,13 +70,13 @@ func composeHeader(c Config) ([]Header, error) {
 	var h []Header
 
 	switch rState {
-	case rMany:
+	case rMANY:
 		h = basicRequest(c, h)
-	case rLone:
+	case rLONE:
 		h = basicRequest(c, h)
-	case rNone:
+	case rNONE:
 		h = authRequest(c, h)
-	case rRaw:
+	case rRAW:
 		h = checkTokenRequest(c, h)
 	default:
 		h = basicRequest(c, h)

@@ -55,12 +55,12 @@ func getStatus(resp *http.Response) (Status, error) {
 	s.Code = resp.StatusCode
 	s.Message = http.StatusText(resp.StatusCode)
 
-	if (rState == rLone || rState == rMany) && s.Code != http.StatusOK {
+	if (rState == rLONE || rState == rMANY) && s.Code != http.StatusOK {
 		// If data recieved.
 		resp.Body.Close()
 		return s, fmt.Errorf("response: %v %v", s.Code, s.Message)
 		// If a record was created.
-	} else if rState == rNone && s.Code != http.StatusCreated {
+	} else if rState == rNONE && s.Code != http.StatusCreated {
 		resp.Body.Close()
 		return s, fmt.Errorf("response: %v %v", s.Code, s.Message)
 	}
@@ -69,6 +69,9 @@ func getStatus(resp *http.Response) (Status, error) {
 }
 
 // makeRequest orchestrates an http request.
+// TODO NOW is the header being set in the best place, should this be
+// seperated? When editing an issue the password is not required for the first
+// contact but should be requested and used so avoid wasting users time.
 func makeRequest(conf Config, json io.Reader) (Reply, error) {
 
 	var reply Reply

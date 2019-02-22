@@ -29,14 +29,17 @@ func setURLSearchQuery(c *Config, e string) error {
 	} else if len(c.Author) > 0 {
 		c.Queries = append(
 			c.Queries, "author:"+c.Author)
+	} else if len(c.Repo) > 0 {
+		c.Queries = append(
+			c.Queries, "repo:"+c.Repo)
 	} else {
-		err = fmt.Errorf("%v: setURLSearchQuery: %v", mState[c.Mode], e)
+		err = fmt.Errorf("%v: setURLSearchQuery: %v", mStateName[c.Mode], e)
 	}
 	return err
 }
 
 // setURLAddress is a helper funcion for setURL, defines the base address for
-// the mRead, mEdit, mLock and mRais modes.
+// the mREAD, mEDIT, mLOCK and mRAISE modes.
 func setURLAddress(c Config, URL, e string) (string, error) {
 
 	var err error
@@ -47,7 +50,7 @@ func setURLAddress(c Config, URL, e string) (string, error) {
 	} else if len(c.Org) > 0 && len(c.Repo) > 0 {
 		URL = URL + "orgs/" + c.Org + "/" + c.Repo + "/issues"
 	} else {
-		err = fmt.Errorf("%v: setURLAddress: %v", mState[c.Mode], e)
+		err = fmt.Errorf("%v: setURLAddress: %v", mStateName[c.Mode], e)
 	}
 
 	return URL, err
@@ -67,7 +70,7 @@ func setURL(c Config) (Address, error) {
 	switch c.Mode {
 
 	// Prepare URL for API search functionality
-	case mList:
+	case mLIST:
 		addr.HTTP = "GET"
 		addr.URL = addr.URL + "search/issues"
 		str := "url requirements were not met"
@@ -78,7 +81,7 @@ func setURL(c Config) (Address, error) {
 
 	// Prepare URL for API reading repo issues directly by full address and
 	// issue number.
-	case mRead:
+	case mREAD:
 		addr.HTTP = "GET"
 		str := "please specify owner, repository and issue number"
 		addr.URL, err = setURLAddress(c, addr.URL, str)
@@ -87,7 +90,7 @@ func setURL(c Config) (Address, error) {
 		}
 		addr.URL += "/" + c.Number
 
-	case mEdit:
+	case mEDIT:
 		// Prepare for editing a preexisting repo.
 		addr.HTTP = "PATCH"
 		str := "please specify owner, repository and issue number"
@@ -97,7 +100,7 @@ func setURL(c Config) (Address, error) {
 		}
 		addr.URL += "/" + c.Number
 
-	case mLock:
+	case mLOCK:
 		// Prepare a URL to set the current issue status to resolved,
 		// requires login.
 		addr.HTTP = "PUT"
@@ -110,14 +113,15 @@ func setURL(c Config) (Address, error) {
 
 	// Prepare URL for issue creation by way of a complete issue address
 	// and the use of the POST function, requires login authorisation.
-	case mRais:
+	case mRAISE:
 		addr.HTTP = "POST"
 		str := "please specify owner and repository details"
 		addr.URL, err = setURLAddress(c, addr.URL, str)
 		if err != nil {
 			return addr, err
 		}
-	case mRaw:
+
+	case mRAW:
 		if len(c.Queries) < 2 {
 			str := "please provide http request type and address"
 			return addr, fmt.Errorf(str)
@@ -131,13 +135,13 @@ func setURL(c Config) (Address, error) {
 	}
 
 	// Add queries to url.
-	if len(c.Queries) > 0 && c.Mode != mLock {
+	if len(c.Queries) > 0 && c.Mode != mLOCK {
 		q := url.QueryEscape(strings.Join(c.Queries, " "))
 		addr.URL = addr.URL + "?q=" + q
 	}
 
 	// If lock required, add query.
-	if c.Mode == mLock {
+	if c.Mode == mLOCK {
 		addr.URL = addr.URL + "?lock_reason=" + c.Reason
 	}
 

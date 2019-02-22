@@ -24,6 +24,7 @@ type State struct {
 	Raw     bool   // Raw request input.
 	Reason  string // Reason for lock.
 	Verbose bool   // Signals the program print out extra detail.
+	Flags   uint
 }
 
 // Req request is a struct containing the details of a particular request.

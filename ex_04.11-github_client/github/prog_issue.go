@@ -147,10 +147,9 @@ func getPass(c Config) (string, error) {
 	var pass string
 	var err error
 	for pass == "" {
-		fmt.Println("Enter host password for user '%v':", c.User)
+		fmt.Printf("Enter host password for user '%v': ", c.User)
 		sc.Scan()
 		pass = sc.Text()
-		pass = strings.TrimSpace(pass)
 	}
 	if err != nil {
 		return pass, fmt.Errorf("pass scanner: %+v", err)

@@ -10,46 +10,47 @@ import (
 type Mode int
 
 const (
-	mList Mode = iota
-	mRead
-	mRais
-	mEdit
-	mLock
-	mRaw
+	mLIST Mode = 1 << iota
+	mREAD
+	mRAISE
+	mEDIT
+	mLOCK
+	mRAW
 )
 
 type Resp int
 
 // Mode of the expected http response type.
 const (
-	rMany Resp = iota
-	rLone
-	rNone
-	rRaw
+	rMANY Resp = 1 << iota
+	rLONE
+	rNONE
+	rRAW
 )
 
 // The Programs main running state.
 var rState Resp
-
-var mState [6]string
-var rStateName [4]string
+var mStateName = make(map[Mode]string)
+var rStateName = make(map[Resp]string)
 
 func init() {
+
 	// mode
-	mState[mList] = "mList"
-	mState[mRead] = "mRead"
-	mState[mEdit] = "mEdit"
-	mState[mRais] = "mRais"
-	mState[mLock] = "mLock"
-	mState[mRaw] = "mRaw"
+	mStateName[mLIST] = "mLIST"
+	mStateName[mREAD] = "mREAD"
+	mStateName[mEDIT] = "mEDIT"
+	mStateName[mRAISE] = "mRAISE"
+	mStateName[mLOCK] = "mLOCK"
+	mStateName[mRAW] = "mRAW"
+
 	// response
-	rStateName[rNone] = "rNone"
-	rStateName[rLone] = "rLone"
-	rStateName[rMany] = "rMany"
-	rStateName[rRaw] = "rRaw"
+	rStateName[rNONE] = "rNONE"
+	rStateName[rLONE] = "rLONE"
+	rStateName[rMANY] = "rMANY"
+	rStateName[rRAW] = "rRAW"
 }
 
-// isFullAddress checks if the requirements have been met to enter rLone
+// isFullAddress checks if the requirements have been met to enter rLONE
 // mode.
 func isFullAddress(c Config) bool {
 	return (len(c.Author) > 0 || len(c.User) > 0 || len(c.Org) > 0) &&
@@ -58,47 +59,55 @@ func isFullAddress(c Config) bool {
 
 // checkModeValid verifies that there are not two contradicting flags set.
 func checkModeValid(c Config) error {
-	tally := 0
+	count := 0
 	if c.Edit {
-		tally++
+		count++
 	}
 	if c.Lock {
-		tally++
+		count++
 	}
 	if c.Raise {
-		tally++
+		count++
 	}
-	if tally > 1 {
+	if count > 1 {
 		str := "Please define either -x -e or -l"
 		return fmt.Errorf(str)
 	}
 	return nil
 }
 
+//setDefault sets the default state of the program.
+func setDefaults(c *Config) {
+	rState = rMANY
+	c.Mode = mLIST
+}
+
 // setRunMode sets the program run mode from the given flags.
 func setRunMode(c *Config) {
 
+	setDefaults(c)
+
 	// Set edit or lock state before checking for the presence of a number.
 	if c.Edit {
-		c.Mode = mEdit
+		c.Mode = mEDIT
 	} else if c.Lock {
-		c.Mode = mEdit
+		c.Mode = mEDIT
 	} else if c.Raise {
-		c.Mode = mRais
+		c.Mode = mRAISE
 	} else if c.Raw {
-		c.Mode = mRaw
+		c.Mode = mRAW
 	}
 
 	// In the case where a number is explicitly provided and the required
 	// parameters exist for a direct HTTP access then do so, else add the
-	// number to the query, listing as a search parameter and then expect
-	// multiple results.
+	// number to the query, listing as a search parameter and in
+	// consiquence expect multiple results.
 	if len(c.Number) > 0 && !c.Edit && !c.Lock {
 		if isFullAddress(*c) {
-			c.Mode = mRead
+			c.Mode = mREAD
 		} else {
 			c.Queries = append(c.Queries, c.Number)
-			c.Mode = mList
+			c.Mode = mLIST
 		}
 	}
 }
@@ -107,18 +116,18 @@ func setRunMode(c *Config) {
 // defined running mode.
 func setRespExp(c *Config) {
 
-	if c.Mode == mList {
-		rState = rMany
-	} else if c.Mode == mRead {
-		rState = rLone
-	} else if c.Mode == mRais {
-		rState = rNone
-	} else if c.Mode == mEdit {
-		rState = rLone
-	} else if c.Mode == mLock {
-		rState = rNone
-	} else if c.Mode == mRaw {
-		rState = rRaw
+	if c.Mode == mLIST {
+		rState = rMANY
+	} else if c.Mode == mREAD {
+		rState = rLONE
+	} else if c.Mode == mRAISE {
+		rState = rNONE
+	} else if c.Mode == mEDIT {
+		rState = rLONE
+	} else if c.Mode == mLOCK {
+		rState = rNONE
+	} else if c.Mode == mRAW {
+		rState = rRAW
 	}
 }
 
@@ -132,14 +141,14 @@ func SetState(c *Config) error {
 		return fmt.Errorf("SetState: %v", err)
 	}
 
-	// 1) set one of five program modes.
+	// 1) set program modes.
 	setRunMode(c)
-	// 2) set one of three expected response modes.
+	// 2) set expected response modes.
 	setRespExp(c)
 
 	// Output state in verbose mode.
 	if c.Verbose {
-		fmt.Printf("SetState run mode: %v\n", mState[c.Mode])
+		fmt.Printf("SetState run mode: %v\n", mStateName[c.Mode])
 		fmt.Printf("SetState response mode: %v\n", rStateName[rState])
 	}
 

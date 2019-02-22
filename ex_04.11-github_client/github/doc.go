@@ -36,25 +36,25 @@ URL MODE
 	│-u us│-r   │-n   │-t   │-x ra│-d   │       │ type  │       │
 	├─────┼─────┼─────┼─────┼─────┼─────┼───────┼───────┼───────┤
 	├─────┼─────┼─────┼─────┼─────┼─────┼───────┼───────┼───────┤
-	│ yes │     │     │ N/A │ N/A │ all │ mList │ uSear │ rMany │
+	│ yes │     │     │ N/A │ N/A │ all │ mLIST │ uSear │ rMANY │
 	├─────┼─────┼─────┼─────┼─────┼─────┼───────┼───────┼───────┤
-	│     │ yes │     │ N/A │ N/A │ all │ mList │ uSear │ rMany │
+	│     │ yes │     │ N/A │ N/A │ all │ mLIST │ uSear │ rMANY │
 	├─────┼─────┼─────┼─────┼─────┼─────┼───────┼───────┼───────┤
-	│ yes │ yes │     │ N/A │ N/A │ all │ mList │ uSear │ rMany │
+	│ yes │ yes │     │ N/A │ N/A │ all │ mLIST │ uSear │ rMANY │
 	├─────┼─────┼─────┼─────┼─────┼─────┼───────┼───────┼───────┤
-	│ yes │     │ yes │ N/A │ N/A │ all │ mList │ uSear │ rMany │
+	│ yes │     │ yes │ N/A │ N/A │ all │ mLIST │ uSear │ rMANY │
 	├─────┼─────┼─────┼─────┼─────┼─────┼───────┼───────┼───────┤
-	│     │ yes │ yes │ N/A │ N/A │ all │ mList │ uSear │ rMany │
+	│     │ yes │ yes │ N/A │ N/A │ all │ mLIST │ uSear │ rMANY │
 	├─────┼─────┼─────┼─────┼─────┼─────┼───────┼───────┼───────┤
-	│ yes │ yes │ yes │ N/A │ N/A │ all │ mRead │ uAdRe │ rLone │
+	│ yes │ yes │ yes │ N/A │ N/A │ all │ mREAD │ uAdRe │ rLONE │
 	├─────┼─────┼─────┼─────┼─────┼─────┼───────┼───────┼───────┤
-	│ yes │ yes │ yes │ yes │ -x  │ all │ mRais │ uAdRw │ rNone │
+	│ yes │ yes │ yes │ yes │ -x  │ all │ mRAISE│ uAdRw │ rNONE │
 	├─────┼─────┼─────┼─────┼─────┼─────┼───────┼───────┼───────┤
-	│ yes │ yes │ yes │ yes │ -e  │ all │ mEdit │ uAdRe │ rLone │
-	│     │     │     │     │     │     │ mEdit │ uAdWr │ rNone │
+	│ yes │ yes │ yes │ yes │ -e  │ all │ mEDIT │ uAdRe │ rLONE │
+	│     │     │     │     │     │     │ mEDIT │ uAdWr │ rNONE │
 	├─────┼─────┼─────┼─────┼─────┼─────┼───────┼───────┼───────┤
-	│ yes │ yes │ yes │ yes │ -l  │ all │ mLock │ uAdRe │ rLone │
-	│     │     │     │     │     │     │ mLock │ uAdWr │ rNone │
+	│ yes │ yes │ yes │ yes │ -l  │ all │ mLOCK │ uAdRe │ rLONE │
+	│     │     │     │     │     │     │ mLOCK │ uAdWr │ rNONE │
 	└─────┴─────┴─────┴─────┴─────┴─────┴───────┴───────┴───────┘
 
 	-o org   -r repo  -n number
