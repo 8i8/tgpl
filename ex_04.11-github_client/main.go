@@ -8,7 +8,7 @@ import (
 )
 
 var conf github.Config
-var fla uint
+var flags github.FlagsIn
 
 func init() {
 
@@ -48,26 +48,22 @@ func init() {
 	flag.StringVar(&conf.Number, "n", "", number)
 	flag.StringVar(&conf.Token, "t", "", token)
 	flag.StringVar(&conf.Editor, "d", "", editor)
-	flag.BoolVar(&conf.Lock, "k", false, lock)
-	flag.BoolVar(&conf.Edit, "e", false, edit)
-	flag.BoolVar(&conf.Raise, "x", false, raise)
-	flag.BoolVar(&conf.Raw, "w", false, lock)
-	flag.BoolVar(&conf.Verbose, "v", false, verbose)
-	flag.UintVar(&fla, "y", 0, "Set y flag on")
+	flag.BoolVar(&flags.Lock, "k", false, lock)
+	flag.BoolVar(&flags.Edit, "e", false, edit)
+	flag.BoolVar(&flags.Raise, "x", false, raise)
+	flag.BoolVar(&flags.Raw, "w", false, lock)
+	flag.BoolVar(&flags.Verbose, "v", false, verbose)
 }
 
 func main() {
 
 	flag.Parse()
-	var f uint
-	f |= (1 << fla)
-	fmt.Println("flag: ", f)
 	// Command line input.
 	conf.Queries = flag.Args()
 
 	// Setup programming for selected mode, in some cases the program mode
 	// is altered here, as such we pass in a pointer.
-	err := github.SetState(&conf)
+	err := github.SetState(&conf, flags)
 	if err != nil {
 		fmt.Println(err)
 		return

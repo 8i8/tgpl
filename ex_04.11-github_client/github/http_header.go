@@ -63,20 +63,19 @@ func checkTokenRequest(c Config, h []Header) []Header {
 
 // composeHeader uses the current confiuration to set the correct header for
 // the required HTTP request.
-// TODO NOW woule this switch be better decided by a state that defines login
-// type? Is the current use of state optimal?
+// TODO NOW define constants
 func composeHeader(c Config) ([]Header, error) {
 
 	var h []Header
 
-	switch rState {
-	case rMANY:
+	switch {
+	case f&cMANY > 0:
 		h = basicRequest(c, h)
-	case rLONE:
+	case f&cLONE > 0:
 		h = basicRequest(c, h)
-	case rNONE:
+	case f&cNONE > 0:
 		h = authRequest(c, h)
-	case rRAW:
+	case f&cRAW > 0:
 		h = checkTokenRequest(c, h)
 	default:
 		h = basicRequest(c, h)

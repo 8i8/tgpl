@@ -36,25 +36,25 @@ URL MODE
 	│-u us│-r   │-n   │-t   │-x ra│-d   │       │ type  │       │
 	├─────┼─────┼─────┼─────┼─────┼─────┼───────┼───────┼───────┤
 	├─────┼─────┼─────┼─────┼─────┼─────┼───────┼───────┼───────┤
-	│ yes │     │     │ N/A │ N/A │ all │ mLIST │ uSear │ rMANY │
+	│ yes │     │     │ N/A │ N/A │ all │ cLIST │ uSear │ cMANY │
 	├─────┼─────┼─────┼─────┼─────┼─────┼───────┼───────┼───────┤
-	│     │ yes │     │ N/A │ N/A │ all │ mLIST │ uSear │ rMANY │
+	│     │ yes │     │ N/A │ N/A │ all │ cLIST │ uSear │ cMANY │
 	├─────┼─────┼─────┼─────┼─────┼─────┼───────┼───────┼───────┤
-	│ yes │ yes │     │ N/A │ N/A │ all │ mLIST │ uSear │ rMANY │
+	│ yes │ yes │     │ N/A │ N/A │ all │ cLIST │ uSear │ cMANY │
 	├─────┼─────┼─────┼─────┼─────┼─────┼───────┼───────┼───────┤
-	│ yes │     │ yes │ N/A │ N/A │ all │ mLIST │ uSear │ rMANY │
+	│ yes │     │ yes │ N/A │ N/A │ all │ cLIST │ uSear │ cMANY │
 	├─────┼─────┼─────┼─────┼─────┼─────┼───────┼───────┼───────┤
-	│     │ yes │ yes │ N/A │ N/A │ all │ mLIST │ uSear │ rMANY │
+	│     │ yes │ yes │ N/A │ N/A │ all │ cLIST │ uSear │ cMANY │
 	├─────┼─────┼─────┼─────┼─────┼─────┼───────┼───────┼───────┤
-	│ yes │ yes │ yes │ N/A │ N/A │ all │ mREAD │ uAdRe │ rLONE │
+	│ yes │ yes │ yes │ N/A │ N/A │ all │ cREAD │ uAdRe │ cLONE │
 	├─────┼─────┼─────┼─────┼─────┼─────┼───────┼───────┼───────┤
-	│ yes │ yes │ yes │ yes │ -x  │ all │ mRAISE│ uAdRw │ rNONE │
+	│ yes │ yes │ yes │ yes │ -x  │ all │ cRAISE│ uAdRw │ cNONE │
 	├─────┼─────┼─────┼─────┼─────┼─────┼───────┼───────┼───────┤
-	│ yes │ yes │ yes │ yes │ -e  │ all │ mEDIT │ uAdRe │ rLONE │
-	│     │     │     │     │     │     │ mEDIT │ uAdWr │ rNONE │
+	│ yes │ yes │ yes │ yes │ -e  │ all │ cEDIT │ uAdRe │ cLONE │
+	│     │     │     │     │     │     │ cEDIT │ uAdWr │ cNONE │
 	├─────┼─────┼─────┼─────┼─────┼─────┼───────┼───────┼───────┤
-	│ yes │ yes │ yes │ yes │ -l  │ all │ mLOCK │ uAdRe │ rLONE │
-	│     │     │     │     │     │     │ mLOCK │ uAdWr │ rNONE │
+	│ yes │ yes │ yes │ yes │ -l  │ all │ cLOCK │ uAdRe │ cLONE │
+	│     │     │     │     │     │     │ cLOCK │ uAdWr │ cNONE │
 	└─────┴─────┴─────┴─────┴─────┴─────┴───────┴───────┴───────┘
 
 	-o org   -r repo  -n number

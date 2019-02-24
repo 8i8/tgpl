@@ -42,9 +42,9 @@ func RaiseIssue(c Config) error {
 // TODO NOW state is being altered here, should it be?
 func EditIssue(c Config) error {
 
-	// Set state to use GET
-	rState = rLONE
-	c.Mode = mREAD
+	// Set default state to use GET
+	f |= cLONE
+	f |= cREAD
 
 	// Run with defined configuration.
 	reply, err := makeRequest(c, nil)
@@ -59,8 +59,8 @@ func EditIssue(c Config) error {
 	}
 
 	// Set state to use authentication.
-	rState = rNONE
-	c.Mode = mEDIT
+	f |= cNONE
+	f |= cEDIT
 
 	// Post the newly edited issue.
 	_, err = makeRequest(c, json)
@@ -84,18 +84,18 @@ func LockIssue(c Config) error {
 // Program entry point as commandline client.
 func Run(c Config) error {
 
-	switch c.Mode {
-	case mLIST:
+	switch {
+	case f&cLIST > 0:
 		return DisplayIssue(c)
-	case mREAD:
+	case f&cREAD > 0:
 		return DisplayIssue(c)
-	case mRAISE:
+	case f&cRAISE > 0:
 		return RaiseIssue(c)
-	case mEDIT:
+	case f&cEDIT > 0:
 		return EditIssue(c)
-	case mLOCK:
+	case f&cLOCK > 0:
 		return LockIssue(c)
-	case mRAW:
+	case f&cRAW > 0:
 		return DisplayIssue(c)
 	default:
 		str := "Run: c.Mode error hit end of switch statment"

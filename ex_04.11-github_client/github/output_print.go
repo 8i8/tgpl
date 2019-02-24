@@ -72,23 +72,23 @@ func printLine(item Issue) {
 // OutputResponse prints the resultset to the terminal.
 func OutputResponse(c Config, reply Reply) error {
 
-	if c.Verbose {
+	if f&cVERBOSE > 0 {
 		fmt.Println("Program output start\n~~~\n")
 	}
 
 	// Print out either a date ordered list of many issues else a detailed
 	// print of one issue.
 	var err error
-	switch reply.Type {
-	case rMANY:
+	switch {
+	case reply.Type&cMANY == 0:
 		err = listIssues(c, reply)
-	case rLONE:
+	case reply.Type&cLONE == 0:
 		printIssue(reply)
 	default:
 		err = fmt.Errorf("unknown rState")
 	}
 
-	if c.Verbose {
+	if f&cVERBOSE > 0 {
 		fmt.Println("\n~~~\nProgram output end\n")
 	}
 	return err

@@ -4,30 +4,20 @@ package github
    Configuration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
+type Flags uint
+
 // Config is a struct specific to the program that contains the principal
 // program settings.
 type Config struct {
+	Mode   Flags  // Program running mode.
 	User   string // Repository owner,
 	Token  string // Flag defined Oauth token.
 	Editor string // Flag defined external editor.
+	Reason string // Reason for lock.
 	Req           // Stores the users request data.
-	State         // The state of the program.
 }
 
-// State is an anonymous struct of only one single instance per request, it is
-// contained within the Config struct.
-type State struct {
-	Mode    Mode   // Program running mode.
-	Edit    bool   // Signal request to edit an issue.
-	Lock    bool   // Lock a repository.
-	Raise   bool   // Raise a new issue.
-	Raw     bool   // Raw request input.
-	Reason  string // Reason for lock.
-	Verbose bool   // Signals the program print out extra detail.
-	Flags   uint
-}
-
-// Req request is a struct containing the details of a particular request.
+// Req request is a struct containing all of the details of a particular request.
 type Req struct {
 	Author  string   // Author user name.
 	Org     string   // Organisation.

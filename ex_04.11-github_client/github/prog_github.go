@@ -15,7 +15,7 @@ var errlog = log.New(os.Stderr, "github: ", log.Lshortfile)
 // Reply is an evelope that encapsulates all the programs http
 // responces, the struct contained in the Msg is defined by the type.
 type Reply struct {
-	Type Resp
+	Type Flags
 	Msg  interface{}
 }
 
