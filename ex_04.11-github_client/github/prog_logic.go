@@ -9,15 +9,13 @@ import (
 // function SetState(c Config) at program start.
 type Mode int
 
-// isFullAddress checks if the requirements have been met to enter cLONE
-// mode.
-func isFullAddress(c Config) bool {
-	return (len(c.Author) > 0 || len(c.User) > 0 || len(c.Org) > 0) &&
-		len(c.Repo) > 0
+// hasFullAddress checks if the requirements are met to use a direct address.
+func hasFullAddress() bool {
+	return (f&cAUTHOR > 0 || f&cUSER > 0 || f&c.ORG > 0) && f&cREPO > 0
 }
 
 // checkModeValid verifies that there are not two contradicting flags set.
-func checkModeValid(c Config) error {
+func checkModeValid() error {
 	count := 0
 	if f&cEDIT > 0 {
 		count++
@@ -29,80 +27,43 @@ func checkModeValid(c Config) error {
 		count++
 	}
 	if count > 1 {
-		str := "Please define either -x -e or -l"
+		str := "Please define only one of either -x -e or -l"
 		return fmt.Errorf(str)
 	}
 	return nil
-}
-
-//setDefault sets the default state of the program.
-func setDefaults(c *Config) {
-	f |= (cMANY | cLIST)
-}
-
-// setRunMode sets the program run mode from the given flags.
-func setRunMode(c *Config) {
-
-	setDefaults(c)
-
-	// flag.StringVar(&conf.User, "u", "", user)
-	// flag.StringVar(&conf.Author, "a", "", author)
-	// flag.StringVar(&conf.Org, "o", "", org)
-	// flag.StringVar(&conf.Repo, "r", "", repo)
-	// flag.StringVar(&conf.Number, "n", "", number)
-	// flag.StringVar(&conf.Token, "t", "", token)
-	// flag.StringVar(&conf.Editor, "d", "", editor)
-
-	// In the case where a number is explicitly provided and the required
-	// parameters exist for a direct HTTP access then do so, else add the
-	// number to the query, listing as a search parameter and in
-	// consiquence expect multiple results.
-	if len(c.Number) > 0 && f&cEDIT > 0 && f&cLOCK > 0 {
-		if isFullAddress(*c) {
-			f |= cREAD
-		} else {
-			c.Queries = append(c.Queries, c.Number)
-			f |= cLIST
-		}
-	}
-}
-
-// setRespExp sets the program HTTP response expectation from the previously
-// defined running mode.
-func setRespExp(c *Config) {
-
-	if f&cLIST > 0 {
-		f |= cMANY
-	} else if f&cREAD > 0 {
-		f |= cLONE
-	} else if f&cRAISE > 0 {
-		f |= cNONE
-	} else if f&cEDIT > 0 {
-		f |= cLONE
-	} else if f&cLOCK > 0 {
-		f |= cNONE
-	} else if f&cRAW > 0 {
-		f |= cRAW
-	}
 }
 
 // SetState defines the state in which to run the program, set by the
 // configuration of the users flags.
 func SetState(c *Config, fl FlagsIn) error {
 
-	// Set state from input flags.
+	// Set state variable from user input, flags and settings.
 	getFlags(fl)
+	getConfig(c)
 
-	// Error check flags for state contradiction.
-	err := checkModeValid(*c)
+	// Error check flags that no conradicting states exist.
+	err := checkModeValid()
 	if err != nil {
 		return fmt.Errorf("SetState: %v", err)
 	}
 
-	// 1) set program modes.
-	setRunMode(c)
-	// 2) set expected response modes.
-	setRespExp(c)
+	// Set default state from input flags covers all base cases.
+	f |= READ_LIST
+
+	// In the case where a number is explicitly provided and the required
+	// parameters exist for a direct HTTP access then do so, else add the
+	// number to the query, listing as a search parameter and in
+	// consiquence expect multiple results.
+	if f&cNUMBER > 0 && f&cEDIT == 0 && f&cLOCK == 0 {
+		if hasFullAddress() {
+			f |= READ_RECORD
+		} else {
+			c.Queries = append(c.Queries, c.Number)
+			f |= READ_LIST
+		}
+	}
+
+	// Set programs http responce expectation.
 
 	// Output state in verbose mode.
 	// if f&cVERBOSE > 0 {

@@ -55,12 +55,12 @@ func getStatus(resp *http.Response) (Status, error) {
 	s.Code = resp.StatusCode
 	s.Message = http.StatusText(resp.StatusCode)
 
-	if (f&cLONE > 0 || f&cMANY > 0) && s.Code != http.StatusOK {
+	if f&cRESP > 0 && s.Code != http.StatusOK {
 		// If data recieved.
 		resp.Body.Close()
 		return s, fmt.Errorf("response: %v %v", s.Code, s.Message)
 		// If a record was created.
-	} else if f&cNONE > 0 && s.Code != http.StatusCreated {
+	} else if f&cCREATE > 0 && s.Code != http.StatusCreated {
 		resp.Body.Close()
 		return s, fmt.Errorf("response: %v %v", s.Code, s.Message)
 	}

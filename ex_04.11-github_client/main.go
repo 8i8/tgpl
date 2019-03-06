@@ -41,6 +41,13 @@ func init() {
 	such; It is far less of a concern to me what it says as the actual
 	amount of space that it occupies.`
 
+	// Boolean flags
+	flag.BoolVar(&flags.Edit, "e", false, edit)
+	flag.BoolVar(&flags.Lock, "k", false, lock)
+	flag.BoolVar(&flags.Raise, "x", false, raise)
+	flag.BoolVar(&flags.Raw, "w", false, lock)
+	flag.BoolVar(&flags.Verbose, "v", false, verbose)
+	// Text settings
 	flag.StringVar(&conf.User, "u", "", user)
 	flag.StringVar(&conf.Author, "a", "", author)
 	flag.StringVar(&conf.Org, "o", "", org)
@@ -48,11 +55,6 @@ func init() {
 	flag.StringVar(&conf.Number, "n", "", number)
 	flag.StringVar(&conf.Token, "t", "", token)
 	flag.StringVar(&conf.Editor, "d", "", editor)
-	flag.BoolVar(&flags.Lock, "k", false, lock)
-	flag.BoolVar(&flags.Edit, "e", false, edit)
-	flag.BoolVar(&flags.Raise, "x", false, raise)
-	flag.BoolVar(&flags.Raw, "w", false, lock)
-	flag.BoolVar(&flags.Verbose, "v", false, verbose)
 }
 
 func main() {

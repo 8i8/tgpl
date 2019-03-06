@@ -70,7 +70,7 @@ func setURL(c Config) (Address, error) {
 	switch c.Mode {
 
 	// Prepare URL for API search functionality
-	case cLIST:
+	case f&READ_LIST > 0:
 		addr.HTTP = "GET"
 		addr.URL = addr.URL + "search/issues"
 		str := "url requirements were not met"
@@ -81,7 +81,7 @@ func setURL(c Config) (Address, error) {
 
 	// Prepare URL for API reading repo issues directly by full address and
 	// issue number.
-	case cREAD:
+	case f&READ_RECORD > 0:
 		addr.HTTP = "GET"
 		str := "please specify owner, repository and issue number"
 		addr.URL, err = setURLAddress(c, addr.URL, str)

@@ -36,26 +36,32 @@ URL MODE
 	│-u us│-r   │-n   │-t   │-x ra│-d   │       │ type  │       │
 	├─────┼─────┼─────┼─────┼─────┼─────┼───────┼───────┼───────┤
 	├─────┼─────┼─────┼─────┼─────┼─────┼───────┼───────┼───────┤
-	│ yes │     │     │ N/A │ N/A │ all │ cLIST │ uSear │ cMANY │
+	│ yes │     │     │ N/A │ N/A │ all │ cLIST │ uSear │ cMANY │ A
 	├─────┼─────┼─────┼─────┼─────┼─────┼───────┼───────┼───────┤
-	│     │ yes │     │ N/A │ N/A │ all │ cLIST │ uSear │ cMANY │
+	│     │ yes │     │ N/A │ N/A │ all │ cLIST │ uSear │ cMANY │ A
 	├─────┼─────┼─────┼─────┼─────┼─────┼───────┼───────┼───────┤
-	│ yes │ yes │     │ N/A │ N/A │ all │ cLIST │ uSear │ cMANY │
+	│ yes │ yes │     │ N/A │ N/A │ all │ cLIST │ uSear │ cMANY │ A
 	├─────┼─────┼─────┼─────┼─────┼─────┼───────┼───────┼───────┤
-	│ yes │     │ yes │ N/A │ N/A │ all │ cLIST │ uSear │ cMANY │
+	│ yes │     │ yes │ N/A │ N/A │ all │ cLIST │ uSear │ cMANY │ A
 	├─────┼─────┼─────┼─────┼─────┼─────┼───────┼───────┼───────┤
-	│     │ yes │ yes │ N/A │ N/A │ all │ cLIST │ uSear │ cMANY │
+	│     │ yes │ yes │ N/A │ N/A │ all │ cLIST │ uSear │ cMANY │ A
 	├─────┼─────┼─────┼─────┼─────┼─────┼───────┼───────┼───────┤
-	│ yes │ yes │ yes │ N/A │ N/A │ all │ cREAD │ uAdRe │ cLONE │
+	│ yes │ yes │ yes │ N/A │ N/A │ all │ cREAD │ uAdRe │ cLONE │ B
 	├─────┼─────┼─────┼─────┼─────┼─────┼───────┼───────┼───────┤
-	│ yes │ yes │ yes │ yes │ -x  │ all │ cRAISE│ uAdRw │ cNONE │
+	│ yes │ yes │ yes │ yes │ -x  │ all │ cRAISE│ uAdWr │ cNONE │ C
 	├─────┼─────┼─────┼─────┼─────┼─────┼───────┼───────┼───────┤
-	│ yes │ yes │ yes │ yes │ -e  │ all │ cEDIT │ uAdRe │ cLONE │
-	│     │     │     │     │     │     │ cEDIT │ uAdWr │ cNONE │
+	│ yes │ yes │ yes │ yes │ -e  │ all │ cREAD │ uAdRe │ cLONE │ B
+	│     │     │     │     │     │     │ cEDIT │ uAdWr │ cNONE │ D
 	├─────┼─────┼─────┼─────┼─────┼─────┼───────┼───────┼───────┤
-	│ yes │ yes │ yes │ yes │ -l  │ all │ cLOCK │ uAdRe │ cLONE │
-	│     │     │     │     │     │     │ cLOCK │ uAdWr │ cNONE │
+	│ yes │ yes │ yes │ yes │ -l  │ all │ cREAD │ uAdRe │ cLONE │ B
+	│     │     │     │     │     │     │ cLOCK │ uAdWr │ cNONE │ E
 	└─────┴─────┴─────┴─────┴─────┴─────┴───────┴───────┴───────┘
+
+	A read list
+	B read record
+	C raise new
+	D edit record
+	E Lock record
 
 	-o org   -r repo  -n number
 	-a auth
