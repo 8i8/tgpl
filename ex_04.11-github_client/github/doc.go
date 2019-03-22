@@ -63,12 +63,24 @@ URL MODE
 	D edit record
 	E Lock record
 
+	[mode]
+	edit
+	raise
+	search
+	read
+
+	[flag|data]
 	-o org   -r repo  -n number
 	-a auth
 	-u user
 
-	-l lock
-	-m lock reason
+	[mode/one of the following reasons]
+	lock
+		* off-topic
+		* too heated
+		* resolved
+		* spam
+
 	-e edit
 	-x raise
 	-d editor
@@ -106,31 +118,3 @@ HTTP REQUESTS
 
 */
 package github
-
-// GET https://api.github.com/repos/golang/go/issues?q=json+decoder
-
-// var query1 []string
-// var query2 []string
-
-// func init() {
-// 	query1 = append(query1, "is:open")
-// 	query2 = append(query2, "repo:golang/go")
-// 	query2 = append(query2, "is:open")
-// }
-
-//URL := "https://api.github.com/users/octocat/orgs"
-//URL := "https://api.github.com/orgs/octokit/repos"
-//URL := "https://api.github.com/search/issues?q=repo:8i8/test"
-//URL := "https://api.github.com/repos/8i8/test/issues"
-//URL := "https://api.github.com/repos/8i8/test/issues"
-
-//URL := "https://api.github.com/users/octocat/orgs"
-//URL := "https://api.github.com/orgs/octokit/repos"
-//URL := "https://api.github.com/search/issues?q=repo:8i8/test"
-//URL := "https://api.github.com/repos/8i8/test/issues"
-//URL := "https://api.github.com/repos/8i8/test/issues"
-
-// var query []string
-// query = append(query, "repo:8i8/test")
-// query = append(query, "is:open")
-// q := url.QueryEscape(strings.Join(terms, " "))

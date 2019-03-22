@@ -13,7 +13,7 @@ type Config struct {
 	User   string // Repository owner,
 	Token  string // Flag defined Oauth token.
 	Editor string // Flag defined external editor.
-	Reason string // Reason for lock.
+	Lock   string // Reason for lock.
 	Req           // Stores the users request data.
 }
 
@@ -26,7 +26,7 @@ type Req struct {
 	Queries []string // Queries that have been retrieved from the Args[] array.
 }
 
-// TODO NOW clean up the configs role
+// TODO clean up the configs role
 // // config holds the programs global configuration.
 // var config = Config{}
 

@@ -1,6 +1,24 @@
 package github
 
 /*
+	mrig: FWIW, you can simplify some of that not via boolean algebra but
+	by converting to a `y*12 + m` format and doing the logic there. For
+	example, lessThanMonth simplifies to `diff := (now.y*12 + now.m) -
+	(rec.y*12 + rec.m); return diff == 0 || diff == 1 &&  │ amosbird now.d
+	< rec.d`.  │ Amperture
+
+	mrig: It might also simplify things to put most of the logic into a
+	single function that returns a three-valued thing indicating "less than
+	month", "month to a year", "more than a year" and have those bool ones
+	just as wrappers, because you can write that as │ Amun_Ra `if less than
+	month'  { return lessThanMonth }  if 'less than year' { return
+	monthToAYear }  return yearOnward` avoiding a lot of similar checking.
+	│ amygara (Or you could implement monthToAYear as `!lessThanMonth &&
+	...` and yearOnward as `!lessThanMonth && !monthToAYear`, but that's
+	maybe less clear.) │ andjjj23
+*/
+
+/*
    1) The same calendar year and month.
    2) The same calendar year with one month difference; lesser day than the day
   	issued.

@@ -31,7 +31,7 @@ func respDecode(c Config, resp *http.Response) (Reply, error) {
 
 	// Set the final decoding type dependant on the program state.
 	switch {
-	case f&cMANY == 0:
+	case f&cLIST > 0:
 		// Decode multiple issues, place into the envelope structs interface.
 		var issue IssuesSearchResult
 		if err := json.Unmarshal(msg, &issue); err != nil {
@@ -39,7 +39,7 @@ func respDecode(c Config, resp *http.Response) (Reply, error) {
 		}
 		reply.Msg = issue
 		log = "multiple"
-	case f&cLONE == 0:
+	case f&cLIST == 0:
 		// Decode a single issue, place	into the envelope struct interface.
 		var issue Issue
 		if err := json.Unmarshal(msg, &issue); err != nil {
@@ -47,24 +47,6 @@ func respDecode(c Config, resp *http.Response) (Reply, error) {
 		}
 		reply.Msg = issue
 		log = "single"
-	case f&cRAW == 0:
-		// Decode multiple issues, place into the envelope structs interface.
-		var issues IssuesSearchResult
-		err := json.Unmarshal(msg, &issues)
-		if err != nil {
-			// Decode a single issue, place	into the envelope struct interface.
-			var issue Issue
-			if err := json.Unmarshal(msg, &issue); err != nil {
-				return reply, fmt.Errorf("json decoder Raw failed: %v", err)
-			}
-			reply.Msg = issue
-			reply.Type = cLONE
-			log = "raw single"
-			break
-		}
-		reply.Msg = issues
-		reply.Type = cMANY
-		log = "raw multiple"
 	default:
 		log = "empty"
 	}

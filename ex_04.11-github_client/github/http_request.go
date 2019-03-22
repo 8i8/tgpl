@@ -55,12 +55,16 @@ func getStatus(resp *http.Response) (Status, error) {
 	s.Code = resp.StatusCode
 	s.Message = http.StatusText(resp.StatusCode)
 
-	if f&cRESP > 0 && s.Code != http.StatusOK {
+	if (f&cLIST > 0 || f&cREAD > 0 || f&cEDIT > 0) &&
+		s.Code != http.StatusOK {
 		// If data recieved.
 		resp.Body.Close()
 		return s, fmt.Errorf("response: %v %v", s.Code, s.Message)
 		// If a record was created.
-	} else if f&cCREATE > 0 && s.Code != http.StatusCreated {
+	} else if f&cRAISE > 0 && s.Code != http.StatusCreated {
+		resp.Body.Close()
+		return s, fmt.Errorf("response: %v %v", s.Code, s.Message)
+	} else if (f&cLOCK > 0 || f&cUNLOCK > 0) && s.Code != http.StatusNoContent {
 		resp.Body.Close()
 		return s, fmt.Errorf("response: %v %v", s.Code, s.Message)
 	}
@@ -72,23 +76,23 @@ func getStatus(resp *http.Response) (Status, error) {
 // TODO NOW is the header being set in the best place, should this be
 // seperated? When editing an issue the password is not required for the first
 // contact but should be requested and used so avoid wasting users time.
-func makeRequest(conf Config, json io.Reader) (Reply, error) {
+func makeRequest(c Config, json io.Reader) (Reply, error) {
 
 	var reply Reply
 	// Set the correct url for the request.
-	addr, err := setURL(conf)
+	c, addr, err := setURL(c)
 	if err != nil {
 		return reply, fmt.Errorf("setURL: %v", err)
 	}
 
 	// Compose an array of header key value pairs.
-	addr.header, err = composeHeader(conf)
+	addr.header, err = composeHeader(c)
 	if err != nil {
 		return reply, fmt.Errorf("composeHeader: %v", err)
 	}
 
 	// Make and send the request.
-	resp, err := sendRequest(conf, addr, json)
+	resp, err := sendRequest(c, addr, json)
 	if err != nil {
 		return reply, fmt.Errorf("sendRequest: %v", err)
 	}
@@ -100,7 +104,7 @@ func makeRequest(conf Config, json io.Reader) (Reply, error) {
 	}
 
 	// Decode the responce.
-	reply, err = respDecode(conf, resp)
+	reply, err = respDecode(c, resp)
 	if err != nil {
 		return reply, fmt.Errorf("respDecode: %v", err)
 	}

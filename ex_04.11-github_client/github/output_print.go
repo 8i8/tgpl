@@ -80,12 +80,12 @@ func OutputResponse(c Config, reply Reply) error {
 	// print of one issue.
 	var err error
 	switch {
-	case reply.Type&cMANY == 0:
+	case f&cLIST > 0:
 		err = listIssues(c, reply)
-	case reply.Type&cLONE == 0:
+	case f&cLIST == 0:
 		printIssue(reply)
 	default:
-		err = fmt.Errorf("unknown rState")
+		err = fmt.Errorf("OutputResponse: end of switch stament")
 	}
 
 	if f&cVERBOSE > 0 {

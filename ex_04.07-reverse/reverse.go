@@ -26,7 +26,7 @@ func ReverseUtf8(b []byte) []byte {
 			utf8.EncodeRune(b[:rs], rr)
 			utf8.EncodeRune(b[cl-ls:], lr)
 		} else {
-			// Shunt the array when runes are differing sizes.
+			// Shunt the array when runes are of differing sizes.
 			b = append(b[:rs], b[ls:cl+ls-rs]...)
 			utf8.EncodeRune(b[:rs], rr)
 			utf8.EncodeRune(b[cl-ls:cl], lr)

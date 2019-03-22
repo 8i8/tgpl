@@ -1,75 +1,206 @@
 package github
 
-import (
-	"fmt"
+import "fmt"
+
+// The Programs main running state.
+var f Flags
+
+const (
+	// Program mode.
+	cREAD    Flags = 1 << iota // Request read mode.
+	cLIST                      // Request list mode.
+	cEDIT                      // Request to edit an issue.
+	cRAISE                     // Raise a new issue.
+	cLOCK                      // Lock a repository.
+	cUNLOCK                    // Unlock an existing locked issue.
+	cSET                       // Set default global editor and user name.
+	cVERBOSE                   // Signals the program print out extra detail.
+
+	// Data.
+	cUSER   // User name given.
+	cAUTHOR // Authour name given.
+	cORG    // Organisation name given.
+	cREPO   // Repoitory name given.
+	cNUMBER // Issue number given.
+	cTOKEN  // Oauth2 token given.
+	cEDITOR // Editor defined.
+	cNAME   // Used as an indicator to signal that either a user name an
+	// author or and organisation have been provided.
 )
 
-// The run state of the program, interpreted by command line flags. This
-// variable is set as in integer within the configuration struct, by the
-// function SetState(c Config) at program start.
-type Mode int
+var mState = make(map[Flags]string)
 
-// hasFullAddress checks if the requirements are met to use a direct address.
-func hasFullAddress() bool {
-	return (f&cAUTHOR > 0 || f&cUSER > 0 || f&c.ORG > 0) && f&cREPO > 0
+func init() {
+
+	// mode
+	mState[cREAD] = "cREAD"
+	mState[cLIST] = "cLIST"
+	mState[cEDIT] = "cEDIT"
+	mState[cRAISE] = "cRAISE"
+	mState[cLOCK] = "cLOCK"
+	mState[cUNLOCK] = "cUNLOCK"
+	mState[cSET] = "cSET"
+	mState[cVERBOSE] = "cVERBOSE"
+
+	// response
+	mState[cUSER] = "cUSER"
+	mState[cAUTHOR] = "cAUTHOR"
+	mState[cORG] = "cORG"
+	mState[cREPO] = "cREPO"
+	mState[cNUMBER] = "cNUMBER"
+	mState[cTOKEN] = "cTOKEN"
+	mState[cEDITOR] = "cEDITOR"
 }
 
-// checkModeValid verifies that there are not two contradicting flags set.
-func checkModeValid() error {
-	count := 0
-	if f&cEDIT > 0 {
-		count++
+// FlagsIn is the strut to pass user command line settings into the program.
+type FlagsIn struct {
+	Read    bool
+	List    bool
+	Edit    bool
+	Raise   bool
+	Unlock  bool
+	Set     bool
+	Verbose bool
+}
+
+// assesInput sets flags for all input values provided, used in preferance over
+// the len() function to switch the programs control flow.
+func assesInput(c Config) {
+
+	// Set only one name as the address name in the case that more than one
+	// have been provided.
+	if len(c.Org) > 0 {
+		f |= cORG
+		f |= cNAME
+	} else if len(c.Author) > 0 {
+		f |= cAUTHOR
+		f |= cNAME
+	} else if len(c.User) > 0 {
+		f |= cUSER
+		f |= cNAME
 	}
-	if f&cLOCK > 0 {
-		count++
+
+	if len(c.Lock) > 0 {
+		f |= cLOCK
 	}
-	if f&cRAISE > 0 {
-		count++
+	if len(c.Repo) > 0 {
+		f |= cREPO
 	}
-	if count > 1 {
-		str := "Please define only one of either -x -e or -l"
-		return fmt.Errorf(str)
+	if len(c.Number) > 0 {
+		f |= cNUMBER
 	}
-	return nil
+	if len(c.Token) > 0 {
+		f |= cTOKEN
+	}
+	if len(c.Editor) > 0 {
+		f |= cEDITOR
+	}
+}
+
+// ckRead verify that the requirments for Read mode have been met.
+func ckRead() error {
+	if f&(cNAME|cREPO|cNUMBER) > 0 {
+		return nil
+	}
+	err := fmt.Errorf("name repo and issue number are required")
+	return err
+}
+
+// ckList verifys that the requirments for the List mode have been met.
+func ckList() error {
+	if f&cNAME > 0 || f&cREPO > 0 {
+		return nil
+	}
+	err := fmt.Errorf("at the very least a user name or the repo are required")
+	return err
+}
+
+// ckAll verifys that the requirments have been met for a direct address
+// autorised acces to an issue, needed by the raise edit lock and unlock
+// functions.
+func ckAll() error {
+	if f&(cNAME|cREPO|cNUMBER|cTOKEN) > 0 {
+		return nil
+	}
+	err := fmt.Errorf("name, repo, number and an Oauth2 token all required")
+	return err
+}
+
+// ckSet Verifies that the requrments have been met to set a default
+// configuration.
+func ckSet() error {
+	if f&cNAME > 0 || f&cEDITOR > 0 {
+		return nil
+	}
+	err := fmt.Errorf("either a name or an editor command are required")
+	return err
+}
+
+// setMode translates the user input flags into the programs main state
+// variable.
+func setMode(in FlagsIn) error {
+
+	// Assertain program mode, assure the use of one only.
+	if in.Read {
+		f |= cREAD
+		return ckRead()
+	} else if in.List {
+		f |= cLIST
+		return ckList()
+	} else if in.Edit {
+		f |= cEDIT
+		return ckAll()
+	} else if in.Raise {
+		f |= cRAISE
+		return ckAll()
+	} else if f&cLOCK > 0 {
+		return ckAll()
+	} else if in.Unlock {
+		f |= cUNLOCK
+		return ckAll()
+	} else if in.Set {
+		f |= cSET
+		return ckSet()
+	}
+
+	// None set, providea a default running mode.
+	f |= cLIST
+	return ckList()
 }
 
 // SetState defines the state in which to run the program, set by the
 // configuration of the users flags.
-func SetState(c *Config, fl FlagsIn) error {
+func SetState(c Config, fl FlagsIn) error {
+
+	// Indipendant flags.
+	if fl.Verbose {
+		f |= cVERBOSE
+	}
+
+	// Set booleans to mirror any flag values that may have been input.
+	assesInput(c)
 
 	// Set state variable from user input, flags and settings.
-	getFlags(fl)
-	getConfig(c)
-
-	// Error check flags that no conradicting states exist.
-	err := checkModeValid()
+	err := setMode(fl)
 	if err != nil {
-		return fmt.Errorf("SetState: %v", err)
+		return fmt.Errorf("error: %v", err)
 	}
 
-	// Set default state from input flags covers all base cases.
-	f |= READ_LIST
-
-	// In the case where a number is explicitly provided and the required
-	// parameters exist for a direct HTTP access then do so, else add the
-	// number to the query, listing as a search parameter and in
-	// consiquence expect multiple results.
-	if f&cNUMBER > 0 && f&cEDIT == 0 && f&cLOCK == 0 {
-		if hasFullAddress() {
-			f |= READ_RECORD
-		} else {
-			c.Queries = append(c.Queries, c.Number)
-			f |= READ_LIST
-		}
+	if f&cVERBOSE > 0 {
+		reportState()
 	}
-
-	// Set programs http responce expectation.
-
-	// Output state in verbose mode.
-	// if f&cVERBOSE > 0 {
-	// 	fmt.Printf("SetState run mode: %v\n", mStateName[b^a])
-	// 	fmt.Printf("SetState response mode: %v\n", mStateName[f^b])
-	// }
 
 	return nil
+}
+
+// reportState outputs the name of all booleans that are set.
+func reportState() {
+
+	fmt.Printf("booleans: ")
+	for i, s := range mState {
+		if f&i > 0 {
+			fmt.Printf("%v ", s)
+		}
+	}
+	fmt.Printf("\n")
 }

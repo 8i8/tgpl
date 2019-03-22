@@ -39,11 +39,11 @@ func RaiseIssue(c Config) error {
 }
 
 // EditIssue edits an existing issue.
-// TODO NOW state is being altered here, should it be?
+// TODO state is being altered here, should it be?
 func EditIssue(c Config) error {
 
 	// Set default state to use GET
-	f |= cLONE
+	f &= cEDIT
 	f |= cREAD
 
 	// Run with defined configuration.
@@ -59,8 +59,8 @@ func EditIssue(c Config) error {
 	}
 
 	// Set state to use authentication.
-	f |= cNONE
 	f |= cEDIT
+	f &= cREAD
 
 	// Post the newly edited issue.
 	_, err = makeRequest(c, json)
@@ -85,18 +85,18 @@ func LockIssue(c Config) error {
 func Run(c Config) error {
 
 	switch {
-	case f&cLIST > 0:
-		return DisplayIssue(c)
 	case f&cREAD > 0:
 		return DisplayIssue(c)
-	case f&cRAISE > 0:
-		return RaiseIssue(c)
+	case f&cLIST > 0:
+		return DisplayIssue(c)
 	case f&cEDIT > 0:
 		return EditIssue(c)
+	case f&cRAISE > 0:
+		return RaiseIssue(c)
 	case f&cLOCK > 0:
 		return LockIssue(c)
-	case f&cRAW > 0:
-		return DisplayIssue(c)
+	case f&cUNLOCK > 0:
+		return LockIssue(c)
 	default:
 		str := "Run: c.Mode error hit end of switch statment"
 		return fmt.Errorf(str)
