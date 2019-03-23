@@ -33,7 +33,7 @@ func setURLSearchQuery(c Config, e string) (Config, error) {
 		c.Queries = append(
 			c.Queries, "repo:"+c.Repo)
 	} else {
-		err = fmt.Errorf("%v: setURLSearchQuery: %v", mState[c.Mode], e)
+		err = fmt.Errorf("setURLSearchQuery: %v", e)
 	}
 	return c, err
 }
@@ -50,7 +50,7 @@ func setURLAddress(c Config, URL, e string) (Config, string, error) {
 	} else if len(c.Org) > 0 && len(c.Repo) > 0 {
 		URL = URL + "orgs/" + c.Org + "/" + c.Repo + "/issues"
 	} else {
-		err = fmt.Errorf("%v: setURLAddress: %v", mState[c.Mode], e)
+		err = fmt.Errorf("setURLAddress: %v", e)
 	}
 
 	return c, URL, err
@@ -76,7 +76,7 @@ func setURL(c Config) (Config, Address, error) {
 		str := "url requirements were not met"
 		c, err = setURLSearchQuery(c, str)
 		if err != nil {
-			return c, addr, err
+			return c, addr, fmt.Errorf("LIST: %v", err)
 		}
 
 	// Prepare URL for API reading repo issues directly by full address and
@@ -86,7 +86,7 @@ func setURL(c Config) (Config, Address, error) {
 		str := "please specify owner, repository and issue number"
 		c, addr.URL, err = setURLAddress(c, addr.URL, str)
 		if err != nil {
-			return c, addr, err
+			return c, addr, fmt.Errorf("READ: %v", err)
 		}
 		addr.URL += "/" + c.Number
 
@@ -96,7 +96,7 @@ func setURL(c Config) (Config, Address, error) {
 		str := "please specify owner, repository and issue number"
 		c, addr.URL, err = setURLAddress(c, addr.URL, str)
 		if err != nil {
-			return c, addr, err
+			return c, addr, fmt.Errorf("EDIT: %v", err)
 		}
 		addr.URL += "/" + c.Number
 
@@ -107,7 +107,7 @@ func setURL(c Config) (Config, Address, error) {
 		str := "please specify owner, repository and issue number"
 		c, addr.URL, err = setURLAddress(c, addr.URL, str)
 		if err != nil {
-			return c, addr, err
+			return c, addr, fmt.Errorf("LOCK: %v", err)
 		}
 		addr.URL += "/" + c.Number + "/lock"
 
@@ -117,7 +117,7 @@ func setURL(c Config) (Config, Address, error) {
 		str := "please specify owner, repository and issue number"
 		c, addr.URL, err = setURLAddress(c, addr.URL, str)
 		if err != nil {
-			return c, addr, err
+			return c, addr, fmt.Errorf("UNLOCK: %v", err)
 		}
 		addr.URL += "/" + c.Number + "/lock"
 
@@ -128,7 +128,7 @@ func setURL(c Config) (Config, Address, error) {
 		str := "please specify owner and repository details"
 		c, addr.URL, err = setURLAddress(c, addr.URL, str)
 		if err != nil {
-			return c, addr, err
+			return c, addr, fmt.Errorf("RAISE: %v", err)
 		}
 	}
 

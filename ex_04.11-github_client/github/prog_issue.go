@@ -91,6 +91,10 @@ func editIssue(conf Config, reply Reply) (*bytes.Buffer, error) {
 	}
 
 	// Message body, open an editor if specified.
+	if f&cEDITOR == 0 {
+		return nil, nil
+	}
+
 	var body string
 	body, err = openInEditor(conf, currentBody)
 	if err != nil {

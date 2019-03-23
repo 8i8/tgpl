@@ -39,12 +39,12 @@ func RaiseIssue(c Config) error {
 }
 
 // EditIssue edits an existing issue.
-// TODO state is being altered here, should it be?
 func EditIssue(c Config) error {
 
 	// Set default state to use GET
-	f &= cEDIT
+	f &^= cEDIT
 	f |= cREAD
+	reportState("EditIssue READ")
 
 	// Run with defined configuration.
 	reply, err := makeRequest(c, nil)
@@ -52,7 +52,7 @@ func EditIssue(c Config) error {
 		return fmt.Errorf("makeRequest: %v", err)
 	}
 
-	// If edits are to be been made, edit and then post them to the server.
+	// If edits are to be been made, make the edit.
 	json, err := editIssue(c, reply)
 	if err != nil {
 		return fmt.Errorf("editIssue: %v", err)
@@ -60,7 +60,8 @@ func EditIssue(c Config) error {
 
 	// Set state to use authentication.
 	f |= cEDIT
-	f &= cREAD
+	f &^= cREAD
+	reportState("EditIssue EDIT")
 
 	// Post the newly edited issue.
 	_, err = makeRequest(c, json)

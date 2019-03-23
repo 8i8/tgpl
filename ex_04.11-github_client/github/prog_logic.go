@@ -1,6 +1,10 @@
 package github
 
-import "fmt"
+import (
+	"bufio"
+	"fmt"
+	"os"
+)
 
 // The Programs main running state.
 var f Flags
@@ -99,7 +103,11 @@ func assesInput(c Config) {
 
 // ckRead verify that the requirments for Read mode have been met.
 func ckRead() error {
-	if f&(cNAME|cREPO|cNUMBER) > 0 {
+	if f&cVERBOSE > 0 {
+		fmt.Printf("ckRead: testing for cNAME|cREPO|cNUMBER\n")
+		reportState("ckRead")
+	}
+	if f&cNAME > 0 && f&cREPO > 0 && f&cNUMBER > 0 {
 		return nil
 	}
 	err := fmt.Errorf("name repo and issue number are required")
@@ -108,7 +116,11 @@ func ckRead() error {
 
 // ckList verifys that the requirments for the List mode have been met.
 func ckList() error {
-	if f&cNAME > 0 || f&cREPO > 0 {
+	if f&cVERBOSE > 0 {
+		fmt.Printf("ckList: testing for cNAME cREPO\n")
+		reportState("ckList")
+	}
+	if f&cNAME > 0 && f&cREPO > 0 {
 		return nil
 	}
 	err := fmt.Errorf("at the very least a user name or the repo are required")
@@ -119,7 +131,11 @@ func ckList() error {
 // autorised acces to an issue, needed by the raise edit lock and unlock
 // functions.
 func ckAll() error {
-	if f&(cNAME|cREPO|cNUMBER|cTOKEN) > 0 {
+	if f&cVERBOSE > 0 {
+		fmt.Printf("ckAll: testing for cNAME cREPO cNUMBER cTOKEN\n")
+		reportState("ckAll")
+	}
+	if f&cNAME > 0 && f&cREPO > 0 && f&cNUMBER > 0 && f&cTOKEN > 0 {
 		return nil
 	}
 	err := fmt.Errorf("name, repo, number and an Oauth2 token all required")
@@ -129,7 +145,11 @@ func ckAll() error {
 // ckSet Verifies that the requrments have been met to set a default
 // configuration.
 func ckSet() error {
-	if f&cNAME > 0 || f&cEDITOR > 0 {
+	if f&cVERBOSE > 0 {
+		fmt.Printf("ckSet: testing for cNAME cEDITOR\n")
+		reportState("ckSet")
+	}
+	if f&cNAME > 0 && f&cEDITOR > 0 {
 		return nil
 	}
 	err := fmt.Errorf("either a name or an editor command are required")
@@ -152,7 +172,7 @@ func setMode(in FlagsIn) error {
 		return ckAll()
 	} else if in.Raise {
 		f |= cRAISE
-		return ckAll()
+		return ckList()
 	} else if f&cLOCK > 0 {
 		return ckAll()
 	} else if in.Unlock {
@@ -187,20 +207,22 @@ func SetState(c Config, fl FlagsIn) error {
 	}
 
 	if f&cVERBOSE > 0 {
-		reportState()
+		reportState("SetState")
 	}
 
 	return nil
 }
 
 // reportState outputs the name of all booleans that are set.
-func reportState() {
+func reportState(context string) {
 
-	fmt.Printf("booleans: ")
+	w := bufio.NewWriter(os.Stdout)
+	fmt.Fprintf(w, "%v", context)
 	for i, s := range mState {
 		if f&i > 0 {
-			fmt.Printf("%v ", s)
+			fmt.Fprintf(w, ": %v", s)
 		}
 	}
-	fmt.Printf("\n")
+	fmt.Fprintf(w, "\n")
+	w.Flush()
 }

@@ -49,7 +49,6 @@ func authRequest(c Config, h []Header) []Header {
 
 // composeHeader uses the current configuration to set the correct header for
 // the required HTTP request.
-// TODO define constants
 func composeHeader(c Config) ([]Header, error) {
 
 	var h []Header
