@@ -30,6 +30,7 @@ const (
 	cEDITOR // Editor defined.
 	cNAME   // Used as an indicator to signal that either a user name an
 	// author or and organisation have been provided.
+	cAUTH // Used as an indicator to signal that authenication is required.
 )
 
 var mState = make(map[Flags]string)
@@ -54,6 +55,7 @@ func init() {
 	mState[cNUMBER] = "cNUMBER"
 	mState[cTOKEN] = "cTOKEN"
 	mState[cEDITOR] = "cEDITOR"
+	mState[cNAME] = "cNAME"
 }
 
 // FlagsIn is the strut to pass user command line settings into the program.
@@ -87,6 +89,9 @@ func assesInput(c Config) {
 	if len(c.Lock) > 0 {
 		f |= cLOCK
 	}
+	if len(c.Lock) > 0 {
+		f |= cUNLOCK
+	}
 	if len(c.Repo) > 0 {
 		f |= cREPO
 	}
@@ -99,6 +104,15 @@ func assesInput(c Config) {
 	if len(c.Editor) > 0 {
 		f |= cEDITOR
 	}
+}
+
+// isAuth is authentication required by the current mode, returns true or
+// false.
+func isAuth() bool {
+	if f&(cEDIT|cRAISE|cLOCK|cUNLOCK) > 0 {
+		return true
+	}
+	return false
 }
 
 // ckRead verify that the requirments for Read mode have been met.
@@ -120,7 +134,7 @@ func ckList() error {
 		fmt.Printf("ckList: testing for cNAME cREPO\n")
 		reportState("ckList")
 	}
-	if f&cNAME > 0 && f&cREPO > 0 {
+	if f&cNAME > 0 || f&cREPO > 0 {
 		return nil
 	}
 	err := fmt.Errorf("at the very least a user name or the repo are required")
@@ -135,7 +149,7 @@ func ckAll() error {
 		fmt.Printf("ckAll: testing for cNAME cREPO cNUMBER cTOKEN\n")
 		reportState("ckAll")
 	}
-	if f&cNAME > 0 && f&cREPO > 0 && f&cNUMBER > 0 && f&cTOKEN > 0 {
+	if f&cNAME > 0 && f&cREPO > 0 && f&cNUMBER > 0 {
 		return nil
 	}
 	err := fmt.Errorf("name, repo, number and an Oauth2 token all required")
@@ -204,6 +218,11 @@ func SetState(c Config, fl FlagsIn) error {
 	err := setMode(fl)
 	if err != nil {
 		return fmt.Errorf("error: %v", err)
+	}
+
+	// If the current running mode reyuires authentication, set the flag.
+	if isAuth() {
+		f |= cAUTH
 	}
 
 	if f&cVERBOSE > 0 {

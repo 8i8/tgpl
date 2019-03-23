@@ -57,7 +57,7 @@ func composeHeader(c Config) ([]Header, error) {
 	h = basicRequest(h)
 
 	// Set authorisation details.
-	if f&cTOKEN > 0 {
+	if f&cAUTH > 0 {
 		h = authRequest(c, h)
 	}
 

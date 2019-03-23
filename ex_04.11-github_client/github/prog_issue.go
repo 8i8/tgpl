@@ -159,6 +159,7 @@ func getPass(c Config) (string, error) {
 		return pass, fmt.Errorf("pass scanner: %+v", err)
 	}
 	// Encode to base64.
+	pass = c.User + ":" + pass
 	pass = base64.StdEncoding.EncodeToString([]byte(pass))
 
 	return pass, nil

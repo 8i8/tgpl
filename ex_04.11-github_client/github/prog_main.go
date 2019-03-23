@@ -41,8 +41,9 @@ func RaiseIssue(c Config) error {
 // EditIssue edits an existing issue.
 func EditIssue(c Config) error {
 
-	// Set default state to use GET
+	// Set state for read.
 	f &^= cEDIT
+	f &^= cAUTH
 	f |= cREAD
 	reportState("EditIssue READ")
 
@@ -60,6 +61,7 @@ func EditIssue(c Config) error {
 
 	// Set state to use authentication.
 	f |= cEDIT
+	f |= cAUTH
 	f &^= cREAD
 	reportState("EditIssue EDIT")
 
