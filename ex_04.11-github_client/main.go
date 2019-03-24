@@ -7,8 +7,16 @@ import (
 	"tgpl/ex_04.11-github_client/gitish"
 )
 
+func setupFlags(flag *flag.FlagSet) {
+
+	flag.Usage = func() {
+		fmt.Println(gitish.Help)
+	}
+}
+
 func main() {
 
+	setupFlags(flag.CommandLine)
 	// Command line input.
 	flag.Parse()
 	if gitish.Helpflag {
