@@ -1,4 +1,4 @@
-package github
+package gitish
 
 // accept is a standard header line.
 func accept() Header {

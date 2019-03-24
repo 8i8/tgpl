@@ -1,4 +1,4 @@
-package github
+package gitish
 
 import (
 	"bufio"
@@ -147,14 +147,14 @@ func lockIssue(c Config) ([]byte, error) {
 
 	// Marshal into json format.
 	if f&cREASON == 0 {
-		// Write specific json data to lock the issue.
-		json, err := lockReasonJSON(c.Reason)
-		if err != nil {
-			return nil, fmt.Errorf("lockIssue: %v", err)
-		}
-		return json, err
+		return nil, nil
 	}
-	return nil, nil
+	// Write specific json data to lock the issue.
+	json, err := lockReasonJSON(c.Reason)
+	if err != nil {
+		return nil, fmt.Errorf("lockIssue: %v", err)
+	}
+	return json, err
 }
 
 // getPass requests that the user enter their password and then returns it

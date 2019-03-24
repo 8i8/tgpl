@@ -1,10 +1,11 @@
-package github
+package gitish
 
 import (
 	"bytes"
 	"fmt"
 	"io"
 	"net/http"
+	"strconv"
 )
 
 // Header contains header request key pairs.
@@ -16,6 +17,11 @@ type Header struct {
 type Status struct {
 	Code    int
 	Message string
+}
+
+// String prints the details of an HTTP status struct.
+func (s Status) String() string {
+	return strconv.Itoa(s.Code) + " " + s.Message
 }
 
 // Address contains the request tupe and URL of a request.
@@ -92,14 +98,13 @@ func makeRequest(c Config, json []byte) (Reply, error) {
 		return reply, fmt.Errorf("composeHeader: %v", err)
 	}
 
-	// Write into a byte buffer.
-	var buf bytes.Buffer
-	buf.Write(json)
 	if f&cVERBOSE > 0 {
-		fmt.Printf("makeRequest: bytes.buffer %v\n", buf.String())
+		fmt.Printf("makeRequest: json %v\n", string(json))
 	}
 
-	resp, err := sendRequest(c, addr, &buf)
+	buf := bytes.NewReader(json)
+
+	resp, err := sendRequest(c, addr, buf)
 	if err != nil {
 		return reply, fmt.Errorf("sendRequest: %v", err)
 	}
@@ -108,6 +113,10 @@ func makeRequest(c Config, json []byte) (Reply, error) {
 	addr.Status, err = getStatus(resp)
 	if err != nil {
 		return reply, fmt.Errorf("getStatus: %v", err)
+	}
+
+	if f&cVERBOSE > 0 {
+		fmt.Printf("getStatus: %v\n", addr.String())
 	}
 
 	// Decode the responce if required.

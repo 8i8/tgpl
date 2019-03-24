@@ -1,4 +1,4 @@
-package github
+package gitish
 
 import (
 	"flag"
@@ -10,13 +10,13 @@ var Helpflag bool
 
 var Help = `
 NAME
-	github
+	gitish
 
 SYNOPSIS
-	github [mode] [name|repo|number] [options]
+	gitish [mode] [name|repo|number] [options]
 
 MODES
-	github -[mode]
+	gitish -[mode]
 
 	-read	Read an existing issue.
 	-list	List all issues for a specific repo or user.
@@ -26,18 +26,18 @@ MODES
 	-unlock	Unlock an issue.
 	-set	Set default user name and editor.
 
-	github -[mode] [value]
+	gitish -[mode] [value]
 
 	-lock	Lock an issue.
 
 FLAGS
-	github	-[flag]
+	gitish	-[flag]
 
 	-v	Verbose mode, gives detailed description of the programs actions.
 	-h
 	-help	Print out the programs help file.
 
-	github	-[flag] [value]
+	gitish	-[flag] [value]
 
 	-u	User name.
 	-a	Author.

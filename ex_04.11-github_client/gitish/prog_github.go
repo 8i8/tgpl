@@ -1,4 +1,4 @@
-package github
+package gitish
 
 import (
 	"log"
@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-var errlog = log.New(os.Stderr, "github: ", log.Lshortfile)
+var errlog = log.New(os.Stderr, "gitish: ", log.Lshortfile)
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    Search request.
@@ -19,13 +19,13 @@ type Reply struct {
 	Msg  interface{}
 }
 
-// IssuesSearchResult is a json object that contains an array of github issues.
+// IssuesSearchResult is a json object that contains an array of gitish issues.
 type IssuesSearchResult struct {
 	TotalCount int      `json:"total_count"`
 	Items      []*Issue // Github issues.
 }
 
-// Issue represents a json object which contains the data from a github
+// Issue represents a json object which contains the data from a gitish
 // repository issue.
 type Issue struct {
 	Number    int
@@ -40,7 +40,7 @@ type Issue struct {
 	Reason    string    `json:"active_lock_reason"`
 }
 
-// User represents a json object which contains a github user details.
+// User represents a json object which contains a gitish user details.
 type User struct {
 	Author  string
 	Login   string

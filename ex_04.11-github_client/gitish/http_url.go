@@ -1,4 +1,4 @@
-package github
+package gitish
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 
 // setURLSearchQuery structures and adds to the query array the required key
 // values paries to instigate an API search query.
-// https://api.github.com/search/issues
+// https://api.gitish.com/search/issues
 func setURLSearchQuery(c Config, e string) (Config, error) {
 
 	var err error

@@ -1,17 +1,17 @@
 /*
-Package github - Command line client for the github issue API.
+Package gitish - Command line client for the gitish issue API.
 
 SYNOPSIS
-	github [user | repo | number][Oauth2][options]
+	gitish [user | repo | number][Oauth2][options]
 
 DESCRIPTION
-	github is a github client designed for raising and tracking and
-	updating github issues on the github platform from the users command
-	line by way of the github HTTP API. Giving the user access from the
+	gitish is a gitish client designed for raising and tracking and
+	updating gitish issues on the gitish platform from the users command
+	line by way of the gitish HTTP API. Giving the user access from the
 	command line or their favorite editor application.
 
 MAIN
-	The github program has essentially five running modes, the mode is set
+	The gitish program has essentially five running modes, the mode is set
 	from the main function according to the flags set state, defined in the
 	SetState() function and three response reactions translating into three
 	more sub states the combination of which defines the running of the
@@ -64,7 +64,7 @@ URL MODE
 	E Lock record
 
 MODES
-	github -[mode]
+	gitish -[mode]
 
 	-read	Read an existing issue.
 	-list	List all issues for a specific repo or user.
@@ -73,18 +73,18 @@ MODES
 	-unlock	Unlock and issue.
 	-set	Set default user name and editor.
 
-	github -[mode] [value]
+	gitish -[mode] [value]
 
 	-lock	Lock an issue.
 
 FLAGS
-	github	-[flag]
+	gitish	-[flag]
 
 	-v	Verbose mode, gives detailed description of the programs actions.
 	-h
 	-help	Print out the programs help file.
 
-	github	-[flag] [value]
+	gitish	-[flag] [value]
 
 	-u	User name.
 	-a	Author.
@@ -129,7 +129,7 @@ HTTP REQUESTS
  	PUT    /repos/:owner/:repo/issues/:number/lock?lock_reason=[reason]
 	DELETE /repos/:owner/:repo/issues/:number/lock
 
-	https://api.github.com/search/issues
+	https://api.gitish.com/search/issues
 
 */
-package github
+package gitish

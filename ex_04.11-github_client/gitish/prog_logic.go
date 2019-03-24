@@ -1,4 +1,4 @@
-package github
+package gitish
 
 import (
 	"bufio"
@@ -58,6 +58,7 @@ func init() {
 	mState[cEDITOR] = "cEDITOR"
 	mState[cREASON] = "cREASON"
 	mState[cNAME] = "cNAME"
+	mState[cAUTH] = "cAUTH"
 }
 
 // FlagsIn is the strut to pass user command line settings into the program.
@@ -177,7 +178,7 @@ func ckAll() error {
 	if f&cVERBOSE > 0 {
 		reportState("ckAll")
 	}
-	err := fmt.Errorf("name, repo, number and an Oauth2 token all required")
+	err := fmt.Errorf("name, repo, number and authenticaton are all required")
 	return err
 }
 
@@ -240,7 +241,7 @@ func SetState(c Config, fl FlagsInStruct) error {
 	// Set booleans to mirror any input flags.
 	assesInput(c)
 
-	// Set main running state from user input, flags and settings.
+	// Set main running state from user input, flags and values.
 	err := setMode(fl)
 	if err != nil {
 		return fmt.Errorf("error: %v", err)
@@ -260,7 +261,8 @@ func SetState(c Config, fl FlagsInStruct) error {
 	return nil
 }
 
-// reportState outputs the name of all booleans that are set.
+// reportState outputs the name of all booleans set by itterating over a map of
+// all the booleans.
 func reportState(context string) {
 
 	w := bufio.NewWriter(os.Stdout)

@@ -1,4 +1,4 @@
-package github
+package gitish
 
 /*
 	mrig: FWIW, you can simplify some of that not via boolean algebra but

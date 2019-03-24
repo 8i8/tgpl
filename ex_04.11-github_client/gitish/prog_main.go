@@ -1,4 +1,4 @@
-package github
+package gitish
 
 import (
 	"fmt"
@@ -80,7 +80,7 @@ func LockUnlockIssue(c Config) error {
 	var err error
 
 	// Marshal into json format.
-	if f&cREASON == 0 {
+	if f&cREASON > 0 {
 		// Write specific json data to lock the issue.
 		json, err = lockReasonJSON(c.Reason)
 		if err != nil {
