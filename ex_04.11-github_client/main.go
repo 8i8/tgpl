@@ -7,6 +7,7 @@ import (
 	"tgpl/ex_04.11-github_client/gitish"
 )
 
+// Initiate custom flag usage call.
 func setupFlags(flag *flag.FlagSet) {
 
 	flag.Usage = func() {
@@ -16,8 +17,8 @@ func setupFlags(flag *flag.FlagSet) {
 
 func main() {
 
-	setupFlags(flag.CommandLine)
 	// Command line input.
+	setupFlags(flag.CommandLine)
 	flag.Parse()
 	if gitish.Helpflag {
 		println(gitish.Help)
