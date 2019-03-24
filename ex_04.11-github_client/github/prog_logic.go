@@ -28,6 +28,7 @@ const (
 	cNUMBER // Issue number given.
 	cTOKEN  // Oauth2 token given.
 	cEDITOR // Editor defined.
+	cREASON // Reason for locking provided.
 	cNAME   // Used as an indicator to signal that either a user name an
 	// author or and organisation have been provided.
 	cAUTH // Used as an indicator to signal that authenication is required.
@@ -55,15 +56,17 @@ func init() {
 	mState[cNUMBER] = "cNUMBER"
 	mState[cTOKEN] = "cTOKEN"
 	mState[cEDITOR] = "cEDITOR"
+	mState[cREASON] = "cREASON"
 	mState[cNAME] = "cNAME"
 }
 
 // FlagsIn is the strut to pass user command line settings into the program.
-type FlagsIn struct {
+type FlagsInStruct struct {
 	Read    bool
 	List    bool
 	Edit    bool
 	Raise   bool
+	Lock    bool
 	Unlock  bool
 	Set     bool
 	Verbose bool
@@ -86,12 +89,6 @@ func assesInput(c Config) {
 		f |= cNAME
 	}
 
-	if len(c.Lock) > 0 {
-		f |= cLOCK
-	}
-	if len(c.Lock) > 0 {
-		f |= cUNLOCK
-	}
 	if len(c.Repo) > 0 {
 		f |= cREPO
 	}
@@ -104,40 +101,66 @@ func assesInput(c Config) {
 	if len(c.Editor) > 0 {
 		f |= cEDITOR
 	}
-}
-
-// isAuth is authentication required by the current mode, returns true or
-// false.
-func isAuth() bool {
-	if f&(cEDIT|cRAISE|cLOCK|cUNLOCK) > 0 {
-		return true
+	if len(c.Reason) > 0 {
+		f |= cREASON
 	}
-	return false
 }
 
-// ckRead verify that the requirments for Read mode have been met.
+// isAuthRequired returns a boolean and checks that the requirments are met
+// for authentification where nesecary, setting the auth flag.
+func isAuthRequired() error {
+	if f&cVERBOSE > 0 {
+		fmt.Printf("isAuthRequired: testing for authenticatio requirments\n")
+	}
+	if f&(cEDIT|cRAISE|cLOCK|cUNLOCK) > 0 {
+		f |= cAUTH
+		return ckAuth()
+	}
+	return nil
+}
+
+// ckAuth verify that the requirments for autentication are met.
+func ckAuth() error {
+	if f&cVERBOSE > 0 {
+		fmt.Printf("ckAuth: testing for cUSER cTOKEN\n")
+	}
+	if f&cTOKEN > 0 || f&cUSER > 0 {
+		return nil
+	}
+	if f&cVERBOSE > 0 {
+		reportState("ckAuth")
+	}
+	err := fmt.Errorf("please provide either a user name or an OAuth2 token")
+	return err
+}
+
+// ckRead verify that the requirments for Read mode are met.
 func ckRead() error {
 	if f&cVERBOSE > 0 {
-		fmt.Printf("ckRead: testing for cNAME|cREPO|cNUMBER\n")
-		reportState("ckRead")
+		fmt.Printf("ckRead: testing for cNAME cREPO cNUMBER\n")
 	}
 	if f&cNAME > 0 && f&cREPO > 0 && f&cNUMBER > 0 {
 		return nil
+	}
+	if f&cVERBOSE > 0 {
+		reportState("ckRead")
 	}
 	err := fmt.Errorf("name repo and issue number are required")
 	return err
 }
 
-// ckList verifys that the requirments for the List mode have been met.
+// ckList verifys that the requirments for the List mode are met.
 func ckList() error {
 	if f&cVERBOSE > 0 {
 		fmt.Printf("ckList: testing for cNAME cREPO\n")
-		reportState("ckList")
 	}
 	if f&cNAME > 0 || f&cREPO > 0 {
 		return nil
 	}
-	err := fmt.Errorf("at the very least a user name or the repo are required")
+	if f&cVERBOSE > 0 {
+		reportState("ckList")
+	}
+	err := fmt.Errorf("either a user or the repo name are required")
 	return err
 }
 
@@ -146,25 +169,28 @@ func ckList() error {
 // functions.
 func ckAll() error {
 	if f&cVERBOSE > 0 {
-		fmt.Printf("ckAll: testing for cNAME cREPO cNUMBER cTOKEN\n")
-		reportState("ckAll")
+		fmt.Printf("ckAll: testing for cNAME cREPO cNUMBER\n")
 	}
 	if f&cNAME > 0 && f&cREPO > 0 && f&cNUMBER > 0 {
 		return nil
+	}
+	if f&cVERBOSE > 0 {
+		reportState("ckAll")
 	}
 	err := fmt.Errorf("name, repo, number and an Oauth2 token all required")
 	return err
 }
 
-// ckSet Verifies that the requrments have been met to set a default
-// configuration.
+// ckSet Verifies that the requrments for a default configuration are met.
 func ckSet() error {
 	if f&cVERBOSE > 0 {
 		fmt.Printf("ckSet: testing for cNAME cEDITOR\n")
-		reportState("ckSet")
 	}
 	if f&cNAME > 0 && f&cEDITOR > 0 {
 		return nil
+	}
+	if f&cVERBOSE > 0 {
+		reportState("ckSet")
 	}
 	err := fmt.Errorf("either a name or an editor command are required")
 	return err
@@ -172,7 +198,7 @@ func ckSet() error {
 
 // setMode translates the user input flags into the programs main state
 // variable.
-func setMode(in FlagsIn) error {
+func setMode(in FlagsInStruct) error {
 
 	// Assertain program mode, assure the use of one only.
 	if in.Read {
@@ -187,7 +213,8 @@ func setMode(in FlagsIn) error {
 	} else if in.Raise {
 		f |= cRAISE
 		return ckList()
-	} else if f&cLOCK > 0 {
+	} else if in.Lock {
+		f |= cLOCK
 		return ckAll()
 	} else if in.Unlock {
 		f |= cUNLOCK
@@ -204,25 +231,26 @@ func setMode(in FlagsIn) error {
 
 // SetState defines the state in which to run the program, set by the
 // configuration of the users flags.
-func SetState(c Config, fl FlagsIn) error {
+func SetState(c Config, fl FlagsInStruct) error {
 
-	// Indipendant flags.
 	if fl.Verbose {
 		f |= cVERBOSE
 	}
 
-	// Set booleans to mirror any flag values that may have been input.
+	// Set booleans to mirror any input flags.
 	assesInput(c)
 
-	// Set state variable from user input, flags and settings.
+	// Set main running state from user input, flags and settings.
 	err := setMode(fl)
 	if err != nil {
 		return fmt.Errorf("error: %v", err)
 	}
 
-	// If the current running mode reyuires authentication, set the flag.
-	if isAuth() {
-		f |= cAUTH
+	// If the current running mode requires authentication, set the flag
+	// and test.
+	err = isAuthRequired()
+	if err != nil {
+		return fmt.Errorf("error: %v", err)
 	}
 
 	if f&cVERBOSE > 0 {

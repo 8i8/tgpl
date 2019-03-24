@@ -139,9 +139,9 @@ func setURL(c Config) (Config, Address, error) {
 	}
 
 	// If lock required, add query.
-	if f&cLOCK > 0 {
-		addr.URL = addr.URL + "?lock_reason=" + c.Lock
-	}
+	// if f&cREASON > 0 {
+	// 	addr.URL = addr.URL + "?lock_reason=" + c.Reason
+	// }
 
 	// If verbose flag is set print the address used.
 	if f&cVERBOSE > 0 {

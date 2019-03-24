@@ -1,7 +1,6 @@
 package github
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -17,7 +16,7 @@ func respDecode(c Config, resp *http.Response) (Reply, error) {
 	var log string
 
 	if f&cVERBOSE > 0 {
-		fmt.Println("respDecode: attempting decode")
+		fmt.Println("respDecode: decoding http responce")
 	}
 
 	// Decode the response into a raw holding variable, here it is stored
@@ -39,7 +38,7 @@ func respDecode(c Config, resp *http.Response) (Reply, error) {
 		}
 		reply.Msg = issue
 		log = "multiple"
-	case f&cLIST == 0:
+	case f&cREAD > 0:
 		// Decode a single issue, place	into the envelope struct interface.
 		var issue Issue
 		if err := json.Unmarshal(msg, &issue); err != nil {
@@ -52,14 +51,14 @@ func respDecode(c Config, resp *http.Response) (Reply, error) {
 	}
 
 	if f&cVERBOSE > 0 {
-		fmt.Println("respDecode: attempt", log)
+		fmt.Println("respDecode: responce successfuly read", log)
 	}
 
 	return reply, err
 }
 
 // issueToJSON marshals data into json format and returns it in a bytes buffer.
-func issueToJSON(title, body string) (*bytes.Buffer, error) {
+func issueToJSON(title, body string) ([]byte, error) {
 
 	// Write data into a struct.
 	var issue Issue
@@ -72,9 +71,37 @@ func issueToJSON(title, body string) (*bytes.Buffer, error) {
 		return nil, fmt.Errorf("Marshal: %v", err)
 	}
 
-	// Write into a byte buffer.
-	var b bytes.Buffer
-	b.Write(json)
+	// // Write into a byte buffer.
+	// var b bytes.Buffer
+	// b.Write(json)
 
-	return &b, err
+	return json, err
+}
+
+// TODO NOW lockReasonJSON prepares the json to lock an issue and also add the given
+// reason for locking.
+func lockReasonJSON(reason string) ([]byte, error) {
+
+	// Reduced struct for locking process.
+	type localIssue struct {
+		Locked bool   `json:"locked"`
+		Reason string `json:"active_lock_reason"`
+	}
+
+	// Write data into a struct.
+	var issue localIssue
+	issue.Locked = true
+	issue.Reason = reason
+
+	// Marshal the struct
+	json, err := json.Marshal(issue)
+	if err != nil {
+		return nil, fmt.Errorf("Marshal: %v", err)
+	}
+
+	// // Write into a byte buffer.
+	// var b bytes.Buffer
+	// b.Write(json)
+
+	return json, err
 }

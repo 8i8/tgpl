@@ -63,16 +63,36 @@ URL MODE
 	D edit record
 	E Lock record
 
-	[mode]
-	edit
-	raise
-	search
-	read
+MODES
+	github -[mode]
 
-	[flag|data]
-	-o org   -r repo  -n number
-	-a auth
-	-u user
+	-read	Read an existing issue.
+	-list	List all issues for a specific repo or user.
+	-edit	Edit an existing issue.
+	-raise	Raise a new issue.
+	-unlock	Unlock and issue.
+	-set	Set default user name and editor.
+
+	github -[mode] [value]
+
+	-lock	Lock an issue.
+
+FLAGS
+	github	-[flag]
+
+	-v	Verbose mode, gives detailed description of the programs actions.
+	-h
+	-help	Print out the programs help file.
+
+	github	-[flag] [value]
+
+	-u	User name.
+	-a	Author.
+	-o	Organisation name.
+	-r	Repository name.
+	-n	Issue number, requires that author and repository also be defined.
+	-t	OAuth2 token.
+	-d	External editor launch command.
 
 	[mode/one of the following reasons]
 	lock
@@ -80,11 +100,6 @@ URL MODE
 		* too heated
 		* resolved
 		* spam
-
-	-e edit
-	-x raise
-	-d editor
-	-v displays verbose report of the programs actions.
 
 HTTP REQUESTS
 	┌───────┬───────┬───────┬───────┬───────┬───────┐

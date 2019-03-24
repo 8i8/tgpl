@@ -73,11 +73,23 @@ func EditIssue(c Config) error {
 	return nil
 }
 
-// LockIssue locks a new issue.
-func LockIssue(c Config) error {
+// TODO NOW LockUnlockIssue locks a new issue.
+func LockUnlockIssue(c Config) error {
+
+	var json []byte
+	var err error
+
+	// Marshal into json format.
+	if f&cREASON == 0 {
+		// Write specific json data to lock the issue.
+		json, err = lockReasonJSON(c.Reason)
+		if err != nil {
+			return fmt.Errorf("lockIssue: %v", err)
+		}
+	}
 
 	// Run with defined configuration.
-	_, err := makeRequest(c, nil)
+	_, err = makeRequest(c, json)
 	if err != nil {
 		return fmt.Errorf("makeRequest: %v", err)
 	}
@@ -97,9 +109,9 @@ func Run(c Config) error {
 	case f&cRAISE > 0:
 		return RaiseIssue(c)
 	case f&cLOCK > 0:
-		return LockIssue(c)
+		return LockUnlockIssue(c)
 	case f&cUNLOCK > 0:
-		return LockIssue(c)
+		return LockUnlockIssue(c)
 	default:
 		str := "Run: c.Mode error hit end of switch statment"
 		return fmt.Errorf(str)

@@ -1,6 +1,6 @@
 package github
 
-// accept is a standtard header line.
+// accept is a standard header line.
 func accept() Header {
 	var h Header
 	h.Key = "Accept"
@@ -16,7 +16,7 @@ func authorize(c Config) Header {
 	return h
 }
 
-// password requests and creats a basic password login.
+// password requests and creates a basic password login.
 func password(c Config) Header {
 	var h Header
 	h.Key = "Authorization"
@@ -25,12 +25,11 @@ func password(c Config) Header {
 	return h
 }
 
-// basicRequest generates the most basic hearder for the program.
-func basicRequest(h []Header) []Header {
-
-	// Set header.
-	h = append(h, accept())
-
+// lock: set a reason for locking an issue.
+func lock(c Config) Header {
+	var h Header
+	h.Key = "active_lock_reason"
+	h.Value = c.Reason
 	return h
 }
 
@@ -54,12 +53,17 @@ func composeHeader(c Config) ([]Header, error) {
 	var h []Header
 
 	// Set basic request
-	h = basicRequest(h)
+	h = append(h, accept())
 
 	// Set authorisation details.
 	if f&cAUTH > 0 {
 		h = authRequest(c, h)
 	}
+
+	// Set Lock details.
+	// if f&cLOCK > 0 {
+	// 	h = append(h, lock(c))
+	// }
 
 	return h, nil
 }

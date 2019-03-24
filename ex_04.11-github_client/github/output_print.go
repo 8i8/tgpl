@@ -69,7 +69,7 @@ func printLine(item Issue) {
 		item.Title, item.CreatedAt.String())
 }
 
-// OutputResponse prints the resultset to the terminal.
+// OutputResponse prints the result set to the terminal.
 func OutputResponse(c Config, reply Reply) error {
 
 	if f&cVERBOSE > 0 {
@@ -82,7 +82,7 @@ func OutputResponse(c Config, reply Reply) error {
 	switch {
 	case f&cLIST > 0:
 		err = listIssues(c, reply)
-	case f&cLIST == 0:
+	case f&cREAD > 0:
 		printIssue(reply)
 	default:
 		err = fmt.Errorf("OutputResponse: end of switch stament")

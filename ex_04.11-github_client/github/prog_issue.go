@@ -2,7 +2,6 @@ package github
 
 import (
 	"bufio"
-	"bytes"
 	"encoding/base64"
 	"fmt"
 	"io/ioutil"
@@ -12,7 +11,7 @@ import (
 )
 
 // Compose issues for the designated repo.
-func composeIssue(conf Config) (*bytes.Buffer, error) {
+func composeIssue(conf Config) ([]byte, error) {
 
 	var err error
 	sc := bufio.NewScanner(os.Stdin)
@@ -66,7 +65,7 @@ func composeIssue(conf Config) (*bytes.Buffer, error) {
 }
 
 // editIssue opens and edits and existing issue.
-func editIssue(conf Config, reply Reply) (*bytes.Buffer, error) {
+func editIssue(conf Config, reply Reply) ([]byte, error) {
 
 	var err error
 	issue := reply.Msg.(Issue)
@@ -140,6 +139,22 @@ func openInEditor(conf Config, text string) (string, error) {
 	text = strings.TrimSpace(string(content))
 
 	return text, err
+}
+
+// TODO NOW lockIssue locks an issue by providing the nessesary json if a reason is
+// provided.
+func lockIssue(c Config) ([]byte, error) {
+
+	// Marshal into json format.
+	if f&cREASON == 0 {
+		// Write specific json data to lock the issue.
+		json, err := lockReasonJSON(c.Reason)
+		if err != nil {
+			return nil, fmt.Errorf("lockIssue: %v", err)
+		}
+		return json, err
+	}
+	return nil, nil
 }
 
 // getPass requests that the user enter their password and then returns it

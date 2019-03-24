@@ -1,6 +1,7 @@
 package github
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"net/http"
@@ -73,10 +74,10 @@ func getStatus(resp *http.Response) (Status, error) {
 }
 
 // makeRequest orchestrates an http request.
-// TODO NOW is the header being set in the best place, should this be
+// TODO is the header being set in the best place, should this be
 // seperated? When editing an issue the password is not required for the first
 // contact but should be requested and used so avoid wasting users time.
-func makeRequest(c Config, json io.Reader) (Reply, error) {
+func makeRequest(c Config, json []byte) (Reply, error) {
 
 	var reply Reply
 	// Set the correct url for the request.
@@ -91,8 +92,14 @@ func makeRequest(c Config, json io.Reader) (Reply, error) {
 		return reply, fmt.Errorf("composeHeader: %v", err)
 	}
 
-	// Make and send the request.
-	resp, err := sendRequest(c, addr, json)
+	// Write into a byte buffer.
+	var buf bytes.Buffer
+	buf.Write(json)
+	if f&cVERBOSE > 0 {
+		fmt.Printf("makeRequest: bytes.buffer %v\n", buf.String())
+	}
+
+	resp, err := sendRequest(c, addr, &buf)
 	if err != nil {
 		return reply, fmt.Errorf("sendRequest: %v", err)
 	}
@@ -103,10 +110,12 @@ func makeRequest(c Config, json io.Reader) (Reply, error) {
 		return reply, fmt.Errorf("getStatus: %v", err)
 	}
 
-	// Decode the responce.
-	reply, err = respDecode(c, resp)
-	if err != nil {
-		return reply, fmt.Errorf("respDecode: %v", err)
+	// Decode the responce if required.
+	if f&(cLIST|cREAD) > 0 {
+		reply, err = respDecode(c, resp)
+		if err != nil {
+			return reply, fmt.Errorf("respDecode: %v", err)
+		}
 	}
 	resp.Body.Close()
 

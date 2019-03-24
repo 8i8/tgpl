@@ -13,7 +13,7 @@ type Config struct {
 	User   string // Repository owner,
 	Token  string // Flag defined Oauth token.
 	Editor string // Flag defined external editor.
-	Lock   string // Reason for lock.
+	Reason string // Reason for lock.
 	Req           // Stores the users request data.
 }
 
