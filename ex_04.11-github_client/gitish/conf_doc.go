@@ -1,33 +1,34 @@
 /*
-Package gitish - Command line client for the gitish issue API.
+Package gitish - Command line client for the github issue API.
 
 SYNOPSIS
 	gitish [user | repo | number][Oauth2][options]
 
 DESCRIPTION
-	gitish is a gitish client designed for raising and tracking and
-	updating gitish issues on the gitish platform from the users command
-	line by way of the gitish HTTP API. Giving the user access from the
-	command line or their favorite editor application.
+	gitish is a github client built for raising, tracking and updating git
+	issues on the github platform. Run from the users command line
+	accessing the github API; Affording the user access from the command
+	line or their favorite editor application.
 
 MAIN
 	The gitish program has essentially five running modes, the mode is set
 	from the main function according to the flags set state, defined in the
-	SetState() function and three response reactions translating into three
+	SetBitState() function and three response reactions translating into three
 	more sub states the combination of which defines the running of the
 	program.
 
 PROGRAM STATES
 	Table representation of program states, the program has essentially
 	five different primary states and three further states which comprise
-	all subroutines, all of which is preset by the SetState() function
-	establishing the type of HTTP request that is required. The second
-	defines the formation of the expectation and treatment of the HTTP
-	response.
+	all subroutines, all of which is preset in the SetBitState() function
+	essentialy establishing the type of HTTP request that is required. The
+	second defines the formation of the expectation and treatment of the
+	HTTP response.
+
 URL MODE
-	There are tow types of url formation, uAddr in which the url provides
+	There are two types of url formation, uAddr in which the url provides
 	an explicit location and uSear with which the search server folder
-	is defined and search values are given by way of query key vale pares.
+	is defined and search values given by way of query key value pairs.
 
 	┌─────┬─────┬─────┬─────┬─────┬─────┬───────┬───────┬───────┐
 	│     │     │     │     │-r   │     │       │       │       │
@@ -61,7 +62,7 @@ URL MODE
 	B read record
 	C raise new
 	D edit record
-	E Lock record
+	E lock/unlock record
 
 MODES
 	gitish -[mode]
@@ -70,19 +71,16 @@ MODES
 	-list	List all issues for a specific repo or user.
 	-edit	Edit an existing issue.
 	-raise	Raise a new issue.
-	-unlock	Unlock and issue.
-	-set	Set default user name and editor.
-
-	gitish -[mode] [value]
-
 	-lock	Lock an issue.
+	-unlock	Unlock an issue.
 
 FLAGS
 	gitish	-[flag]
 
-	-v	Verbose mode, gives detailed description of the programs actions.
+	-v	Verbose mode, gives detailed description of the programs
+		actions.
 	-h
-	-help	Print out the programs help file.
+	-help	Prints out the programs help file.
 
 	gitish	-[flag] [value]
 
@@ -90,12 +88,14 @@ FLAGS
 	-a	Author.
 	-o	Organisation name.
 	-r	Repository name.
-	-n	Issue number, requires that author and repository also be defined.
+	-n	Issue number, requires that author and repository also be
+		defined.
 	-t	OAuth2 token.
 	-d	External editor launch command.
+	-l	Provide a reason for locking.
 
-	[mode/one of the following reasons]
-	lock
+	[lock rational]
+
 		* off-topic
 		* too heated
 		* resolved
@@ -117,6 +117,8 @@ HTTP REQUESTS
 	├───────┼───────┼───────┼───────┼───────┼───────┤
 	│unlock │       │       │       │       │   1   │
 	└───────┴───────┴───────┴───────┴───────┴───────┘
+
+	URL usable by the API
 
 	GET    /issues          (login required, lists all issues assigned to user)
  	GET    /user/issues

@@ -4,17 +4,17 @@ import (
 	"fmt"
 )
 
-// DisplayIssue displays a result set of issues in the terminal.
+// DisplayIssue displays a list of issues in the terminal.
 func DisplayIssue(c Config) error {
 
-	// Run with defined configuration.
+	// Run with current configuration.
 	reply, err := makeRequest(c, nil)
 	if err != nil {
 		return fmt.Errorf("makeRequest: %v", err)
 	}
 
 	// Print to terminal.
-	err = OutputResponse(c, reply)
+	err = outputResponse(c, reply)
 	if err != nil {
 		return fmt.Errorf("OutputResponse: %v", err)
 	}
@@ -30,7 +30,7 @@ func RaiseIssue(c Config) error {
 		return fmt.Errorf("composeIssue: %v", err)
 	}
 
-	// Run with defined configuration.
+	// Run with current configuration.
 	_, err = makeRequest(c, json)
 	if err != nil {
 		return fmt.Errorf("makeRequest: %v", err)
@@ -41,31 +41,31 @@ func RaiseIssue(c Config) error {
 // EditIssue edits an existing issue.
 func EditIssue(c Config) error {
 
-	// Set state for read.
+	// Set state for read to aquire the targeted issue.
 	f &^= cEDIT
 	f &^= cAUTH
 	f |= cREAD
 	reportState("EditIssue READ")
 
-	// Run with defined configuration.
+	// Run with current configuration.
 	reply, err := makeRequest(c, nil)
 	if err != nil {
 		return fmt.Errorf("makeRequest: %v", err)
 	}
 
-	// If edits are to be been made, make the edit.
+	// If edits are to be been made, make them.
 	json, err := editIssue(c, reply)
 	if err != nil {
 		return fmt.Errorf("editIssue: %v", err)
 	}
 
-	// Set state to use authentication.
+	// Set to authentication for updating edited issue.
 	f |= cEDIT
 	f |= cAUTH
 	f &^= cREAD
 	reportState("EditIssue EDIT")
 
-	// Post the newly edited issue.
+	// Post issue.
 	_, err = makeRequest(c, json)
 	if err != nil {
 		return fmt.Errorf("makeRequest: json: %v", err)
@@ -73,7 +73,7 @@ func EditIssue(c Config) error {
 	return nil
 }
 
-// TODO NOW LockUnlockIssue locks a new issue.
+// LockUnlockIssue locks a new issue.
 func LockUnlockIssue(c Config) error {
 
 	var json []byte
@@ -81,14 +81,15 @@ func LockUnlockIssue(c Config) error {
 
 	// Marshal into json format.
 	if f&cREASON > 0 {
-		// Write specific json data to lock the issue.
+		// Write specifics json data to lock the issue.
+		// TODO this does not appear to be working.
 		json, err = lockReasonJSON(c.Reason)
 		if err != nil {
 			return fmt.Errorf("lockIssue: %v", err)
 		}
 	}
 
-	// Run with defined configuration.
+	// Run with current configuration.
 	_, err = makeRequest(c, json)
 	if err != nil {
 		return fmt.Errorf("makeRequest: %v", err)
@@ -96,7 +97,7 @@ func LockUnlockIssue(c Config) error {
 	return nil
 }
 
-// Program entry point as commandline client.
+// Run is the main programs entry point.
 func Run(c Config) error {
 
 	switch {
@@ -116,5 +117,4 @@ func Run(c Config) error {
 		str := "Run: c.Mode error hit end of switch statment"
 		return fmt.Errorf(str)
 	}
-	return nil
 }

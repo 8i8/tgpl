@@ -6,8 +6,7 @@ import (
 	"time"
 )
 
-// date is a struct used to translate a time.Time object into a sortable date
-// format.
+// date is used to translate a time.Time object into a calculable format.
 type date struct {
 	r int
 	y int
@@ -16,7 +15,7 @@ type date struct {
 	p bool
 }
 
-// IssueMap is a struct for maintaining an issue map with its index.
+// IssueMap is for keeping an issue map together with its index.
 type IssueMap struct {
 	M *map[int]Issue
 	I *[]date
@@ -31,7 +30,7 @@ func (v IssueMap) Len() int {
 // search criteria.
 func listIssues(conf Config, reply Reply) error {
 
-	//fmt.Println(reply)
+	// Approprate type
 	r, ok := reply.Msg.(IssuesSearchResult)
 	if !ok {
 		return fmt.Errorf("listIssues: type assertion failed")
@@ -48,7 +47,7 @@ func listIssues(conf Config, reply Reply) error {
 		issue[item.Number] = *item
 	}
 
-	// Check that there is a response to print.
+	// Check that there is data to print.
 	if resp.Len() == 0 {
 		return fmt.Errorf("listIssues: empty result string")
 	}
@@ -61,12 +60,10 @@ func listIssues(conf Config, reply Reply) error {
 		index = append(index, issue)
 	}
 
-	// Sort descending, newest first.
+	// Sort descending, newest first and then print.
 	sort.Slice(index, func(i, j int) bool {
 		return index[i].r > index[j].r
 	})
-
-	// If there is something to print, print it.
 	printIssues(resp)
 
 	return nil

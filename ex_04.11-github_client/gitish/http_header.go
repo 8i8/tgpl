@@ -1,6 +1,8 @@
 package gitish
 
-// accept is a standard header line.
+import "fmt"
+
+// accept defines the media type.
 func accept() Header {
 	var h Header
 	h.Key = "Accept"
@@ -8,7 +10,7 @@ func accept() Header {
 	return h
 }
 
-// authorize is the standard header Oath2 authorisation.
+// authorize for Oath2 authorisation.
 func authorize(c Config) Header {
 	var h Header
 	h.Key = "Authorization"
@@ -16,16 +18,19 @@ func authorize(c Config) Header {
 	return h
 }
 
-// password requests and creates a basic password login.
-func password(c Config) Header {
+// password creates a password request when OAuth2 is not being used.
+func password(c Config) (Header, error) {
 	var h Header
 	h.Key = "Authorization"
-	pass, _ := getPass(c)
+	pass, err := getPass(c)
+	if err != nil {
+		return h, fmt.Errorf("password: getPass failed")
+	}
 	h.Value = "Basic " + pass
-	return h
+	return h, nil
 }
 
-// lock: set a reason for locking an issue.
+// lock sets the reason for locking an issue, if one has been provided.
 func lock(c Config) Header {
 	var h Header
 	h.Key = "active_lock_reason"
@@ -33,17 +38,21 @@ func lock(c Config) Header {
 	return h
 }
 
-// authRequest generates a request header that uses oauth2 authorisation.
-func authRequest(c Config, h []Header) []Header {
+// authRequest seeks authorisation when it is required.
+func authRequest(c Config, h []Header) ([]Header, error) {
 
-	// If token provided use that, else request password.
+	// If a token has been provided use that, else request a password.
 	if f&cTOKEN > 0 {
 		h = append(h, authorize(c))
 	} else {
-		h = append(h, password(c))
+		pass, err := password(c)
+		if err != nil {
+			return nil, fmt.Errorf("authRequest: %v", err)
+		}
+		h = append(h, pass)
 	}
 
-	return h
+	return h, nil
 }
 
 // composeHeader uses the current configuration to set the correct header for
@@ -51,19 +60,23 @@ func authRequest(c Config, h []Header) []Header {
 func composeHeader(c Config) ([]Header, error) {
 
 	var h []Header
+	var err error
 
 	// Set basic request
 	h = append(h, accept())
 
 	// Set authorisation details.
 	if f&cAUTH > 0 {
-		h = authRequest(c, h)
+		h, err = authRequest(c, h)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	// Set Lock details.
-	// if f&cLOCK > 0 {
-	// 	h = append(h, lock(c))
-	// }
+	if f&cLOCK > 0 {
+		h = append(h, lock(c))
+	}
 
 	return h, nil
 }

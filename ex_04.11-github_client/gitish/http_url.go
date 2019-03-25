@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-// setURLSearchQuery structures and adds to the query array the required key
+// setURLSearchQuery structures and adds to the query array of the required key
 // values paries to instigate an API search query.
 // https://api.gitish.com/search/issues
 func setURLSearchQuery(c Config, e string) (Config, error) {
@@ -38,8 +38,8 @@ func setURLSearchQuery(c Config, e string) (Config, error) {
 	return c, err
 }
 
-// setURLAddress is a helper funcion for setURL, defines the base address for
-// the cREAD, cEDIT, cLOCK and cRAISE modes.
+// setURLAddress is a helper funcion for setURL, it defines the base URL
+// address for the cREAD, cEDIT, cLOCK and cRAISE modes.
 func setURLAddress(c Config, URL, e string) (Config, string, error) {
 
 	var err error
@@ -56,7 +56,7 @@ func setURLAddress(c Config, URL, e string) (Config, string, error) {
 	return c, URL, err
 }
 
-// setURL structures an http request from the given configuration.
+// setURL structures an http request for the given configuration.
 func setURL(c Config) (Config, Address, error) {
 
 	var addr Address
@@ -65,11 +65,11 @@ func setURL(c Config) (Config, Address, error) {
 	// Set the base address.
 	addr.URL = "https://api.github.com/"
 
-	// Dependant upon the program runnnig mode, generate the required URL
-	// and or query set.
+	// Dependant upon the program run mode, generate the required URL and
+	// or query key pairs.
 	switch {
 
-	// Prepare URL for API search functionality
+	// Prepare URL for search.
 	case f&cLIST > 0:
 		addr.HTTP = "GET"
 		addr.URL = addr.URL + "search/issues"
@@ -79,7 +79,7 @@ func setURL(c Config) (Config, Address, error) {
 			return c, addr, fmt.Errorf("LIST: %v", err)
 		}
 
-	// Prepare URL for API reading repo issues directly by full address and
+	// Prepare URL for reading repo issues directly using full address and
 	// issue number.
 	case f&cREAD > 0:
 		addr.HTTP = "GET"
@@ -90,7 +90,7 @@ func setURL(c Config) (Config, Address, error) {
 		}
 		addr.URL += "/" + c.Number
 
-	// Prepare for editing a preexisting repo.
+	// Prepare URL for editing a preexisting repo.
 	case f&cEDIT > 0:
 		addr.HTTP = "PATCH"
 		str := "please specify owner, repository and issue number"
@@ -100,8 +100,7 @@ func setURL(c Config) (Config, Address, error) {
 		}
 		addr.URL += "/" + c.Number
 
-	// Prepare a URL to set the current issue status to resolved, requires
-	// login.
+	// Prepare a URL to set the current issue status to closed.
 	case f&cLOCK > 0:
 		addr.HTTP = "PUT"
 		str := "please specify owner, repository and issue number"
@@ -111,7 +110,7 @@ func setURL(c Config) (Config, Address, error) {
 		}
 		addr.URL += "/" + c.Number + "/lock"
 
-	// Prepare URL to set the given issue status to open, requires login.
+	// Prepare URL to set the given issue status to open,
 	case f&cUNLOCK > 0:
 		addr.HTTP = "DELETE"
 		str := "please specify owner, repository and issue number"
@@ -121,8 +120,7 @@ func setURL(c Config) (Config, Address, error) {
 		}
 		addr.URL += "/" + c.Number + "/lock"
 
-	// Prepare URL for issue creation by way of a complete issue address
-	// and the use of the POST function, requires login authorisation.
+	// Prepare URL for issue creation.
 	case f&cRAISE > 0:
 		addr.HTTP = "POST"
 		str := "please specify owner and repository details"
@@ -139,11 +137,12 @@ func setURL(c Config) (Config, Address, error) {
 	}
 
 	// If lock required, add query.
+	// TODO can the lock reason be set here?
 	// if f&cREASON > 0 {
 	// 	addr.URL = addr.URL + "?lock_reason=" + c.Reason
 	// }
 
-	// If verbose flag is set print the address used.
+	// If verbose flag is set print out the address used.
 	if f&cVERBOSE > 0 {
 		fmt.Printf("Setting URL: %v %v\n", addr.HTTP, addr.URL)
 	}

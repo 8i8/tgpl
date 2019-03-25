@@ -6,79 +6,61 @@ import (
 	"os"
 )
 
-// The Programs main running state.
-var f Flags
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ *  Set bitfield for program state
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-const (
-	// Program mode.
-	cREAD    Flags = 1 << iota // Request read mode.
-	cLIST                      // Request list mode.
-	cEDIT                      // Request to edit an issue.
-	cRAISE                     // Raise a new issue.
-	cLOCK                      // Lock a repository.
-	cUNLOCK                    // Unlock an existing locked issue.
-	cSET                       // Set default global editor and user name.
-	cVERBOSE                   // Signals the program print out extra detail.
+// setBitAuth sets a flag in the bitfield if authentication is required for
+// the http request that is needed.
+func setBitAuth() error {
 
-	// Data.
-	cUSER   // User name given.
-	cAUTHOR // Authour name given.
-	cORG    // Organisation name given.
-	cREPO   // Repoitory name given.
-	cNUMBER // Issue number given.
-	cTOKEN  // Oauth2 token given.
-	cEDITOR // Editor defined.
-	cREASON // Reason for locking provided.
-	cNAME   // Used as an indicator to signal that either a user name an
-	// author or and organisation have been provided.
-	cAUTH // Used as an indicator to signal that authenication is required.
-)
-
-var mState = make(map[Flags]string)
-
-func init() {
-
-	// mode
-	mState[cREAD] = "cREAD"
-	mState[cLIST] = "cLIST"
-	mState[cEDIT] = "cEDIT"
-	mState[cRAISE] = "cRAISE"
-	mState[cLOCK] = "cLOCK"
-	mState[cUNLOCK] = "cUNLOCK"
-	mState[cSET] = "cSET"
-	mState[cVERBOSE] = "cVERBOSE"
-
-	// response
-	mState[cUSER] = "cUSER"
-	mState[cAUTHOR] = "cAUTHOR"
-	mState[cORG] = "cORG"
-	mState[cREPO] = "cREPO"
-	mState[cNUMBER] = "cNUMBER"
-	mState[cTOKEN] = "cTOKEN"
-	mState[cEDITOR] = "cEDITOR"
-	mState[cREASON] = "cREASON"
-	mState[cNAME] = "cNAME"
-	mState[cAUTH] = "cAUTH"
+	if f&cVERBOSE > 0 {
+		fmt.Printf("setBitAuth: testing for authentication requirements\n")
+	}
+	if f&(cEDIT|cRAISE|cLOCK|cUNLOCK) > 0 {
+		f |= cAUTH
+		return ckAuth()
+	}
+	return nil
 }
 
-// FlagsIn is the strut to pass user command line settings into the program.
-type FlagsInStruct struct {
-	Read    bool
-	List    bool
-	Edit    bool
-	Raise   bool
-	Lock    bool
-	Unlock  bool
-	Set     bool
-	Verbose bool
+// setBitMode set a bitfield flag from the input argument that defines the
+// program running mode.
+func setBitMode(in FlagsInStruct) error {
+
+	// Ascertain program mode, assure the use of one only.
+	if in.Read {
+		f |= cREAD
+		return ckRead()
+	} else if in.List {
+		f |= cLIST
+		return ckList()
+	} else if in.Edit {
+		f |= cEDIT
+		return ckRead()
+	} else if in.Raise {
+		f |= cRAISE
+		return ckList()
+	} else if in.Lock {
+		f |= cLOCK
+		return ckRead()
+	} else if in.Unlock {
+		f |= cUNLOCK
+		return ckRead()
+	} else if in.Set {
+		f |= cSET
+		return ckSet()
+	}
+
+	// None defined, set a default running mode.
+	f |= cLIST
+	return ckList()
 }
 
-// assesInput sets flags for all input values provided, used in preferance over
-// the len() function to switch the programs control flow.
-func assesInput(c Config) {
+// setBitValues sets a bitfield from input argument values.
+func setBitValues(c Config) {
 
-	// Set only one name as the address name in the case that more than one
-	// have been provided.
+	// Set only one name.
 	if len(c.Org) > 0 {
 		f |= cORG
 		f |= cNAME
@@ -107,23 +89,52 @@ func assesInput(c Config) {
 	}
 }
 
-// isAuthRequired returns a boolean and checks that the requirments are met
-// for authentification where nesecary, setting the auth flag.
-func isAuthRequired() error {
+// SetBitState defines the state in which to run the program, set by the
+// configuration of the users flags.
+func SetBitState(c Config, fl FlagsInStruct) error {
+
+	if fl.Verbose {
+		f |= cVERBOSE
+	}
+
+	// If help has been requested, stop here and print out the help
+	// information.
+	if helpflag {
+		println(help)
+		return nil
+	}
+
+	// Set flags to denote existing values.
+	setBitValues(c)
+
+	// Set main running mode from input arguments, check logical coherence.
+	err := setBitMode(fl)
+	if err != nil {
+		return fmt.Errorf("error: %v", err)
+	}
+
+	// If the current running mode requires authentication, set the flag
+	// and test.
+	err = setBitAuth()
+	if err != nil {
+		return fmt.Errorf("error: %v", err)
+	}
+
 	if f&cVERBOSE > 0 {
-		fmt.Printf("isAuthRequired: testing for authenticatio requirments\n")
+		reportState("SetBitState")
 	}
-	if f&(cEDIT|cRAISE|cLOCK|cUNLOCK) > 0 {
-		f |= cAUTH
-		return ckAuth()
-	}
+
 	return nil
 }
 
-// ckAuth verify that the requirments for autentication are met.
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ *  Logical checks of program state.
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
+// ckAuth verify that the requirements for authentication are met.
 func ckAuth() error {
 	if f&cVERBOSE > 0 {
-		fmt.Printf("ckAuth: testing for cUSER cTOKEN\n")
+		fmt.Printf("ckAuth: testing authentication requirements\n")
 	}
 	if f&cTOKEN > 0 || f&cUSER > 0 {
 		return nil
@@ -131,11 +142,11 @@ func ckAuth() error {
 	if f&cVERBOSE > 0 {
 		reportState("ckAuth")
 	}
-	err := fmt.Errorf("please provide either a user name or an OAuth2 token")
+	err := fmt.Errorf("please provide a user name or an OAuth2 token")
 	return err
 }
 
-// ckRead verify that the requirments for Read mode are met.
+// ckRead verify that the requirements for Read mode are met.
 func ckRead() error {
 	if f&cVERBOSE > 0 {
 		fmt.Printf("ckRead: testing for cNAME cREPO cNUMBER\n")
@@ -150,7 +161,7 @@ func ckRead() error {
 	return err
 }
 
-// ckList verifys that the requirments for the List mode are met.
+// ckList verify that the requirements for the List mode are met.
 func ckList() error {
 	if f&cVERBOSE > 0 {
 		fmt.Printf("ckList: testing for cNAME cREPO\n")
@@ -165,24 +176,7 @@ func ckList() error {
 	return err
 }
 
-// ckAll verifys that the requirments have been met for a direct address
-// autorised acces to an issue, needed by the raise edit lock and unlock
-// functions.
-func ckAll() error {
-	if f&cVERBOSE > 0 {
-		fmt.Printf("ckAll: testing for cNAME cREPO cNUMBER\n")
-	}
-	if f&cNAME > 0 && f&cREPO > 0 && f&cNUMBER > 0 {
-		return nil
-	}
-	if f&cVERBOSE > 0 {
-		reportState("ckAll")
-	}
-	err := fmt.Errorf("name, repo, number and authenticaton are all required")
-	return err
-}
-
-// ckSet Verifies that the requrments for a default configuration are met.
+// ckSet Verifies that the requirements for a default configuration are met.
 func ckSet() error {
 	if f&cVERBOSE > 0 {
 		fmt.Printf("ckSet: testing for cNAME cEDITOR\n")
@@ -197,72 +191,11 @@ func ckSet() error {
 	return err
 }
 
-// setMode translates the user input flags into the programs main state
-// variable.
-func setMode(in FlagsInStruct) error {
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ *  General use
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-	// Assertain program mode, assure the use of one only.
-	if in.Read {
-		f |= cREAD
-		return ckRead()
-	} else if in.List {
-		f |= cLIST
-		return ckList()
-	} else if in.Edit {
-		f |= cEDIT
-		return ckAll()
-	} else if in.Raise {
-		f |= cRAISE
-		return ckList()
-	} else if in.Lock {
-		f |= cLOCK
-		return ckAll()
-	} else if in.Unlock {
-		f |= cUNLOCK
-		return ckAll()
-	} else if in.Set {
-		f |= cSET
-		return ckSet()
-	}
-
-	// None set, providea a default running mode.
-	f |= cLIST
-	return ckList()
-}
-
-// SetState defines the state in which to run the program, set by the
-// configuration of the users flags.
-func SetState(c Config, fl FlagsInStruct) error {
-
-	if fl.Verbose {
-		f |= cVERBOSE
-	}
-
-	// Set booleans to mirror any input flags.
-	assesInput(c)
-
-	// Set main running state from user input, flags and values.
-	err := setMode(fl)
-	if err != nil {
-		return fmt.Errorf("error: %v", err)
-	}
-
-	// If the current running mode requires authentication, set the flag
-	// and test.
-	err = isAuthRequired()
-	if err != nil {
-		return fmt.Errorf("error: %v", err)
-	}
-
-	if f&cVERBOSE > 0 {
-		reportState("SetState")
-	}
-
-	return nil
-}
-
-// reportState outputs the name of all booleans set by itterating over a map of
-// all the booleans.
+// reportState printout all set bitfield flags by name.
 func reportState(context string) {
 
 	w := bufio.NewWriter(os.Stdout)

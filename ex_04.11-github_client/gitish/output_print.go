@@ -6,7 +6,9 @@ import (
 	"time"
 )
 
-// Print a list of single line issues, ordered and grouped by date.
+// Print a list of single line issues, grouped by date.
+// TODO inprove sorting here, there are 3 itterations over the list when there
+// only need be one.
 func printIssues(retIssues IssueMap) {
 
 	issue := *retIssues.M
@@ -69,11 +71,11 @@ func printLine(item Issue) {
 		item.Title, item.CreatedAt.String())
 }
 
-// OutputResponse prints the result set to the terminal.
-func OutputResponse(c Config, reply Reply) error {
+// outputResponse prints the result set to the terminal.
+func outputResponse(c Config, reply Reply) error {
 
 	if f&cVERBOSE > 0 {
-		fmt.Println("Program output start\n~~~\n")
+		fmt.Printf("Program output start\n~~~\n\n")
 	}
 
 	// Print out either a date ordered list of many issues else a detailed
@@ -89,7 +91,7 @@ func OutputResponse(c Config, reply Reply) error {
 	}
 
 	if f&cVERBOSE > 0 {
-		fmt.Println("\n~~~\nProgram output end\n")
+		fmt.Printf("\n~~~\nProgram output end\n\n")
 	}
 	return err
 }

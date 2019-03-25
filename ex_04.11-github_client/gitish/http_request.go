@@ -8,23 +8,23 @@ import (
 	"strconv"
 )
 
-// Header contains header request key pairs.
+// Header request key pairs.
 type Header struct {
 	Key, Value string
 }
 
-// Status contains an http responce status, both the text and the code.
+// Status http response, text and code key pair.
 type Status struct {
 	Code    int
 	Message string
 }
 
-// String prints the details of an HTTP status struct.
+// String returns a string that contains the key pair.
 func (s Status) String() string {
 	return strconv.Itoa(s.Code) + " " + s.Message
 }
 
-// Address contains the request tupe and URL of a request.
+// Address contains the URL the request and the response.
 type Address struct {
 	HTTP, URL string
 	header    []Header
@@ -53,25 +53,24 @@ func sendRequest(conf Config, addr Address, json io.Reader) (*http.Response, err
 	return resp, err
 }
 
-// getStatus fills a Status struct with an http responce status data and
-// verifies that responce data agains the expected responce, raising an error
-// when required.
+// getStatus fills a Status struct from an http response status and verifies
+// that response data against the expected, raising an error on discrepancies.
 func getStatus(resp *http.Response) (Status, error) {
 
 	var s Status
 	s.Code = resp.StatusCode
 	s.Message = http.StatusText(resp.StatusCode)
 
-	if (f&cLIST > 0 || f&cREAD > 0 || f&cEDIT > 0) &&
+	// Check mode and verify correct response status, raise error if
+	// required.
+	if f&(cLIST|cREAD|cEDIT) > 0 &&
 		s.Code != http.StatusOK {
-		// If data recieved.
 		resp.Body.Close()
 		return s, fmt.Errorf("response: %v %v", s.Code, s.Message)
-		// If a record was created.
 	} else if f&cRAISE > 0 && s.Code != http.StatusCreated {
 		resp.Body.Close()
 		return s, fmt.Errorf("response: %v %v", s.Code, s.Message)
-	} else if (f&cLOCK > 0 || f&cUNLOCK > 0) && s.Code != http.StatusNoContent {
+	} else if f&(cLOCK|cUNLOCK) > 0 && s.Code != http.StatusNoContent {
 		resp.Body.Close()
 		return s, fmt.Errorf("response: %v %v", s.Code, s.Message)
 	}
@@ -80,9 +79,6 @@ func getStatus(resp *http.Response) (Status, error) {
 }
 
 // makeRequest orchestrates an http request.
-// TODO is the header being set in the best place, should this be
-// seperated? When editing an issue the password is not required for the first
-// contact but should be requested and used so avoid wasting users time.
 func makeRequest(c Config, json []byte) (Reply, error) {
 
 	var reply Reply
@@ -92,7 +88,7 @@ func makeRequest(c Config, json []byte) (Reply, error) {
 		return reply, fmt.Errorf("setURL: %v", err)
 	}
 
-	// Compose an array of header key value pairs.
+	// Compile an array of header key value pairs.
 	addr.header, err = composeHeader(c)
 	if err != nil {
 		return reply, fmt.Errorf("composeHeader: %v", err)
@@ -102,14 +98,14 @@ func makeRequest(c Config, json []byte) (Reply, error) {
 		fmt.Printf("makeRequest: json %v\n", string(json))
 	}
 
+	// Buffer json into reader and make send request.
 	buf := bytes.NewReader(json)
-
 	resp, err := sendRequest(c, addr, buf)
 	if err != nil {
 		return reply, fmt.Errorf("sendRequest: %v", err)
 	}
 
-	// Record the responce return status.
+	// Record the response return state.
 	addr.Status, err = getStatus(resp)
 	if err != nil {
 		return reply, fmt.Errorf("getStatus: %v", err)
@@ -119,7 +115,7 @@ func makeRequest(c Config, json []byte) (Reply, error) {
 		fmt.Printf("getStatus: %v\n", addr.String())
 	}
 
-	// Decode the responce if required.
+	// Decode the response if required.
 	if f&(cLIST|cREAD) > 0 {
 		reply, err = respDecode(c, resp)
 		if err != nil {

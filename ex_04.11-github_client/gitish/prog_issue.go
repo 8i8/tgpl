@@ -141,7 +141,7 @@ func openInEditor(conf Config, text string) (string, error) {
 	return text, err
 }
 
-// TODO NOW lockIssue locks an issue by providing the nessesary json if a reason is
+// lockIssue locks an issue by formulating the nessesary json when a reason is
 // provided.
 func lockIssue(c Config) ([]byte, error) {
 
