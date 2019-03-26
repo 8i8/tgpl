@@ -7,41 +7,32 @@ import (
 )
 
 // Print a list of single line issues, grouped by date.
-// TODO inprove sorting here, there are 3 itterations over the list when there
-// only need be one.
-func printIssues(retIssues IssueMap) {
+func printIssues(Issues IssueMap) {
 
-	issue := *retIssues.M
-	index := *retIssues.I
+	issue := *Issues.M
+	imonth := *Issues.Imonth
+	iyear := *Issues.Iyear
+	imore := *Issues.Imore
 	now := date{}
 	now.y, now.m, now.d = time.Now().Date()
-	fmt.Printf("%d issues:\n", len(index))
+	fmt.Printf("%d issues:\n", len(issue))
 
 	// Print issues that are less than a month old.
-	fmt.Println("\nLess than a month")
-	for n, d := range index {
-		item := issue[d.r]
-		if lessThanMonth(now, d) {
-			printLine(item)
-			index[n].p = true
-		}
-	}
+	printList(imonth, issue, "Less than a month")
 
 	// Print issues that are less than a year old.
-	fmt.Println("\nLess than a year")
-	for n, d := range index {
-		item := issue[d.r]
-		if monthToAYear(now, d) {
-			printLine(item)
-			index[n].p = true
-		}
-	}
+	printList(iyear, issue, "Less than a year")
 
 	// Print issues that are older than a year.
-	fmt.Println("\nOlder than a year")
-	for n, d := range index {
-		item := issue[d.r]
-		if yearOnward(now, d) {
+	printList(imore, issue, "Older than a year")
+}
+
+// printList prints out a list of issues under the given header.
+func printList(index []date, issue map[int]Issue, header string) {
+	if len(index) > 0 {
+		fmt.Println(header)
+		for n, d := range index {
+			item := issue[d.r]
 			printLine(item)
 			index[n].p = true
 		}
@@ -85,7 +76,11 @@ func outputResponse(c Config, reply Reply) error {
 	case f&cLIST > 0:
 		err = listIssues(c, reply)
 	case f&cREAD > 0:
-		printIssue(reply)
+		if f&cEDITOR > 0 {
+			editIssue(c, reply)
+		} else {
+			printIssue(reply)
+		}
 	default:
 		err = fmt.Errorf("OutputResponse: end of switch stament")
 	}

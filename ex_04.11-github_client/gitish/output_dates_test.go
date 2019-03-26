@@ -5,72 +5,141 @@ import (
 	"time"
 )
 
-var cal []date
+var calendar []date
 var now date
 
 func TestDates(t *testing.T) {
 
-	// Test all months.
+	// Months.
 	for i := 0; i < 12; i++ {
-		// Test for many different start days.
-		for j := 0; j < 1000; j++ {
+		// Days, test for many different start days, 400 is just over a year
+		// and a month.
+		for j := 0; j < 400; j++ {
 
-			// Set the start date.
+			// Arbritrary starting point.
 			d := time.Date(2011, 1, 10, 1, 0, 0, 0, time.UTC)
-			// Augment date to cover a time period.
+
+			// Augment date to cover the given time period.
 			d = d.AddDate(0, i, j)
 			now = date{0, d.Year(), d.Month(), d.Day(), false}
 
-			// Set an array of time periods of greater than two
-			// years.
+			// Create calendar that spans two years.
 			for k := 730; k > 0; k-- {
 				day := date{0, d.Year(), d.Month(), d.Day(), false}
-				cal = append(cal, day)
+				calendar = append(calendar, day)
 				d = d.AddDate(0, 0, -1)
 			}
 
-			// Tests
-			testLessThanMonth(t, i, j)
-			testMonthToAYear(t, i, j)
-			testYearOnward(t, i, j)
+			// Test the entire range of dates.
+			for n, d := range calendar {
+				c := testDateSort(now, d)
+				if c&dERROR > 0 {
+					t.Error("error: ", d.d, d.m, d.y, i, j)
+					return
+				}
+				if c != dMORE && c != dYEAR && c != dMONTH {
+					t.Error("doubled: ", d.d, d.m, d.y, i, j)
+					return
+				}
+				calendar[n].p = true
+			}
+
+			// Check for dates that have not been printed.
 			testNotPrinted(t, i, j)
-			cal = cal[:0]
+
+			// reset the calendar
+			calendar = calendar[:0]
 		}
 	}
 }
 
-func testLessThanMonth(t *testing.T, i, j int) {
-	for n, d := range cal {
-		if lessThanMonth(now, d) {
-			if d.p == true {
-				t.Error("error: LessThanMonth already printed",
-					d.d, d.m, d.y, i, j)
+// testDateSort returns a bitfield with the flag set.
+func testDateSort(now, rec date) cal {
+
+	var c cal
+	if yearOnward(now, rec) {
+		c |= dMORE
+	}
+	if monthToAYear(now, rec) {
+		c |= dYEAR
+	}
+	if lessThanMonth(now, rec) {
+		c |= dMONTH
+	}
+	if c == 0 {
+		c |= dERROR
+	}
+	return c
+}
+
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ *  Benchmarks
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
+func BenchmarkDate(b *testing.B) {
+
+	for k := 0; k < b.N; k++ {
+		// Months.
+		for i := 0; i < 12; i++ {
+			// Days, test for many different start days, 400 is just over a year
+			// and a month.
+			for j := 0; j < 400; j++ {
+
+				// Arbritrary starting point.
+				d := time.Date(2011, 1, 10, 1, 0, 0, 0, time.UTC)
+
+				// Augment date to cover the given time period.
+				d = d.AddDate(0, i, j)
+				now = date{0, d.Year(), d.Month(), d.Day(), false}
+
+				// Create calendar that spans two years.
+				for k := 730; k > 0; k-- {
+					day := date{0, d.Year(), d.Month(), d.Day(), false}
+					calendar = append(calendar, day)
+					d = d.AddDate(0, 0, -1)
+				}
+
+				for _, d := range calendar {
+					dateSort(now, d)
+				}
+
+				// reset the calendar
+				calendar = calendar[:0]
 			}
-			cal[n].p = true
 		}
 	}
 }
 
-func testMonthToAYear(t *testing.T, i, j int) {
-	for n, d := range cal {
-		if monthToAYear(now, d) {
-			if d.p == true {
-				t.Error("error: MonthToAYear already printed",
-					d.d, d.m, d.y, i, j)
-			}
-			cal[n].p = true
-		}
-	}
-}
+func BenchmarkDateOld(b *testing.B) {
 
-func testYearOnward(t *testing.T, i, j int) {
-	for n, d := range cal {
-		if yearOnward(now, d) {
-			if d.p == true {
-				t.Error("error: YearOnward already printed",
-					d.d, d.m, d.y, i, j)
+	for k := 0; k < b.N; k++ {
+		// Months.
+		for i := 0; i < 12; i++ {
+			// Days, test for many different start days, 400 is just over a year
+			// and a month.
+			for j := 0; j < 400; j++ {
+
+				// Arbritrary starting point.
+				d := time.Date(2011, 1, 10, 1, 0, 0, 0, time.UTC)
+
+				// Augment date to cover the given time period.
+				d = d.AddDate(0, i, j)
+				now = date{0, d.Year(), d.Month(), d.Day(), false}
+
+				// Create calendar that spans two years.
+				for k := 730; k > 0; k-- {
+					day := date{0, d.Year(), d.Month(), d.Day(), false}
+					calendar = append(calendar, day)
+					d = d.AddDate(0, 0, -1)
+				}
+
+				for _, d := range calendar {
+					dateSortOld(now, d)
+				}
+
+				// reset the calendar
+				calendar = calendar[:0]
 			}
-			cal[n].p = true
 		}
 	}
 }
@@ -79,10 +148,49 @@ func testYearOnward(t *testing.T, i, j int) {
    Print an error for any dates remaining that have not yet been printed.
 */
 func testNotPrinted(t *testing.T, i, j int) {
-	for _, d := range cal {
+	for _, d := range calendar {
 		if d.p == false {
 			t.Error("error: date not printed",
 				d.d, d.m, d.y, i, j)
 		}
 	}
+}
+
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ *  Old method left in code for benchmarking.
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
+// dateSort returns a bitfield with the flag set.
+func dateSortOld(now, rec date) cal {
+
+	switch {
+	case yearOnwardOld(now, rec):
+		return dMORE
+	case monthToAYearOld(now, rec):
+		return dYEAR
+	case lessThanMonthOld(now, rec):
+		return dMONTH
+	default:
+		return dERROR
+	}
+}
+
+func lessThanMonthOld(now, rec date) bool {
+	return now.y == rec.y && now.m == rec.m ||
+		now.y == rec.y && now.m-1 == rec.m && now.d < rec.d ||
+		now.y-1 == rec.y && now.m == 1 && rec.m == 12 && now.d < rec.d
+}
+
+func monthToAYearOld(now, rec date) bool {
+	return now.y == rec.y && now.m-1 == rec.m && now.d >= rec.d ||
+		now.y == rec.y && now.m-1 > rec.m ||
+		now.y-1 == rec.y && now.m < rec.m && rec.m-now.m != 11 ||
+		now.y-1 == rec.y && now.m == 1 && rec.m == 12 && now.d >= rec.d ||
+		now.y-1 == rec.y && now.m == rec.m && now.d < rec.d
+}
+
+func yearOnwardOld(now, rec date) bool {
+	return now.y-1 > rec.y ||
+		now.y-1 == rec.y && now.m > rec.m ||
+		now.y-1 == rec.y && now.m == rec.m && now.d >= rec.d
 }

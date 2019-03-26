@@ -52,8 +52,12 @@ func setBitMode(in FlagsInStruct) error {
 		return ckSet()
 	}
 
-	// None defined, set a default running mode.
-	f |= cLIST
+	// None defined, test for list or read running mode.
+	if f&(cNAME|cREPO|cNUMBER) == cADDRESS {
+		f |= cREAD
+	} else {
+		f |= cLIST
+	}
 	return ckList()
 }
 

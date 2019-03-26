@@ -38,7 +38,7 @@ type Req struct {
 	Queries []string // Queries that have been retrieved from the Args[] array.
 }
 
-// FlagsInStruct flags set from ther user command line args.
+// FlagsInStruct flags set from the user command line arguments.
 type FlagsInStruct struct {
 	Read    bool
 	List    bool
@@ -108,13 +108,23 @@ const (
 	cNAME // Used as an indicator to signal that either a user name an
 	// author or and organisation have been provided.
 	cAUTH // Used as an indicator to signal that authentication is required.
+
 )
+
+// cADDRESS stores the combined flag set that defined the state requirement for
+// a direct address HTTP access rather than a search, used by cREAD and other
+// similarly single response or address function.
+var cADDRESS flags
+
+func init() {
+	cADDRESS |= (cNAME | cREPO | cNUMBER)
+}
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *  Map for outputting bitfield flags by name.
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-// mState is a hashmap for printing out flags by name, used by the verboase
+// mState is a hashmap for printing out flags by name, used by the verbose
 // flag.
 var mState = make(map[flags]string)
 

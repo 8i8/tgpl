@@ -1,7 +1,13 @@
 package gitish
 
-// TODO these functions could be joined into one single function that returns a
-// flag such that one single iteration over an array of dates be required.
+type cal uint
+
+const (
+	dMONTH cal = 1 << iota
+	dYEAR
+	dMORE
+	dERROR
+)
 
 // lessThanMonth returns true for dates that are less than a month apart.
 func lessThanMonth(now, rec date) bool {
@@ -24,22 +30,33 @@ func yearOnward(now, rec date) bool {
 	return diff == 12 && now.d >= rec.d || diff > 12
 }
 
-func lessThanMonth2(now, rec date) bool {
-	return now.y == rec.y && now.m == rec.m ||
-		now.y == rec.y && now.m-1 == rec.m && now.d < rec.d ||
-		now.y-1 == rec.y && now.m == 1 && rec.m == 12 && now.d < rec.d
+// dateSort returns a bitfield with the flag set.
+func dateSort(now, rec date) cal {
+
+	switch {
+	case yearOnward(now, rec):
+		return dMORE
+	case monthToAYear(now, rec):
+		return dYEAR
+	case lessThanMonth(now, rec):
+		return dMONTH
+	default:
+		return dERROR
+	}
 }
 
-func monthToAYear2(now, rec date) bool {
-	return now.y == rec.y && now.m-1 == rec.m && now.d >= rec.d ||
-		now.y == rec.y && now.m-1 > rec.m ||
-		now.y-1 == rec.y && now.m < rec.m && rec.m-now.m != 11 ||
-		now.y-1 == rec.y && now.m == 1 && rec.m == 12 && now.d >= rec.d ||
-		now.y-1 == rec.y && now.m == rec.m && now.d < rec.d
-}
-
-func yearOnward2(now, rec date) bool {
-	return now.y-1 > rec.y ||
-		now.y-1 == rec.y && now.m > rec.m ||
-		now.y-1 == rec.y && now.m == rec.m && now.d >= rec.d
+func dateSort2(now, rec date) cal {
+	diff := (now.y*12 + int(now.m)) - (rec.y*12 + int(rec.m))
+	switch {
+	case diff == 12 && now.d >= rec.d || diff > 12:
+		return dMORE
+	case diff == 1 && now.d >= rec.d ||
+		diff > 1 && diff < 12 ||
+		diff == 12 && now.d < rec.d:
+		return dYEAR
+	case diff == 0 || diff == 1 && now.d < rec.d:
+		return dMONTH
+	default:
+		return dERROR
+	}
 }
