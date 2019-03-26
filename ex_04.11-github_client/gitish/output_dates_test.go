@@ -39,13 +39,6 @@ func TestDates(t *testing.T) {
 	}
 }
 
-/*
-   1) The same calendar month and year.
-   2) The same calendar year with one month difference; lesser day than the day
-  	issued.
-   3) One calendar year difference; January issue date December; lesser day
-  	today than the day issued.
-*/
 func testLessThanMonth(t *testing.T, i, j int) {
 	for n, d := range cal {
 		if lessThanMonth(now, d) {
@@ -58,18 +51,6 @@ func testLessThanMonth(t *testing.T, i, j int) {
 	}
 }
 
-/*
-   1) The same calendar year; Greater month by more than one calendar month
-  	than the date issued.
-   2) The same calendar year; The month is one greater than the issued month;
-  	equal or greater day today than the day issued.
-   3) One calendar years difference; January the date of issue in December;
-  	Equal or greater day today than the day issued.
-   4) One calendar years difference; The current calendar month is lesser than
-  	the month of the issue.
-   5) One calendar years difference; The same calendar month; lesser day today
-  	than the day issued.
-*/
 func testMonthToAYear(t *testing.T, i, j int) {
 	for n, d := range cal {
 		if monthToAYear(now, d) {
@@ -82,11 +63,6 @@ func testMonthToAYear(t *testing.T, i, j int) {
 	}
 }
 
-/*
-   1) One calendar years difference; The same calendar month: Equal or greater
-  	day than the day issued.
-   2) Greater than one years difference.
-*/
 func testYearOnward(t *testing.T, i, j int) {
 	for n, d := range cal {
 		if yearOnward(now, d) {
