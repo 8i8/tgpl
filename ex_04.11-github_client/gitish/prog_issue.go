@@ -2,7 +2,6 @@ package gitish
 
 import (
 	"bufio"
-	"encoding/base64"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -155,27 +154,4 @@ func lockIssue(c Config) ([]byte, error) {
 		return nil, fmt.Errorf("lockIssue: %v", err)
 	}
 	return json, err
-}
-
-// getPass requests that the user enter their password and then returns it
-// encoded as a base64 string.
-func getPass(c Config) (string, error) {
-
-	// User input.
-	sc := bufio.NewScanner(os.Stdin)
-	var pass string
-	var err error
-	for pass == "" {
-		fmt.Printf("Enter host password for user '%v': ", c.User)
-		sc.Scan()
-		pass = sc.Text()
-	}
-	if err != nil {
-		return pass, fmt.Errorf("pass scanner: %+v", err)
-	}
-	// Encode to base64.
-	pass = c.User + ":" + pass
-	pass = base64.StdEncoding.EncodeToString([]byte(pass))
-
-	return pass, nil
 }

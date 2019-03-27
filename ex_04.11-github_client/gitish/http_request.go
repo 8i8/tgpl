@@ -3,7 +3,6 @@ package gitish
 import (
 	"bytes"
 	"fmt"
-	"io"
 	"net/http"
 	"strconv"
 )
@@ -32,10 +31,13 @@ type Address struct {
 }
 
 // sendRequest compiles and sends the appropriate predefined request.
-func sendRequest(conf Config, addr Address, json io.Reader) (*http.Response, error) {
+func sendRequest(conf Config, addr Address, json []byte) (*http.Response, error) {
+
+	// Buffer json for request.
+	buf := bytes.NewReader(json)
 
 	// Get a new request object.
-	req, err := http.NewRequest(addr.HTTP, addr.URL, json)
+	req, err := http.NewRequest(addr.HTTP, addr.URL, buf)
 	if err != nil {
 		return nil, fmt.Errorf("NewRequest: %v", err)
 	}
@@ -98,9 +100,7 @@ func makeRequest(c Config, json []byte) (Reply, error) {
 		fmt.Printf("makeRequest: json %v\n", string(json))
 	}
 
-	// Buffer json into reader and make send request.
-	buf := bytes.NewReader(json)
-	resp, err := sendRequest(c, addr, buf)
+	resp, err := sendRequest(c, addr, json)
 	if err != nil {
 		return reply, fmt.Errorf("sendRequest: %v", err)
 	}

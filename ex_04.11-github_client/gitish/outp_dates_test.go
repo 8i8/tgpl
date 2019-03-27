@@ -134,7 +134,8 @@ func BenchmarkDateOld(b *testing.B) {
 				}
 
 				for _, d := range calendar {
-					dateSortOld(now, d)
+					//dateSortOld(now, d)
+					testDateSort(now, d)
 				}
 
 				// reset the calendar
