@@ -43,6 +43,13 @@ func lock(c Config) Header {
 	return h
 }
 
+func putZeroLength(c Config) Header {
+	var h Header
+	h.Key = "Content-Length"
+	h.Value = "0"
+	return h
+}
+
 // authRequest seeks authorisation when it is required.
 func authRequest(c Config, h []Header) ([]Header, error) {
 
@@ -81,6 +88,9 @@ func composeHeader(c Config) ([]Header, error) {
 	// Set Lock details.
 	if f&cLOCK > 0 {
 		h = append(h, lock(c))
+		if len(c.Queries) == 0 {
+			h = append(h, putZeroLength(c))
+		}
 	}
 
 	return h, nil
