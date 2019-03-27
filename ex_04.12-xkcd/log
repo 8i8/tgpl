@@ -1,0 +1,39 @@
+== Info:   Trying 151.101.192.67...
+== Info: TCP_NODELAY set
+== Info: Connected to xkcd.com (151.101.192.67) port 80 (#0)
+=> Send header, 83 bytes (0x53)
+0000: GET /info.0.json HTTP/1.1
+001b: Host: xkcd.com
+002b: User-Agent: curl/7.52.1
+0044: Accept: */*
+0051: 
+<= Recv header, 32 bytes (0x20)
+0000: HTTP/1.1 301 Moved Permanently
+<= Recv header, 17 bytes (0x11)
+0000: Server: Varnish
+<= Recv header, 16 bytes (0x10)
+0000: Retry-After: 0
+<= Recv header, 40 bytes (0x28)
+0000: Location: https://xkcd.com/info.0.json
+<= Recv header, 19 bytes (0x13)
+0000: Content-Length: 0
+<= Recv header, 22 bytes (0x16)
+0000: Accept-Ranges: bytes
+<= Recv header, 37 bytes (0x25)
+0000: Date: Wed, 27 Mar 2019 19:08:18 GMT
+<= Recv header, 18 bytes (0x12)
+0000: Via: 1.1 varnish
+<= Recv header, 19 bytes (0x13)
+0000: Connection: close
+<= Recv header, 33 bytes (0x21)
+0000: X-Served-By: cache-cdg20740-CDG
+<= Recv header, 14 bytes (0xe)
+0000: X-Cache: HIT
+<= Recv header, 17 bytes (0x11)
+0000: X-Cache-Hits: 0
+<= Recv header, 37 bytes (0x25)
+0000: X-Timer: S1553713699.844093,VS0,VE0
+<= Recv header, 2 bytes (0x2)
+0000: 
+== Info: Curl_http_done: called premature == 0
+== Info: Closing connection 0

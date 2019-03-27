@@ -12,6 +12,13 @@ type Header struct {
 	Key, Value string
 }
 
+// Address contains the URL the request and the response.
+type Address struct {
+	HTTP, URL string
+	header    []Header
+	Status
+}
+
 // Status http response, text and code key pair.
 type Status struct {
 	Code    int
@@ -23,15 +30,8 @@ func (s Status) String() string {
 	return strconv.Itoa(s.Code) + " " + s.Message
 }
 
-// Address contains the URL the request and the response.
-type Address struct {
-	HTTP, URL string
-	header    []Header
-	Status
-}
-
 // sendRequest compiles and sends the appropriate predefined request.
-func sendRequest(conf Config, addr Address, json []byte) (*http.Response, error) {
+func sendRequest(addr Address, json []byte) (*http.Response, error) {
 
 	// Buffer json for request.
 	buf := bytes.NewReader(json)
@@ -100,7 +100,7 @@ func makeRequest(c Config, json []byte) (Reply, error) {
 		fmt.Printf("makeRequest: json %v\n", string(json))
 	}
 
-	resp, err := sendRequest(c, addr, json)
+	resp, err := sendRequest(addr, json)
 	if err != nil {
 		return reply, fmt.Errorf("sendRequest: %v", err)
 	}

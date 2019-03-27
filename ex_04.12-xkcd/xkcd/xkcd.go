@@ -1,6 +1,6 @@
 package xkcd
 
-type xbcd struct {
+type Comic struct {
 	Month      string
 	Num        uint
 	Link       string
