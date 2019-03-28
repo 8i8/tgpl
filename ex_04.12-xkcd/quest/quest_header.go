@@ -1,4 +1,4 @@
-package httpm
+package quest
 
 // accept defines the media type.
 func accAppJson() Header {

@@ -1,5 +1,16 @@
 package xkcd
 
+const cLastURL = "https://xkcd.com/info.0.json"
+const cBaseURL = "https://xkcd.com/"
+const cTailURL = "/info.0.json"
+
+// Comics is an array of xkcd cartoons.
+type Comics struct {
+	Len     uint
+	Edition []Comic
+}
+
+// Comic contains an xkcd cartoon.
 type Comic struct {
 	Month      string
 	Num        uint
@@ -12,6 +23,11 @@ type Comic struct {
 	Img        string
 	Title      string
 	Day        string
+}
+
+// Print returns a single xkcd commic edition specified by referance number.
+func (c Comics) Print(i uint) Comic {
+	return c.Edition[i]
 }
 
 /*
