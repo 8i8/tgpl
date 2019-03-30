@@ -5,6 +5,9 @@ import (
 	"fmt"
 )
 
+// helpFlag is a flag that is set to signal help is to be printed.
+var helpFlag bool
+
 // SetupFlags provides custom help documentation.
 func SetupFlags(flag *flag.FlagSet) {
 	flag.Usage = func() {

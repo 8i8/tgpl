@@ -4,6 +4,17 @@ const cLastURL = "https://xkcd.com/info.0.json"
 const cBaseURL = "https://xkcd.com/"
 const cTailURL = "/info.0.json"
 
+// Database file name.
+var cNAME = "xkcd.json"
+
+// Verbouse program output whilst running.
+var (
+	VERBOSE bool
+	UPDATE  bool
+	RECORD  uint
+	TESTRUN uint
+)
+
 // Comics is an array of xkcd cartoons.
 type Comics struct {
 	Len     uint
@@ -13,7 +24,7 @@ type Comics struct {
 // Comic contains an xkcd cartoon.
 type Comic struct {
 	Month      string
-	Num        uint
+	Number     uint `json:"num"`
 	Link       string
 	Year       string
 	News       string
@@ -28,6 +39,10 @@ type Comic struct {
 // Print returns a single xkcd commic edition specified by referance number.
 func (c Comics) Print(i uint) Comic {
 	return c.Edition[i]
+}
+
+func (c Comic) Num() uint {
+	return c.Number
 }
 
 /*

@@ -3,6 +3,7 @@ package xkcd
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 
 	"tgpl/ex_04.12-xkcd/quest"
 )
@@ -18,4 +19,16 @@ func xkcdDecode(req quest.HttpQuest) (Comic, error) {
 	}
 
 	return comic, nil
+}
+
+// readFile is a wraper around the json decode function.
+func readFile(file *os.File) (Comics, error) {
+
+	// Read data.
+	var comics Comics
+	err := json.NewDecoder(file).Decode(&comics)
+	if err != nil {
+		return comics, fmt.Errorf("decoder: %v", err)
+	}
+	return comics, nil
 }

@@ -6,64 +6,157 @@ import (
 	"os"
 )
 
-// LoadConfig load the last saved config, if no file exists create with the
-// default settings.
 func LoadDatabase() (Comics, error) {
 
+	if VERBOSE {
+		fmt.Printf("xkcd: loading database\n")
+	}
+
 	// Open file for reading if present.
-	file, err := os.Open("xkcd.json")
+	file, err := os.Open(cNAME)
 	if err != nil {
-		// If not present create file
-		comics, err := generate()
+		if VERBOSE {
+			fmt.Printf("xkcd: data file not found ...\n")
+		}
+		//return nil, fmt.Errorf("Open: %v", err)
+		// TODO ask user whether a new database is to be made.
+		comics, err := generateDatabase()
 		if err != nil {
-			return comics, fmt.Errorf("generate: %v", err)
+			return comics, fmt.Errorf("generateDatabase: %v", err)
 		}
 		return comics, nil
 	}
 
-	// Read json file.
-	var comics Comics
-	decoder := json.NewDecoder(file)
-	err = decoder.Decode(&comics)
+	comics, err := readFile(file)
 	if err != nil {
-		return comics, fmt.Errorf("decoder: %v", err)
+		return comics, fmt.Errorf("readFile: %v", err)
+	}
+
+	if VERBOSE {
+		fmt.Printf("xkcd: database loaded\n")
 	}
 
 	return comics, err
 }
 
-// UpdateDatabase retries any editions that are not currently in the database.
-// func UpdateDatabase() (Comics, error) {
-// }
+func growDatastructure(comics Comics, l uint) Comics {
 
-// generate pull the entire xkcd database from the website.
-func generate() (Comics, error) {
+	// If required, make a new data structure and copy over any comics
+	// present.
+	if cap(comics.Edition) < int(l) {
+		newComics := Comics{}
+		newComics.Edition = make([]Comic, l)
+		copy(newComics.Edition, comics.Edition)
+		return newComics
+	}
+	// Adjust length.
+	comics.Edition = comics.Edition[:int(l)]
+	return comics
+}
+
+// UpdateDatabase retrieves any editions that are not currently in the
+// database.
+func UpdateDatabase(comics Comics) (Comics, bool, error) {
+
+	if VERBOSE {
+		fmt.Printf("xkcd: updating database ...\n")
+	}
+
+	// Check whether update is required.
+	l, err := getLatestNumber()
+	if err != nil {
+		return comics, false, fmt.Errorf("GetLatestNumber: %v", err)
+	}
+
+	if l <= comics.Len {
+		if VERBOSE {
+			fmt.Printf("xkcd: ... up to date\n")
+		}
+		return comics, false, nil
+	}
+
+	// Record current length and grow.
+	c := comics.Len
+	comics = growDatastructure(comics, l)
+
+	// Fill array with new comics.
+	for i := uint(c); i < l; i++ {
+		comic, code, err := getComic(i + 1)
+		if err != nil && code != 404 {
+			return comics, false, fmt.Errorf("GetComicNum: %d: %v", i, err)
+		}
+		if code != 404 {
+			comics.Edition[i] = comic
+		}
+		comics.Len++
+	}
+
+	// Adds \n after the quest.http status responces which use \r to avoid
+	// flooding.
+	if VERBOSE {
+		fmt.Printf("\n")
+	}
+
+	// Prepare for reading.
+	data, err := json.MarshalIndent(comics, "", "	")
+	if err != nil {
+		return comics, false, fmt.Errorf("MarshalIndent: %v", err)
+	}
+
+	// Open file for writing.
+	file, err := os.Create(cNAME)
+	if err != nil {
+		return comics, false, fmt.Errorf("Create: %v", err)
+	}
+
+	// Write data to file.
+	_, err = file.Write(data)
+	if err != nil {
+		return comics, false, fmt.Errorf("Write: %v", err)
+	}
+	file.Close()
+
+	if VERBOSE {
+		fmt.Printf("xkcd: ... database updated, %d records created\n", l-c)
+	}
+
+	return comics, true, nil
+}
+
+// generateDatabase pulls the entire xkcd database from the website.
+func generateDatabase() (Comics, error) {
 
 	var comics Comics
-	// Make the file.
-	file, err := os.Create("xkcd.json")
-	if err != nil {
-		return comics, fmt.Errorf("Create: %v", err)
+
+	if VERBOSE {
+		fmt.Printf("xkcd: generating database ...\n")
 	}
-	defer file.Close()
 
 	// Get the total quantity of comics.
-	// l, err := GetLatestNum()
-	// if err != nil || l == 0 {
-	// 	return fmt.Errorf("GetLatestNum: %v", err)
-	// }
-	var l uint
-	l = 1000
+	l, err := getLatestNumber()
+	if err != nil || l == 0 {
+		return comics, fmt.Errorf("GetLatestNum: %v", err)
+	}
+
+	// Data store.
 	comics.Edition = make([]Comic, l)
 	comics.Len = l
 
 	// Fill array with comics.
-	for i := uint(0); i < l; i++ {
-		comic, err := GetComic(i + 1)
-		if err != nil {
+	for i := uint(0); i < l && i < 400; i++ {
+		comic, code, err := getComic(i + 1)
+		if err != nil && code != 404 {
 			return comics, fmt.Errorf("GetComicNum: %d: %v", i, err)
 		}
-		comics.Edition[i] = comic
+		if code == 404 {
+			fmt.Printf("http: 404 page %d not found\n", i+1)
+		} else {
+			comics.Edition[i] = comic
+		}
+	}
+
+	if VERBOSE {
+		fmt.Printf("\n")
 	}
 
 	// Prepare for reading.
@@ -72,10 +165,21 @@ func generate() (Comics, error) {
 		return comics, fmt.Errorf("MarshalIndent: %v", err)
 	}
 
-	// Write json to file.
+	// Open file for writing.
+	file, err := os.Create(cNAME)
+	if err != nil {
+		return comics, fmt.Errorf("Create: %v", err)
+	}
+	defer file.Close()
+
+	// Write data to file.
 	_, err = file.Write(data)
 	if err != nil {
 		return comics, fmt.Errorf("Write: %v", err)
+	}
+
+	if VERBOSE {
+		fmt.Printf("xkcd: ... database written\n")
 	}
 
 	return comics, err

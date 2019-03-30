@@ -2,6 +2,8 @@ package quest
 
 import "strconv"
 
+var VERBOSE bool
+
 // Header key value pairs.
 type Header struct {
 	Key, Value string
@@ -15,8 +17,8 @@ type HttpQuest struct {
 	httpStatus
 }
 
-// GET sets the appropriate header HTTP verb and keypairs to connect by the GET
-// method.
+// GET sets the appropriate header HTTP verb and key pairs to connect by the
+// GET method.
 func (r *HttpQuest) GET(s string) {
 	r.verb = "GET"
 	r.url = s

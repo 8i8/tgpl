@@ -1,18 +1,23 @@
 package main
 
 import (
-	"fmt"
+	"flag"
 
 	"tgpl/ex_04.12-xkcd/xkcd"
 )
 
+func init() {
+	flag.BoolVar(&xkcd.VERBOSE, "v", false, "")
+	flag.BoolVar(&xkcd.UPDATE, "u", false, "")
+	flag.UintVar(&xkcd.TESTRUN, "t", 0, "")
+	flag.UintVar(&xkcd.RECORD, "n", 0, "")
+}
+
 func main() {
 
-	comics, err := xkcd.LoadDatabase()
-	if err != nil {
-		fmt.Printf("error: %v\n", err)
-		return
-	}
+	// Command line input.
+	xkcd.SetupFlags(flag.CommandLine)
+	flag.Parse()
 
-	fmt.Printf("%+v\n", comics.Print(0))
+	xkcd.Init()
 }

@@ -14,41 +14,43 @@ func TestDates(t *testing.T) {
 	for i := 0; i < 12; i++ {
 		// Days, test for many different start days, 400 is just over a year
 		// and a month.
-		for j := 0; j < 400; j++ {
+		for j := 0; j < 40; j++ {
 
-			// Arbritrary starting point.
-			d := time.Date(2011, 1, 10, 1, 0, 0, 0, time.UTC)
+			for k := 0; k < 50; k++ {
+				// Arbritrary starting point.
+				d := time.Date(1980+k, 6, 10, 1, 0, 0, 0, time.UTC)
 
-			// Augment date to cover the given time period.
-			d = d.AddDate(0, i, j)
-			now = date{0, d.Year(), d.Month(), d.Day(), false}
+				// Augment date to cover the given time period.
+				d = d.AddDate(0, i, j)
+				now = date{0, d.Year(), d.Month(), d.Day(), false}
 
-			// Create calendar that spans two years.
-			for k := 730; k > 0; k-- {
-				day := date{0, d.Year(), d.Month(), d.Day(), false}
-				calendar = append(calendar, day)
-				d = d.AddDate(0, 0, -1)
-			}
-
-			// Test the entire range of dates.
-			for n, d := range calendar {
-				c := testDateSort(now, d)
-				if c&dERROR > 0 {
-					t.Error("error: ", d.d, d.m, d.y, i, j)
-					return
+				// Create calendar that spans two years.
+				for l := 730; l > 0; l-- {
+					day := date{0, d.Year(), d.Month(), d.Day(), false}
+					calendar = append(calendar, day)
+					d = d.AddDate(0, 0, -1)
 				}
-				if c != dMORE && c != dYEAR && c != dMONTH {
-					t.Error("doubled: ", d.d, d.m, d.y, i, j)
-					return
+
+				// Test the entire range of dates.
+				for n, d := range calendar {
+					c := testDateSort(now, d)
+					if c&dERROR > 0 {
+						t.Error("error: ", d.d, d.m, d.y, i, j)
+						return
+					}
+					if c != dMORE && c != dYEAR && c != dMONTH {
+						t.Error("doubled: ", d.d, d.m, d.y, i, j)
+						return
+					}
+					calendar[n].p = true
 				}
-				calendar[n].p = true
+
+				// Check for dates that have not been printed.
+				testNotPrinted(t, i, j, k)
+
+				// reset the calendar
+				calendar = calendar[:0]
 			}
-
-			// Check for dates that have not been printed.
-			testNotPrinted(t, i, j)
-
-			// reset the calendar
-			calendar = calendar[:0]
 		}
 	}
 }
@@ -86,7 +88,7 @@ func BenchmarkDate(b *testing.B) {
 			for j := 0; j < 400; j++ {
 
 				// Arbritrary starting point.
-				d := time.Date(2011, 1, 10, 1, 0, 0, 0, time.UTC)
+				d := time.Date(2011, 6, 10, 1, 0, 0, 0, time.UTC)
 
 				// Augment date to cover the given time period.
 				d = d.AddDate(0, i, j)
@@ -120,7 +122,7 @@ func BenchmarkDateOld(b *testing.B) {
 			for j := 0; j < 400; j++ {
 
 				// Arbritrary starting point.
-				d := time.Date(2011, 1, 10, 1, 0, 0, 0, time.UTC)
+				d := time.Date(2011, 6, 10, 1, 0, 0, 0, time.UTC)
 
 				// Augment date to cover the given time period.
 				d = d.AddDate(0, i, j)
@@ -148,11 +150,11 @@ func BenchmarkDateOld(b *testing.B) {
 /*
    Print an error for any dates remaining that have not yet been printed.
 */
-func testNotPrinted(t *testing.T, i, j int) {
+func testNotPrinted(t *testing.T, i, j, k int) {
 	for _, d := range calendar {
 		if d.p == false {
 			t.Error("error: date not printed",
-				d.d, d.m, d.y, i, j)
+				d.d, d.m, d.y, i, j, k)
 		}
 	}
 }

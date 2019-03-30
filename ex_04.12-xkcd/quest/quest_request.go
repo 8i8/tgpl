@@ -7,8 +7,10 @@ import (
 	"net/http"
 )
 
-// respDecodeJSON reads and stores an http responce body.
-func respDecodeJSON(req *HttpQuest, resp *http.Response) error {
+var count uint
+
+// respDecode reads and stores an http response body.
+func respDecode(req *HttpQuest, resp *http.Response) error {
 
 	var msg json.RawMessage
 
@@ -25,6 +27,25 @@ func getStatus(req *HttpQuest, resp *http.Response) *HttpQuest {
 
 	req.Code = resp.StatusCode
 	req.Message = http.StatusText(resp.StatusCode)
+
+	if VERBOSE {
+		count++
+		i := count % 6
+		switch i {
+		case 0:
+			fmt.Printf("\rquest: http: %s .  ", req.Status())
+		case 1:
+			fmt.Printf("\rquest: http: %s  . ", req.Status())
+		case 2:
+			fmt.Printf("\rquest: http: %s   .", req.Status())
+		case 3:
+			fmt.Printf("\rquest: http: %s   .", req.Status())
+		case 4:
+			fmt.Printf("\rquest: http: %s  . ", req.Status())
+		case 5:
+			fmt.Printf("\rquest: http: %s .  ", req.Status())
+		}
+	}
 
 	return req
 }
@@ -55,7 +76,7 @@ func sendRequest(req HttpQuest, body []byte) (*http.Response, error) {
 	return response, err
 }
 
-// Request sends and recieves an HTTP requests, storing the responce
+// request sends and receives an HTTP requests, storing the response
 // status.
 func request(req HttpQuest, body []byte) (HttpQuest, error) {
 
@@ -66,10 +87,10 @@ func request(req HttpQuest, body []byte) (HttpQuest, error) {
 
 	getStatus(&req, response)
 
-	err = respDecodeJSON(&req, response)
+	err = respDecode(&req, response)
 	if err != nil {
 		fmt.Printf("http: %v\n", req.Status())
-		return req, fmt.Errorf("respDecodeJSON: %v", err)
+		return req, fmt.Errorf("respDecode: %v", err)
 	}
 
 	return req, nil
