@@ -14,8 +14,8 @@ func commaRec(s string) string {
 	return commaRec(s[:n-3]) + "," + s[n-3:]
 }
 
-// Displeased with the reseting in the above function; I decided to write
-// another version, looking to invrease efficincy.
+// Displeased by the recopying of the string in the above function; I have
+// decided to write another version, looking to increase efficiency.
 func commaBuf(s string) string {
 
 	var buf bytes.Buffer
@@ -27,7 +27,7 @@ func commaBuf(s string) string {
 		sign++
 	}
 
-	// Check for decimal point. If present store the number length before
+	// Check for decimal point. If present store the numbers length before
 	// the point in n and after the pont in tail.
 	n := strings.LastIndex(s, ".")
 	if n > 0 {

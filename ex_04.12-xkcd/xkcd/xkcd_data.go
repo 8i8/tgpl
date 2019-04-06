@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-func LoadDatabase() (Comics, error) {
+func loadDatabase() (Comics, error) {
 
 	if VERBOSE {
 		fmt.Printf("xkcd: loading database\n")
@@ -70,7 +70,7 @@ func UpdateDatabase(comics Comics) (Comics, bool, error) {
 
 	if l <= comics.Len {
 		if VERBOSE {
-			fmt.Printf("xkcd: ... up to date\n")
+			fmt.Printf("\nxkcd: ... up to date\n")
 		}
 		return comics, false, nil
 	}
@@ -117,7 +117,7 @@ func UpdateDatabase(comics Comics) (Comics, bool, error) {
 	file.Close()
 
 	if VERBOSE {
-		fmt.Printf("xkcd: ... database updated, %d records created\n", l-c)
+		fmt.Printf("xkcd: ... database updated, %d records added\n", l-c)
 	}
 
 	return comics, true, nil

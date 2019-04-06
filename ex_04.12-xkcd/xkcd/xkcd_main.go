@@ -16,6 +16,7 @@ func getComic(i uint) (Comic, int, error) {
 	var comic Comic
 	var err error
 
+	// If a number has been given get that, else if zero given, get the latest.
 	if i == 0 {
 		req, err = req.QuestGET(cLastURL)
 	} else {
@@ -25,7 +26,10 @@ func getComic(i uint) (Comic, int, error) {
 		return comic, req.Code, fmt.Errorf("QuestGET: %v", err)
 	}
 
-	comic, err = xkcdDecode(req)
+	// If a comic was returned decode it.
+	if req.Code != 404 {
+		comic, err = xkcdDecode(req)
+	}
 	if err != nil {
 		return comic, req.Code, fmt.Errorf("xkcdDecode: %v", err)
 	}
@@ -52,43 +56,85 @@ func getLatestNumber() (uint, error) {
 	return latest.Num(), nil
 }
 
-// Init initalises the xkcd datastructure from the database, checking for
-// updates if requested, or if the last update was over a week ago.
-func Init() {
+// setConfig sets required state variables for desired program run mode.
+func setConfig() {
 
-	var err error
+	// sets quest package to verbose.
 	if VERBOSE {
 		quest.VERBOSE = true
 	}
+
+	// Sets program to generate a test database.
 	if TESTRUN > 0 {
 		cNAME = "test.json"
 	}
-
-	if RECORD > 0 {
-		comic, code, err := getComic(RECORD)
-		if err != nil && code != 404 {
-			fmt.Printf("error: getComic: %v\n")
-		}
-		if code == 404 {
-			fmt.Printf("http: 404 page not found\n")
-		} else {
-			PrintSingle(comic)
-		}
-		return
-	}
-
-	comics, err = LoadDatabase()
-	if err != nil {
-		fmt.Printf("error: LoadDatabase: %v\n", err)
-		return
-	}
-
-	if UPDATE {
-		Update()
-	}
-
 }
 
+// dbInit loads the xkcd index data from the data file into program memory.
+func dbInit() Comics {
+
+	// load db into memory.
+	comics, err := loadDatabase()
+	if err != nil {
+		fmt.Printf("error: loadDatabase: %v\n", err)
+		return comics
+	}
+	return comics
+}
+
+// DbGet prints our the given comic description from the database.
+func DbGet(n uint) {
+
+	if VERBOSE {
+		fmt.Printf("xkcd: database access ~~~\n\n")
+	}
+	if comics.Len > DBGET {
+		printSingle(comics.Edition[n])
+	}
+	if VERBOSE {
+		fmt.Printf("\nxkcd: ~~~ database done\n")
+	}
+}
+
+// WebGet outputs the given comic from the internet by making a http request.
+func WebGet(n uint) {
+
+	if VERBOSE {
+		fmt.Printf("xkcd: make http request\n")
+	}
+
+	comic, code, err := getComic(n)
+	if err != nil && code != 404 {
+		fmt.Printf("error: getComic: %v\n", err)
+	} else if code == 404 {
+		fmt.Printf("xkcd: http: 404 comic not found\n")
+	}
+
+	if VERBOSE {
+		fmt.Printf("xkcd: http request closed\n")
+	}
+
+	if err == nil {
+		printSingle(comic)
+	}
+}
+
+// Search searched the local database of comic descriptions for the given
+// arguments.
+func Search(args []string) {
+	if VERBOSE {
+		fmt.Printf("xkcd: output start ~~~\n\n")
+	}
+	m := buildSearchMap(comics)
+	buildSearchGraph(m)
+	res := search(m, comics, args)
+	printResults(comics, res)
+	if VERBOSE {
+		fmt.Printf("\nxkcd: ~~~ output end\n")
+	}
+}
+
+// Update updates the comic database with the latest comic descriptions.
 func Update() {
 
 	var err error
@@ -99,23 +145,33 @@ func Update() {
 	}
 }
 
-/*
-month	"3"
-num	2128
-link	""
-year	"2019"
-news	""
-safe_title	"New Robot"
-transcript	""
-alt	"\"Some worry that we'll soon have a surplus of search and rescue robots, compared to the number of actual people in situations requiring search and rescue. That's where our other robot project comes in...\""
-img	"https://imgs.xkcd.com/comics/new_robot.png"
-title	"New Robot"
-day	"25"
-*/
-func PrintComic(i uint) {
-	fmt.Println(comics.Edition[i])
-}
+// Run is the xkcd main program routine.
+func Run(args []string) {
 
-func PrintSingle(comic Comic) {
-	fmt.Println(comic)
+	// Program state.
+	setConfig()
+
+	// Load db
+	comics = dbInit()
+
+	if DBGET > 0 {
+		DbGet(DBGET - 1)
+		return
+	}
+
+	if SEARCH {
+		Search(args)
+		return
+	}
+
+	if WEBGET > 0 {
+		WebGet(WEBGET)
+	}
+
+	if UPDATE {
+		Update()
+	}
+
+	// TODO the numbering needs to be made generic.
+	printSingle(comics.Edition[comics.Len-1])
 }

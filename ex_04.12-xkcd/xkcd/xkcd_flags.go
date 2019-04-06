@@ -26,8 +26,10 @@ SYNOPSIS
 	cartoons by their textual descriptions.
 FLAGS
 	xkcd	Displays the latest cartoon number and address.
-	-u	Updates the database.
-	-d	Displays the latest cartoon's description.
-	-r	Remakes the list of cartoons.
-	-s	Search the xkcd database.
+	-v	Verbose mode.
+	-u	Update comic database.
+	-s	Search database.
+	-t	Generate test database of size 'n'.
+	-n	Display comic 'n' from database.
+	-w	Display comic 'n' from web.
 `

@@ -1,5 +1,5 @@
 {
-	"Len": 2130,
+	"Len": 2132,
 	"Edition": [
 		{
 			"Month": "1",
@@ -27690,6 +27690,32 @@
 			"Img": "https://imgs.xkcd.com/comics/industry_nicknames.png",
 			"Title": "Industry Nicknames",
 			"Day": "29"
+		},
+		{
+			"Month": "4",
+			"num": 2131,
+			"Link": "https://xkcd.com/2131/emojidome_bracket_round_of_128.png",
+			"Year": "2019",
+			"News": "",
+			"safe_title": "Emojidome",
+			"Transcript": "",
+			"Alt": "Thank you to the xkcd April 1st volunteers/commentators, including @Chromakode, Kevin, @Aiiane, Patrick, Kat, Reuven, @cotrone, @bstaffin, @zigdon, schwal, Stereo, and everyone who voted!",
+			"Img": "https://imgs.xkcd.com/comics/emojidome.png",
+			"Title": "Emojidome",
+			"Day": "1"
+		},
+		{
+			"Month": "4",
+			"num": 2132,
+			"Link": "",
+			"Year": "2019",
+			"News": "",
+			"safe_title": "Percentage Styles",
+			"Transcript": "",
+			"Alt": "In a tribute to classical Latin, I started pronouncing it 'per-kent.' Eventually my friends had to resort to spritzing me with a water bottle like a cat to train me out of it.",
+			"Img": "https://imgs.xkcd.com/comics/percentage_styles.png",
+			"Title": "Percentage Styles",
+			"Day": "3"
 		}
 	]
 }

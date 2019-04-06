@@ -88,8 +88,7 @@ func request(req HttpQuest, body []byte) (HttpQuest, error) {
 	getStatus(&req, response)
 
 	err = respDecode(&req, response)
-	if err != nil {
-		fmt.Printf("http: %v\n", req.Status())
+	if err != nil && req.Code != 404 {
 		return req, fmt.Errorf("respDecode: %v", err)
 	}
 

@@ -22,7 +22,7 @@ NAME
 	gitish
 
 SYNOPSIS
-	gitish [mode] [name|repo|number] [options]
+	gitish [mode] [u|a|o] <value> [r] <value> [options]
 
 MODES
 	gitish -[mode]
