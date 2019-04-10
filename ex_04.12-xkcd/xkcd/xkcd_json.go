@@ -22,11 +22,9 @@ func xkcdDecode(req quest.HttpQuest) (Comic, error) {
 }
 
 // readFile is a wraper around the json decode function.
-func readFile(file *os.File) (Comics, error) {
+func readFile(comics *DataBase, file *os.File) (*DataBase, error) {
 
-	// Read data.
-	var comics Comics
-	err := json.NewDecoder(file).Decode(&comics)
+	err := json.NewDecoder(file).Decode(comics)
 	if err != nil {
 		return comics, fmt.Errorf("decoder: %v", err)
 	}

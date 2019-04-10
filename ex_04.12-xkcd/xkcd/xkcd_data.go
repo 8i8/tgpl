@@ -6,57 +6,83 @@ import (
 	"os"
 )
 
-func loadDatabase() (Comics, error) {
+// DataBase is an array of xkcd cartoons.
+type DataBase struct {
+	Len     uint
+	Edition []Comic
+}
+
+// Print returns a single xkcd commic edition specified by referance number.
+func (c *DataBase) Print(i uint) Comic {
+	return c.Edition[i]
+}
+
+// xkcdInit loads the xkcd index data from the data file into program memory.
+func xkcdInit() (*DataBase, error) {
+
+	// Data store for program whilst running.
+	var comics DataBase
+
+	// load db into memory.
+	err := loadDatabase(&comics, cNAME)
+	if err != nil {
+		return &comics, fmt.Errorf("loadDatabase: %v\n", err)
+	}
+
+	return &comics, err
+}
+
+func loadDatabase(comics *DataBase, path string) error {
 
 	if VERBOSE {
 		fmt.Printf("xkcd: loading database\n")
 	}
 
 	// Open file for reading if present.
-	file, err := os.Open(cNAME)
+	file, err := os.Open(path)
 	if err != nil {
 		if VERBOSE {
 			fmt.Printf("xkcd: data file not found ...\n")
 		}
 		//return nil, fmt.Errorf("Open: %v", err)
 		// TODO ask user whether a new database is to be made.
-		comics, err := generateDatabase()
+		comics, err = downloadAllXkcd(comics)
 		if err != nil {
-			return comics, fmt.Errorf("generateDatabase: %v", err)
+			return fmt.Errorf("downloadAllXkcd: %v", err)
 		}
-		return comics, nil
+		return nil
 	}
 
-	comics, err := readFile(file)
+	comics, err = readFile(comics, file)
 	if err != nil {
-		return comics, fmt.Errorf("readFile: %v", err)
+		return fmt.Errorf("readFile: %v", err)
 	}
 
 	if VERBOSE {
 		fmt.Printf("xkcd: database loaded\n")
 	}
 
-	return comics, err
+	return err
 }
 
-func growDatastructure(comics Comics, l uint) Comics {
+func growDatastructure(comics *DataBase, l uint) *DataBase {
 
 	// If required, make a new data structure and copy over any comics
 	// present.
 	if cap(comics.Edition) < int(l) {
-		newComics := Comics{}
-		newComics.Edition = make([]Comic, l)
-		copy(newComics.Edition, comics.Edition)
-		return newComics
+		newDataBase := &DataBase{}
+		newDataBase.Edition = make([]Comic, l)
+		copy(newDataBase.Edition, comics.Edition)
+		return newDataBase
 	}
 	// Adjust length.
 	comics.Edition = comics.Edition[:int(l)]
 	return comics
 }
 
-// UpdateDatabase retrieves any editions that are not currently in the
+// updateDatabase retrieves any editions that are not currently in the
 // database.
-func UpdateDatabase(comics Comics) (Comics, bool, error) {
+func updateDatabase(comics *DataBase) (*DataBase, bool, error) {
 
 	if VERBOSE {
 		fmt.Printf("xkcd: updating database ...\n")
@@ -81,9 +107,9 @@ func UpdateDatabase(comics Comics) (Comics, bool, error) {
 
 	// Fill array with new comics.
 	for i := uint(c); i < l; i++ {
-		comic, code, err := getComic(i + 1)
+		comic, code, err := newComicHTTP(i + 1)
 		if err != nil && code != 404 {
-			return comics, false, fmt.Errorf("GetComicNum: %d: %v", i, err)
+			return comics, false, fmt.Errorf("newComicHTTP: %d: %v", i, err)
 		}
 		if code != 404 {
 			comics.Edition[i] = comic
@@ -123,10 +149,8 @@ func UpdateDatabase(comics Comics) (Comics, bool, error) {
 	return comics, true, nil
 }
 
-// generateDatabase pulls the entire xkcd database from the website.
-func generateDatabase() (Comics, error) {
-
-	var comics Comics
+// downloadAllXkcd pulls the entire xkcd database from the website.
+func downloadAllXkcd(comics *DataBase) (*DataBase, error) {
 
 	if VERBOSE {
 		fmt.Printf("xkcd: generating database ...\n")
@@ -144,7 +168,7 @@ func generateDatabase() (Comics, error) {
 
 	// Fill array with comics.
 	for i := uint(0); i < l && i < 400; i++ {
-		comic, code, err := getComic(i + 1)
+		comic, code, err := newComicHTTP(i + 1)
 		if err != nil && code != 404 {
 			return comics, fmt.Errorf("GetComicNum: %d: %v", i, err)
 		}
@@ -183,4 +207,29 @@ func generateDatabase() (Comics, error) {
 	}
 
 	return comics, err
+}
+
+// Update updates the comic database with the latest comic descriptions.
+func (d *DataBase) Update() {
+
+	var err error
+	d, _, err = updateDatabase(d)
+	if err != nil {
+		fmt.Printf("error: updateDatabase: %v\n", err)
+		return
+	}
+}
+
+// DbGet prints out the given comic description from the database.
+func (d *DataBase) DbGet(n uint) {
+
+	if VERBOSE {
+		fmt.Printf("xkcd: database access ~~~\n\n")
+	}
+	if d.Len > DBGET {
+		printSingle(d.Edition[n])
+	}
+	if VERBOSE {
+		fmt.Printf("\nxkcd: ~~~ database done\n")
+	}
 }

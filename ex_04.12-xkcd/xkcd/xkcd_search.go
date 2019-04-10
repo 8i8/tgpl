@@ -2,130 +2,122 @@ package xkcd
 
 import (
 	"fmt"
-	"sort"
 	"unicode"
 	"unicode/utf8"
 
-	"tgpl/ex_04.12-xkcd/trie"
+	"tgpl/ex_04.12-xkcd/ds"
 )
 
-// nSearch is a map containing arrays of comic index numbers.
-type mSearch map[string][]uint
-
-// addToMap checks a mSearch map for a prexisting entry and returns the map with
-// the number add if it was not already present.
-func addToMap(m mSearch, s string, n uint) mSearch {
-
-	list := m[s]
-
-	// If empty.
-	if len(list) == 0 {
-		list = append(list, n)
-		m[s] = list
-		return m
-	}
-
-	// If already there.
-	for _, num := range list {
-		if num == n {
-			return m
-		}
-	}
-	// Add the number.
-	list = append(list, n)
-	m[s] = list
-	return m
-}
-
-// extractWords adds every word in a string to a mSearch map.
-func extractWords(m mSearch, s string, n uint) mSearch {
+// lex extracts every word from a string.
+func lex(trie *ds.Trie, s string, n uint) *ds.Trie {
 
 	var word []rune
 	var isInWord bool
 	b := []byte(s)
 
+	// Build word rune by rune, all lower case.
 	for len(b) > 0 {
+		// If rune is a letter add to byte slice and indicate the state
+		// of bing in a word.
 		r, size := utf8.DecodeRune(b)
 		if unicode.IsLetter(r) || unicode.IsNumber(r) {
 			word = append(word, unicode.ToLower(r))
 			isInWord = true
 		} else {
+			// Break; If reading a word; Add both the word and it's
+			// index of origin to the map. Skipping over any non
+			// lexical characters.
 			if isInWord {
-				m = addToMap(m, string(word), n)
+				trie = trie.Add(string(word), n)
 				word = word[:0]
 				isInWord = false
 			}
 		}
 		b = b[size:]
 	}
-
-	return m
+	return trie
 }
 
 // scanComic runs extract words on every text field in a Comic struct.
-func scanComic(m mSearch, c Comic) mSearch {
+func scan(t *ds.Trie, c Comic) *ds.Trie {
 
-	m = extractWords(m, c.Link, c.Number)
-	m = extractWords(m, c.News, c.Number)
-	m = extractWords(m, c.SafeTitle, c.Number)
-	m = extractWords(m, c.Transcript, c.Number)
-	m = extractWords(m, c.Alt, c.Number)
-	m = extractWords(m, c.Title, c.Number)
+	t = lex(t, c.Link, c.Number)
+	t = lex(t, c.News, c.Number)
+	t = lex(t, c.SafeTitle, c.Number)
+	t = lex(t, c.Transcript, c.Number)
+	t = lex(t, c.Alt, c.Number)
+	t = lex(t, c.Title, c.Number)
 
-	return m
+	return t
 }
 
-// buildSearchMap scans the comic database and creates a map of all words
+// buildSearchGraph scans the comic database and creates a map of all words
 // found, linking them to the comics that they are from.
-func buildSearchMap(comics Comics) mSearch {
+func buildSearchGraph(comics *DataBase) *ds.Trie {
 
-	// Scan and map comics.
-	m := make(mSearch)
+	if VERBOSE {
+		fmt.Print("xkcd: building search data structure\n")
+	}
 
+	t := &ds.Trie{}
 	for _, comic := range comics.Edition {
-		scanComic(m, comic)
+		scan(t, comic)
 	}
 
-	return m
-}
-
-func buildSearchGraph(m mSearch) {
-	t := trie.Trie{}
-
-	for word, _ := range m {
-		t.Add(word)
+	if VERBOSE {
+		fmt.Print("xkcd: search data structure complete\n")
 	}
-	fmt.Print("trie made\n")
+
+	return t
 }
 
-// search prepares a list of all comics that contain all of the given search
-// terms.
-func search(m mSearch, comics Comics, args []string) []uint {
+// search prepares a list of comics that contain the given search terms.
+func search(t *ds.Trie, comics *DataBase, args []string) []uint {
+
+	if VERBOSE {
+		fmt.Printf("xkcd: starting search list\n")
+	}
 
 	var results []uint
-	count := make(map[uint]int)
+	m := make(ds.Count)
 
 	// Count occurrence of each search word over all comics, used to filter
 	// out comics that do not contain all of the required search words.
-	for _, arg := range args {
-		indices := m[arg]
-		for _, num := range indices {
-			count[num]++
-		}
+	btrees := t.SubWordSearch(args)
+	for _, btree := range btrees {
+		m = ds.BtreeCount(btree, m)
 	}
 
 	// If the comic contains the same number of found words as the length
 	// of the list of search terms, add the comic to the results.
-	for num, i := range count {
+	for num, i := range m {
 		if i == len(args) {
 			results = append(results, num-1)
 		}
 	}
 
 	// Sort the results.
-	sort.Slice(results, func(i, j int) bool {
-		return results[j] > results[i]
-	})
+	// sort.Slice(results, func(i, j int) bool {
+	// 	return results[j] > results[i]
+	// })
+
+	if VERBOSE {
+		fmt.Printf("xkcd: search list complete\n")
+	}
 
 	return results
+}
+
+// Search searched the local database of comic descriptions for the given
+// arguments.
+func (d *DataBase) Search(args []string) {
+	if VERBOSE {
+		fmt.Printf("xkcd: output start ~~~\n\n")
+	}
+	t := buildSearchGraph(d)
+	results := search(t, d, args)
+	printResults(d, results)
+	if VERBOSE {
+		fmt.Printf("\nxkcd: ~~~ output end\n")
+	}
 }

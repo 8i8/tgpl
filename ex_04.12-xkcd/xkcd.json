@@ -1,5 +1,5 @@
 {
-	"Len": 2132,
+	"Len": 2134,
 	"Edition": [
 		{
 			"Month": "1",
@@ -27716,6 +27716,32 @@
 			"Img": "https://imgs.xkcd.com/comics/percentage_styles.png",
 			"Title": "Percentage Styles",
 			"Day": "3"
+		},
+		{
+			"Month": "4",
+			"num": 2133,
+			"Link": "",
+			"Year": "2019",
+			"News": "",
+			"safe_title": "EHT Black Hole Picture",
+			"Transcript": "",
+			"Alt": "[five years later] Ok, it seems we were accidentally zoomed in slightly too far. But imagine there's a cool-looking twisted accretion disc just outside this black square!",
+			"Img": "https://imgs.xkcd.com/comics/eht_black_hole_picture.png",
+			"Title": "EHT Black Hole Picture",
+			"Day": "5"
+		},
+		{
+			"Month": "4",
+			"num": 2134,
+			"Link": "",
+			"Year": "2019",
+			"News": "",
+			"safe_title": "Too Much Talking",
+			"Transcript": "",
+			"Alt": "Next time I go, I'm going to prepare a whole bunch of opinions that I'm sure are good, and make everyone sit quietly while I run through them.",
+			"Img": "https://imgs.xkcd.com/comics/too_much_talking.png",
+			"Title": "Too Much Talking",
+			"Day": "8"
 		}
 	]
 }
