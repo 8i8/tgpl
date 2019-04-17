@@ -1,5 +1,5 @@
 {
-	"Len": 2134,
+	"Len": 2138,
 	"Edition": [
 		{
 			"Month": "1",
@@ -27742,6 +27742,58 @@
 			"Img": "https://imgs.xkcd.com/comics/too_much_talking.png",
 			"Title": "Too Much Talking",
 			"Day": "8"
+		},
+		{
+			"Month": "4",
+			"num": 2135,
+			"Link": "",
+			"Year": "2019",
+			"News": "",
+			"safe_title": "M87 Black Hole Size Comparison",
+			"Transcript": "",
+			"Alt": "I think Voyager 1 would be just past the event horizon, but slightly less than halfway to the bright ring.",
+			"Img": "https://imgs.xkcd.com/comics/m87_black_hole_size_comparison.png",
+			"Title": "M87 Black Hole Size Comparison",
+			"Day": "10"
+		},
+		{
+			"Month": "4",
+			"num": 2136,
+			"Link": "",
+			"Year": "2019",
+			"News": "",
+			"safe_title": "Election Commentary",
+			"Transcript": "",
+			"Alt": "This really validates Jones's strategy of getting several thousand more votes than Smith. In retrospect, that was a smart move; those votes were crucial.",
+			"Img": "https://imgs.xkcd.com/comics/election_commentary.png",
+			"Title": "Election Commentary",
+			"Day": "12"
+		},
+		{
+			"Month": "4",
+			"num": 2137,
+			"Link": "",
+			"Year": "2019",
+			"News": "",
+			"safe_title": "Text Entry",
+			"Transcript": "",
+			"Alt": "I like to think that somewhere out there, there's someone whose personal quest is lobbying TV providers to add an option to switch their on-screen keyboards to Dvorak.",
+			"Img": "https://imgs.xkcd.com/comics/text_entry.png",
+			"Title": "Text Entry",
+			"Day": "15"
+		},
+		{
+			"Month": "4",
+			"num": 2138,
+			"Link": "",
+			"Year": "2019",
+			"News": "",
+			"safe_title": "Wanna See the Code?",
+			"Transcript": "",
+			"Alt": "And because if you just leave it there, it's going to start contaminating things downstream even if no one touches it directly.",
+			"Img": "https://imgs.xkcd.com/comics/wanna_see_the_code.png",
+			"Title": "Wanna See the Code?",
+			"Day": "17"
 		}
 	]
 }

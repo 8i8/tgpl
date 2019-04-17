@@ -5,7 +5,7 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"tgpl/ex_04.12-xkcd/ds"
+	"8i8/ds"
 )
 
 // lex extracts every word from a string.
@@ -28,7 +28,7 @@ func lex(trie *ds.Trie, s string, n uint) *ds.Trie {
 			// index of origin to the map. Skipping over any non
 			// lexical characters.
 			if isInWord {
-				trie = trie.Add(string(word), n)
+				trie.Add(string(word), n)
 				word = word[:0]
 				isInWord = false
 			}
@@ -79,22 +79,49 @@ func search(t *ds.Trie, comics *DataBase, args []string) []uint {
 	}
 
 	var results []uint
-	m := make(ds.Count)
 
 	// Count occurrence of each search word over all comics, used to filter
 	// out comics that do not contain all of the required search words.
-	btrees := t.SubWordSearch(args)
-	for _, btree := range btrees {
-		m = ds.BtreeCount(btree, m)
+	btrees := t.SearchWords(args)
+
+	// Add all indicies to a map and count occurance.
+	m := make(ds.Count)
+	for _, data := range btrees {
+		for _, btree := range data.LinkedIds {
+			// if VERBOSE {
+			// 	fmt.Println("btree:")
+			// 	ds.BtreePrint(btree)
+			// }
+			ds.BtreeCount(&m, btree)
+		}
 	}
+
+	// Extract from map only those indicies that contain every search term,
+	// check the number of occurance of the id againt the number of search words.
+	var filter []uint
+	l := len(args)
+	for id, count := range m {
+
+		// if VERBOSE {
+		// 	fmt.Printf("output: id: %d count: %d\n", id, count)
+		// }
+		if count == l {
+			filter = append(filter, id)
+		}
+	}
+	if VERBOSE {
+		fmt.Printf("filter: %v\n", filter)
+	}
+
+	// ~~~
 
 	// If the comic contains the same number of found words as the length
 	// of the list of search terms, add the comic to the results.
-	for num, i := range m {
-		if i == len(args) {
-			results = append(results, num-1)
-		}
-	}
+	// for num, i := range m {
+	// 	if i == len(args) {
+	// 		results = append(results, num-1)
+	// 	}
+	// }
 
 	// Sort the results.
 	// sort.Slice(results, func(i, j int) bool {
@@ -115,8 +142,9 @@ func (d *DataBase) Search(args []string) {
 		fmt.Printf("xkcd: output start ~~~\n\n")
 	}
 	t := buildSearchGraph(d)
-	results := search(t, d, args)
-	printResults(d, results)
+	_ = search(t, d, args)
+	// results := search(t, d, args)
+	// printResults(d, results)
 	if VERBOSE {
 		fmt.Printf("\nxkcd: ~~~ output end\n")
 	}

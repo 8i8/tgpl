@@ -1,9 +1,8 @@
 package xkcd
 
 import (
+	"8i8/ds"
 	"fmt"
-
-	"tgpl/ex_04.12-xkcd/ds"
 )
 
 // type Comic struct {
