@@ -13,6 +13,7 @@ const cTailURL = "/info.0.json"
 
 // Database file name.
 var cNAME = "xkcd.json"
+var cADDRESS = "data/"
 
 // Verbouse program output whilst running.
 var (

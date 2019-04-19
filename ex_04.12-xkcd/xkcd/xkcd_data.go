@@ -24,7 +24,7 @@ func xkcdInit() (*DataBase, error) {
 	var comics DataBase
 
 	// load db into memory.
-	err := loadDatabase(&comics, cNAME)
+	err := loadDatabase(&comics, cADDRESS+cNAME)
 	if err != nil {
 		return &comics, fmt.Errorf("loadDatabase: %v\n", err)
 	}
@@ -130,7 +130,7 @@ func updateDatabase(comics *DataBase) (*DataBase, bool, error) {
 	}
 
 	// Open file for writing.
-	file, err := os.Create(cNAME)
+	file, err := os.Create(cADDRESS + cNAME)
 	if err != nil {
 		return comics, false, fmt.Errorf("Create: %v", err)
 	}
@@ -190,7 +190,7 @@ func downloadAllXkcd(comics *DataBase) (*DataBase, error) {
 	}
 
 	// Open file for writing.
-	file, err := os.Create(cNAME)
+	file, err := os.Create(cADDRESS + cNAME)
 	if err != nil {
 		return comics, fmt.Errorf("Create: %v", err)
 	}

@@ -96,16 +96,24 @@ func searchBtree(t *ds.Trie, comics *DataBase, args []string) []uint {
 	// out comics that do not contain all of the required search words.
 	datalist := t.SearchWords(args)
 
-	// Add all indicies to a map and count occurance.
+	// Add all indices to a map and count occurrence.
 	m := make(ds.Count)
 	for _, data := range datalist {
+		temp := make(ds.Count)
+		// Generate a map from all the linked btrees such that only one
+		// instance of every comic index can exist per word searched.
 		for _, btree := range data.LinkedIds {
-			ds.BtreeCount(&m, btree)
+			ds.BtreeToMap(&temp, btree)
+		}
+		// Count instances of each index so as to isolate only the
+		// comics that contain all words sought.
+		for id, _ := range temp {
+			m[id]++
 		}
 	}
 
-	// Extract from map only those indicies that contain every search term,
-	// check the number of occurance of the id againt the number of search words.
+	// Extract from map only those indices that contain every search term,
+	// check the number of occurrence of the id against the number of search words.
 	var filter []uint
 	l := len(args)
 	for id, count := range m {
