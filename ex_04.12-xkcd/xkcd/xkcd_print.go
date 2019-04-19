@@ -2,7 +2,6 @@ package xkcd
 
 import (
 	"8i8/ds"
-	"fmt"
 )
 
 // type Comic struct {
@@ -23,8 +22,8 @@ func printMap(m *ds.Trie) {
 }
 
 func printResults(c *DataBase, r []uint) {
-	fmt.Println(r)
-	// for _, i := range r {
-	// 	printTitle(c.Edition[i])
-	// }
+	//fmt.Println(r)
+	for _, i := range r {
+		printTitle(c.Edition[i])
+	}
 }

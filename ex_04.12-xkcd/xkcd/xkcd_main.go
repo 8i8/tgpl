@@ -18,6 +18,7 @@ var (
 	VERBOSE bool
 	UPDATE  bool
 	SEARCH  bool
+	LIST    bool
 	DBGET   uint
 	WEBGET  uint
 	TESTRUN uint

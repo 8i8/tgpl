@@ -15,11 +15,16 @@ func init() {
 	flag.UintVar(&xkcd.WEBGET, "w", 0, "")      // Display comic 'n' http.
 }
 
-func main() {
-
+func xkcdProgram() {
 	// Command line input.
 	xkcd.SetupFlags(flag.CommandLine)
 	flag.Parse()
 
 	xkcd.Run(flag.Args())
+}
+
+func main() {
+
+	xkcdProgram()
+	//ds.Test()
 }
