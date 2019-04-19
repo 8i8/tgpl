@@ -92,8 +92,6 @@ func searchBtree(t *ds.Trie, comics *DataBase, args []string) []uint {
 		fmt.Printf("xkcd: starting search list\n")
 	}
 
-	var results []uint
-
 	// Count occurrence of each search word over all comics, used to filter
 	// out comics that do not contain all of the required search words.
 	datalist := t.SearchWords(args)
@@ -119,7 +117,7 @@ func searchBtree(t *ds.Trie, comics *DataBase, args []string) []uint {
 		fmt.Printf("xkcd: search list complete\n")
 	}
 
-	return results
+	return filter
 }
 
 // scanComicMap runs extract words on every text field in a Comic struct.
@@ -161,7 +159,7 @@ func buildSearchTrie(m ds.MBtree) *ds.Trie {
 }
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *   Search
+ *  Search
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
 // Search searches the local database of comic descriptions for the given

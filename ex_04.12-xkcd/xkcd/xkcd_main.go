@@ -1,6 +1,7 @@
 package xkcd
 
 import (
+	"8i8/ds"
 	"fmt"
 
 	"tgpl/ex_04.12-xkcd/quest"
@@ -30,6 +31,7 @@ func setConfig() {
 	// sets quest package to verbose.
 	if VERBOSE {
 		quest.VERBOSE = true
+		ds.Verbose()
 	}
 
 	// Sets program to generate a test database.
