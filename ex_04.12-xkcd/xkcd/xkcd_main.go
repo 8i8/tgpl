@@ -21,6 +21,7 @@ var (
 	UPDATE  bool
 	SEARCH  bool
 	LIST    bool
+	SYNC    bool
 	DBGET   uint
 	WEBGET  uint
 	TESTRUN uint
