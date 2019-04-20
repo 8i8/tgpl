@@ -53,6 +53,24 @@ func searchBtreeSyncMap(t *ds.Trie, comics *DataBase, args []string) []uint {
 	return filter
 }
 
+// goScanComicSyncMap runs extract words on every text field in a Comic struct.
+func goScanComicSyncMap(m *sync.Map, c Comic, ch chan<- *sync.Map) {
+
+	ch1 := make(chan *sync.Map)
+	go ds.GoExtractAndSyncMap(m, c.Link, c.Number, ch1)
+	go ds.GoExtractAndSyncMap(m, c.News, c.Number, ch1)
+	go ds.GoExtractAndSyncMap(m, c.SafeTitle, c.Number, ch1)
+	go ds.GoExtractAndSyncMap(m, c.Transcript, c.Number, ch1)
+	go ds.GoExtractAndSyncMap(m, c.Alt, c.Number, ch1)
+	go ds.GoExtractAndSyncMap(m, c.Title, c.Number, ch1)
+
+	for i := 0; i < 6; i++ {
+		m = <-ch1
+	}
+
+	ch <- m
+}
+
 // scanComicMap runs extract words on every text field in a Comic struct.
 func scanComicSyncMap(m *sync.Map, c Comic) *sync.Map {
 
@@ -71,17 +89,25 @@ func scanComicSyncMap(m *sync.Map, c Comic) *sync.Map {
 func buildSearchSyncMap(comics *DataBase) *sync.Map {
 
 	// Scan and map comics.
-	var m sync.Map
+	m := new(sync.Map)
+	ch := make(chan *sync.Map)
 
-	for _, comic := range comics.Edition {
-		scanComicSyncMap(&m, comic)
+	if COMICSYNC {
+		for _, comic := range comics.Edition {
+			go goScanComicSyncMap(m, comic, ch)
+		}
+
+		for range comics.Edition {
+			m = <-ch
+		}
+		return m
 	}
 
-	value, _ := m.Load("hello")
-	btree := value.(*ds.BtreeNode)
-	btree.Print()
+	for _, comic := range comics.Edition {
+		m = scanComicSyncMap(m, comic)
+	}
 
-	return &m
+	return m
 }
 
 // buildSearchTrieSyncMap constructs a search trie from a search map.
