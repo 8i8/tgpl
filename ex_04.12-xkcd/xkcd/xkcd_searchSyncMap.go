@@ -90,21 +90,28 @@ func buildSearchSyncMap(comics *DataBase) *sync.Map {
 
 	// Scan and map comics.
 	m := new(sync.Map)
-	ch := make(chan *sync.Map)
-
-	if COMICSYNC {
-		for _, comic := range comics.Edition {
-			go goScanComicSyncMap(m, comic, ch)
-		}
-
-		for range comics.Edition {
-			m = <-ch
-		}
-		return m
-	}
 
 	for _, comic := range comics.Edition {
 		m = scanComicSyncMap(m, comic)
+	}
+
+	return m
+}
+
+// buildSearchMap scans the comic database and creates a map of all words
+// found, linking them to the comics that they are from.
+func buildSearchComicSyncMap(comics *DataBase) *sync.Map {
+
+	// Scan and map comics.
+	m := new(sync.Map)
+	ch := make(chan *sync.Map)
+
+	for _, comic := range comics.Edition {
+		go goScanComicSyncMap(m, comic, ch)
+	}
+
+	for range comics.Edition {
+		m = <-ch
 	}
 
 	return m

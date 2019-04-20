@@ -19,8 +19,18 @@ func (d *DataBase) Search(args []string) {
 		t := buildSearchTrieList(m)
 		results := searchList(t, d, args)
 		printResults(d, results)
+	} else if LISTSYNC {
+		m := buildSearchSyncMapList(d)
+		t := buildSearchTrieSyncMapList(m)
+		results := searchList(t, d, args)
+		printResults(d, results)
 	} else if SYNC {
 		m := buildSearchSyncMap(d)
+		t := buildSearchTrieSyncMap(m)
+		results := searchBtree(t, d, args)
+		printResults(d, results)
+	} else if COMICSYNC {
+		m := buildSearchComicSyncMap(d)
 		t := buildSearchTrieSyncMap(m)
 		results := searchBtree(t, d, args)
 		printResults(d, results)
