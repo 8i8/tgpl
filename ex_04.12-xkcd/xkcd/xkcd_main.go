@@ -20,7 +20,7 @@ var (
 	VERBOSE bool
 	UPDATE  bool
 	SEARCH  bool
-	BTREE   bool
+	CASE    bool
 	DBGET   uint
 	WEBGET  uint
 	TESTRUN uint
@@ -32,7 +32,7 @@ func setConfig() {
 	// sets quest package to verbose.
 	if VERBOSE {
 		quest.VERBOSE = true
-		ds.Verbose()
+		ds.Mode(ds.VERBOSE)
 	}
 
 	// Sets program to generate a test database.
@@ -40,12 +40,8 @@ func setConfig() {
 		cNAME = "test.json"
 	}
 
-	// Set the ds map mode, to define what it is that the map is to store.
-	if BTREE {
-		ds.BTREE = true
-	} else {
-		ds.LIST = true
-	}
+	// Set the ds map mode, defines what it is that the map is to store.
+	ds.Mode(ds.LIST)
 }
 
 // Run is the xkcd main program routine.

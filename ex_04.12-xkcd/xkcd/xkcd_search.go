@@ -13,12 +13,12 @@ import (
 // scanComicMap runs extract words on every text field in a Comic struct.
 func scanComicMap(m ds.MData, c Comic) ds.MData {
 
-	m = ds.ExtractAndMap(m, c.Link, c.Number)
-	m = ds.ExtractAndMap(m, c.News, c.Number)
-	m = ds.ExtractAndMap(m, c.SafeTitle, c.Number)
-	m = ds.ExtractAndMap(m, c.Transcript, c.Number)
-	m = ds.ExtractAndMap(m, c.Alt, c.Number)
-	m = ds.ExtractAndMap(m, c.Title, c.Number)
+	m = ds.ExtractStrings(m, c.Link, c.Number)
+	m = ds.ExtractStrings(m, c.News, c.Number)
+	m = ds.ExtractStrings(m, c.SafeTitle, c.Number)
+	m = ds.ExtractStrings(m, c.Transcript, c.Number)
+	m = ds.ExtractStrings(m, c.Alt, c.Number)
+	m = ds.ExtractStrings(m, c.Title, c.Number)
 
 	return m
 }
@@ -45,14 +45,8 @@ func buildSearchMap(comics *DataBase) ds.MData {
 func buildSearchTrie(m ds.MData) *ds.Trie {
 
 	t := new(ds.Trie)
-	if BTREE {
-		for word, data := range m {
-			t.AddBtree(word, data.Btree)
-		}
-	} else {
-		for word, indices := range m {
-			t.AddList(word, indices)
-		}
+	for word, data := range m {
+		t.Add(word, data)
 	}
 
 	return t
@@ -71,12 +65,7 @@ func search(t *ds.Trie, comics *DataBase, args []string) []uint {
 
 	// Count occurrence of each search word over all comics, used to filter
 	// out comics that do not contain all of the required search words.
-	var datalist []ds.DataReturn
-	if BTREE {
-		datalist = t.SearchWords(args)
-	} else {
-		datalist = t.SearchWordsList(args)
-	}
+	datalist := t.SearchWords(args)
 
 	// Add all indices to a map and count occurrence.
 	m := make(ds.Count)
@@ -84,12 +73,8 @@ func search(t *ds.Trie, comics *DataBase, args []string) []uint {
 		temp := make(ds.Count)
 		// Generate a map from all the linked data such that only one
 		// instance of every comic index can exist per word searched.
-		if BTREE {
-			for _, btree := range data.LinkedIds {
-				ds.BtreeToMap(&temp, btree)
-			}
-		} else {
-			for _, id := range data.Links {
+		for _, data := range data.Datalist {
+			for _, id := range data.List {
 				temp[id] = 0
 			}
 		}
@@ -129,7 +114,7 @@ func (d *DataBase) Search(args []string) {
 
 	m := buildSearchMap(d)
 	t := buildSearchTrie(m)
-	results := search(t, d, args)
+	results := search(t, d, cleanArgs(args))
 	printResults(d, results)
 
 	if VERBOSE {
