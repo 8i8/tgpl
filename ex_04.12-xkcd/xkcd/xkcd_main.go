@@ -17,15 +17,13 @@ var cADDRESS = "data/"
 
 // Verbouse program output whilst running.
 var (
-	VERBOSE   bool
-	UPDATE    bool
-	SEARCH    bool
-	BTREE     bool
-	BTREESYNC bool
-	LISTSYNC  bool
-	DBGET     uint
-	WEBGET    uint
-	TESTRUN   uint
+	VERBOSE bool
+	UPDATE  bool
+	SEARCH  bool
+	BTREE   bool
+	DBGET   uint
+	WEBGET  uint
+	TESTRUN uint
 )
 
 // setConfig sets required state variables for desired program run mode.
@@ -40,6 +38,13 @@ func setConfig() {
 	// Sets program to generate a test database.
 	if TESTRUN > 0 {
 		cNAME = "test.json"
+	}
+
+	// Set the ds map mode, to define what it is that the map is to store.
+	if BTREE {
+		ds.BTREE = true
+	} else {
+		ds.LIST = true
 	}
 }
 
