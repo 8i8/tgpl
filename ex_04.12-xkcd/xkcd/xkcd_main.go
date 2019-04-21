@@ -20,9 +20,8 @@ var (
 	VERBOSE   bool
 	UPDATE    bool
 	SEARCH    bool
-	LIST      bool
-	SYNC      bool
-	COMICSYNC bool
+	BTREE     bool
+	BTREESYNC bool
 	LISTSYNC  bool
 	DBGET     uint
 	WEBGET    uint

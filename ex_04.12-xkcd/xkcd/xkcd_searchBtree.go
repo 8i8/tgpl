@@ -53,7 +53,7 @@ func searchBtree(t *ds.Trie, comics *DataBase, args []string) []uint {
 }
 
 // scanComicMap runs extract words on every text field in a Comic struct.
-func scanComicMap(m ds.MBtree, c Comic) ds.MBtree {
+func scanComicMap(m ds.MData, c Comic) ds.MData {
 
 	m = ds.ExtractAndMap(m, c.Link, c.Number)
 	m = ds.ExtractAndMap(m, c.News, c.Number)
@@ -67,10 +67,10 @@ func scanComicMap(m ds.MBtree, c Comic) ds.MBtree {
 
 // buildSearchMap scans the comic database and creates a map of all words
 // found, linking them to the comics that they are from.
-func buildSearchMap(comics *DataBase) ds.MBtree {
+func buildSearchMap(comics *DataBase) ds.MData {
 
 	// Scan and map comics.
-	m := make(ds.MBtree)
+	m := make(ds.MData)
 
 	for _, comic := range comics.Edition {
 		scanComicMap(m, comic)
@@ -80,11 +80,11 @@ func buildSearchMap(comics *DataBase) ds.MBtree {
 }
 
 // buildSearchTrie constructs a search trie from a search map.
-func buildSearchTrie(m ds.MBtree) *ds.Trie {
+func buildSearchTrie(m ds.MData) *ds.Trie {
 
 	t := new(ds.Trie)
-	for word, btree := range m {
-		t.AddBtree(word, btree)
+	for word, data := range m {
+		t.AddBtree(word, data.Btree)
 	}
 
 	return t

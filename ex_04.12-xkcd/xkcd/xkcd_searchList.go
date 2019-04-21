@@ -53,7 +53,7 @@ func searchList(t *ds.Trie, comics *DataBase, args []string) []uint {
 }
 
 // scanComicMap runs extract words on every text field in a Comic struct.
-func scanComicMapList(m ds.MList, c Comic) ds.MList {
+func scanComicMapList(m ds.MData, c Comic) ds.MData {
 
 	m = ds.ExtractAndMapList(m, c.Link, c.Number)
 	m = ds.ExtractAndMapList(m, c.News, c.Number)
@@ -67,10 +67,10 @@ func scanComicMapList(m ds.MList, c Comic) ds.MList {
 
 // buildSearchMap scans the comic database and creates a map of all words
 // found, linking them to the comics that they are from.
-func buildSearchMapList(comics *DataBase) ds.MList {
+func buildSearchMapList(comics *DataBase) ds.MData {
 
 	// Scan and map comics.
-	m := make(ds.MList)
+	m := make(ds.MData)
 
 	for _, comic := range comics.Edition {
 		scanComicMapList(m, comic)
@@ -80,7 +80,7 @@ func buildSearchMapList(comics *DataBase) ds.MList {
 }
 
 // buildSearchTrie constructs a search trie from a search map.
-func buildSearchTrieList(m ds.MList) *ds.Trie {
+func buildSearchTrieList(m ds.MData) *ds.Trie {
 
 	t := new(ds.Trie)
 	for word, indices := range m {

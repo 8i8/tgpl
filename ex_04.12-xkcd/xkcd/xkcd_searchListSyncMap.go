@@ -54,7 +54,7 @@ func searchListSyncMap(t *ds.Trie, comics *DataBase, args []string) []uint {
 }
 
 // scanComicMap runs extract words on every text field in a Comic struct.
-func scanComicSyncMapList(m *sync.Map, c Comic) *sync.Map {
+func scanComicSyncMapList(m *sync.Map, c Comic, ch chan<- *sync.Map) *sync.Map {
 
 	m = ds.ExtractAndSyncMapList(m, c.Link, c.Number)
 	m = ds.ExtractAndSyncMapList(m, c.News, c.Number)
@@ -63,6 +63,7 @@ func scanComicSyncMapList(m *sync.Map, c Comic) *sync.Map {
 	m = ds.ExtractAndSyncMapList(m, c.Alt, c.Number)
 	m = ds.ExtractAndSyncMapList(m, c.Title, c.Number)
 
+	ch <- m
 	return m
 }
 
@@ -72,9 +73,14 @@ func buildSearchSyncMapList(comics *DataBase) *sync.Map {
 
 	// Scan and map comics.
 	m := new(sync.Map)
+	ch := make(chan *sync.Map)
 
 	for _, comic := range comics.Edition {
-		scanComicSyncMapList(m, comic)
+		go scanComicSyncMapList(m, comic, ch)
+	}
+
+	for range comics.Edition {
+		m = <-ch
 	}
 
 	return m
@@ -84,8 +90,8 @@ func buildSearchSyncMapList(comics *DataBase) *sync.Map {
 func buildSearchTrieSyncMapList(m *sync.Map) *ds.Trie {
 
 	t := new(ds.Trie)
-	m.Range(func(word, list interface{}) bool {
-		t.AddList(word.(string), list.([]uint))
+	m.Range(func(word, data interface{}) bool {
+		t.AddList(word.(string), data.(ds.Data))
 		return true
 	})
 
