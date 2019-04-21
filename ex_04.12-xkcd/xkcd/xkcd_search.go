@@ -11,7 +11,7 @@ import (
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
 // scanComicMap runs extract words on every text field in a Comic struct.
-func scanComicMap(m ds.MData, c Comic) ds.MData {
+func scanComicMap(m ds.MList, c Comic) ds.MList {
 
 	m = ds.ExtractStrings(m, c.Link, c.Number)
 	m = ds.ExtractStrings(m, c.News, c.Number)
@@ -25,10 +25,10 @@ func scanComicMap(m ds.MData, c Comic) ds.MData {
 
 // buildSearchMap scans the comic database and creates a map of all words
 // found, linking them to the comics that they are from.
-func buildSearchMap(comics *DataBase) ds.MData {
+func buildSearchMap(comics *DataBase) ds.MList {
 
 	// Scan and map comics.
-	m := make(ds.MData)
+	m := make(ds.MList)
 
 	for _, comic := range comics.Edition {
 		scanComicMap(m, comic)
@@ -42,11 +42,11 @@ func buildSearchMap(comics *DataBase) ds.MData {
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
 // buildSearchTrie constructs a search trie from a map of words.
-func buildSearchTrie(m ds.MData) *ds.Trie {
+func buildSearchTrie(m ds.MList) *ds.Trie {
 
 	t := new(ds.Trie)
-	for word, data := range m {
-		t.Add(word, data)
+	for word, list := range m {
+		t.Add(word, list)
 	}
 
 	return t
@@ -73,10 +73,8 @@ func search(t *ds.Trie, comics *DataBase, args []string) []uint {
 		temp := make(ds.Count)
 		// Generate a map from all the linked data such that only one
 		// instance of every comic index can exist per word searched.
-		for _, data := range data.Datalist {
-			for _, id := range data.List {
-				temp[id] = 0
-			}
+		for _, id := range data.List {
+			temp[id] = 0
 		}
 		// Count instances of each index so as to isolate only the
 		// comics that contain all words sought.
