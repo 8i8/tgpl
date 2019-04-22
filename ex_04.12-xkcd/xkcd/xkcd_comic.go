@@ -55,7 +55,7 @@ func setURL(i uint) string {
 }
 
 // setURLOnAllcomics does just that, setting the web url of the comic on each
-// database entry.
+// database entry, used to set or reset the URL for the entire database.
 func setURLOnAll(comics *DataBase) error {
 
 	for i, comic := range comics.Edition {

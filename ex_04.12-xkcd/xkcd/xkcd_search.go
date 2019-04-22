@@ -106,11 +106,7 @@ func (d *DataBase) Search(args []string) {
 	m := buildSearchMapList(d)
 	t := buildSearchTrieList(m)
 	results := searchList(t, d, cleanArgs(args))
-	if TITLE {
-		d.printTitleList(results)
-	} else {
-		d.printList(results)
-	}
+	d.printList(results)
 
 	if VERBOSE {
 		fmt.Printf("\nxkcd: ~~~ output end\n")

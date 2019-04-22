@@ -4,17 +4,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+
+	"tgpl/ex_04.12-xkcd/quest"
 )
 
 // DataBase is an array of xkcd cartoons.
 type DataBase struct {
 	Len     uint
 	Edition []Comic
-}
-
-// Print returns a single xkcd commic edition specified by referance number.
-func (d *DataBase) Print(i uint) Comic {
-	return d.Edition[i]
 }
 
 // xkcdInit loads the xkcd index data from the data file into program memory.
@@ -106,7 +103,11 @@ func updateDatabase(comics *DataBase) (*DataBase, bool, error) {
 		return comics, false, nil
 	}
 
-	// Record current length and grow.
+	// Enable signaling for new records, irrespective of VERBOSE state.
+	quest.UPDATE = true
+
+	// Record current length and grow to accommodate new records if
+	// required.
 	c := comics.Len
 	comics = growDatastructure(comics, l)
 
@@ -122,9 +123,9 @@ func updateDatabase(comics *DataBase) (*DataBase, bool, error) {
 		comics.Len++
 	}
 
-	// Adds \n after the quest.http status responces which use \r to avoid
+	// Adds \n after the quest.http status responses which use \r to avoid
 	// flooding.
-	if VERBOSE {
+	if VERBOSE || UPDATE {
 		fmt.Printf("\n")
 	}
 
@@ -133,7 +134,7 @@ func updateDatabase(comics *DataBase) (*DataBase, bool, error) {
 		return comics, false, fmt.Errorf("writeDatabase: %v", err)
 	}
 
-	if VERBOSE {
+	if VERBOSE || UPDATE {
 		fmt.Printf("xkcd: ... database updated, %d records added\n", l-c)
 	}
 
@@ -231,8 +232,10 @@ func (d *DataBase) DbGet(n uint) {
 	if VERBOSE {
 		fmt.Printf("xkcd: database access ~~~\n\n")
 	}
-	if d.Len > DBGET {
-		printSingle(d.Edition[n])
+	if d.Len > DBGET-1 {
+		d.printComic(n)
+	} else {
+		fmt.Printf("xkcd: most recent addition is Number %d.", d.Len)
 	}
 	if VERBOSE {
 		fmt.Printf("\nxkcd: ~~~ database done\n")

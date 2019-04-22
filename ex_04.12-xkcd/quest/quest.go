@@ -2,7 +2,10 @@ package quest
 
 import "strconv"
 
-var VERBOSE bool
+var (
+	VERBOSE bool
+	UPDATE  bool
+)
 
 // Header key value pairs.
 type Header struct {

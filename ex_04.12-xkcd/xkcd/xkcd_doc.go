@@ -11,25 +11,30 @@ DESCRIPTION
 	browsed by number.
 
 FLAGS
-	xkcd -s hello world
+	xkcd hello world
 
-	-s	Search for <args> amongst the comic descriptions in the local database.
+		Search for <args> amongst the comic descriptions in the local database.
 
 	xkcd -n 571
 
-	-n	Display the description of comic 'n' from the database index.
-	-w	Download and display the description of comic 'n' from the web.
+	-n [n]	Display the description of comic 'n' from the database index.
+	-w [n]	Download and display the description of comic 'n' from the web.
 
-	xkcd -u -s hello world
+	xkcd -u -l hello world
 
+	-l	Display output as an abreviated list.
 	-u	Update first with the latest comics descriptions.
 	-v	Verbose mode, for a detailed output of the programs actions.
 	-help	Prints out the programs help file.
 	-h
 
+	-test [n]
+		Use the test data set if available localy else create one
+		afresh, by dowloading [n] comics from the xkcd website.
+
 HTTP REQUESTS
 
-	Information of the sites API
+	Information froṁ the sites API
 		https://xkcd.com/json.html
 
 	http://xkcd.com/info.0.json (current comic)
@@ -67,20 +72,25 @@ DESCRIPTION
 	browsed by number.
 
 FLAGS
-	xkcd -s hello world
+	xkcd hello world
 
-	-s	Search for <args> amongst the comic descriptions in the local database.
+		Search for <args> amongst the comic descriptions in the local database.
 
 	xkcd -n 571
 
-	-n	Display the description of comic 'n' from the database index.
-	-w	Download and display the description of comic 'n' from the web.
+	-n [n]	Display the description of comic 'n' from the database index.
+	-w [n]	Download and display the description of comic 'n' from the web.
 
-	xkcd -u -s hello world
+	xkcd -u -l hello world
 
+	-l	Display output as an abreviated list.
 	-u	Update first with the latest comics descriptions.
 	-v	Verbose mode, for a detailed output of the programs actions.
 	-help	Prints out the programs help file.
 	-h
+
+	-test [n]
+		Use the test data set if available localy else create one
+		afresh, by dowloading [n] comics from the xkcd website.
 
 `

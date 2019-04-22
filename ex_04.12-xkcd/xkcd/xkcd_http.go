@@ -32,6 +32,7 @@ func newComicHTTP(i uint) (Comic, int, error) {
 		return comic, req.Code, fmt.Errorf("xkcdDecode: %v", err)
 	}
 
+	// Add the relevent URL to the commic, otherwise not included.
 	comic.URL = setURL(i)
 
 	return comic, req.Code, nil
