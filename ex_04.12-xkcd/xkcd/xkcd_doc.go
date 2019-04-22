@@ -36,7 +36,6 @@ HTTP REQUESTS
 	http://xkcd.com/614/info.0.json (comic #614)
 
 */
-
 package xkcd
 
 import (

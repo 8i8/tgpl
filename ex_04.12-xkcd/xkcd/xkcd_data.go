@@ -13,8 +13,8 @@ type DataBase struct {
 }
 
 // Print returns a single xkcd commic edition specified by referance number.
-func (c *DataBase) Print(i uint) Comic {
-	return c.Edition[i]
+func (d *DataBase) Print(i uint) Comic {
+	return d.Edition[i]
 }
 
 // xkcdInit loads the xkcd index data from the data file into program memory.
@@ -26,12 +26,14 @@ func xkcdInit() (*DataBase, error) {
 	// load db into memory.
 	err := loadDatabase(&comics, cADDRESS+cNAME)
 	if err != nil {
-		return &comics, fmt.Errorf("loadDatabase: %v\n", err)
+		return &comics, fmt.Errorf("loadDatabase: %v", err)
 	}
 
 	return &comics, err
 }
 
+// loadDatabase loads xlcd data from a file if one exists, downloading and
+// creating the file if it is not present.
 func loadDatabase(comics *DataBase, path string) error {
 
 	if VERBOSE {
@@ -65,6 +67,9 @@ func loadDatabase(comics *DataBase, path string) error {
 	return err
 }
 
+// growDatastructure expands the array that holds the comic structs to a
+// specified length, the latest comic is retrievable as such the required
+// length is known.
 func growDatastructure(comics *DataBase, l uint) *DataBase {
 
 	// If required, make a new data structure and copy over any comics
@@ -81,7 +86,7 @@ func growDatastructure(comics *DataBase, l uint) *DataBase {
 }
 
 // updateDatabase retrieves any editions that are not currently in the
-// database.
+// database and adds them.
 func updateDatabase(comics *DataBase) (*DataBase, bool, error) {
 
 	if VERBOSE {
@@ -123,24 +128,10 @@ func updateDatabase(comics *DataBase) (*DataBase, bool, error) {
 		fmt.Printf("\n")
 	}
 
-	// Prepare for reading.
-	data, err := json.MarshalIndent(comics, "", "	")
+	err = writeDatabase(comics)
 	if err != nil {
-		return comics, false, fmt.Errorf("MarshalIndent: %v", err)
+		return comics, false, fmt.Errorf("writeDatabase: %v", err)
 	}
-
-	// Open file for writing.
-	file, err := os.Create(cADDRESS + cNAME)
-	if err != nil {
-		return comics, false, fmt.Errorf("Create: %v", err)
-	}
-
-	// Write data to file.
-	_, err = file.Write(data)
-	if err != nil {
-		return comics, false, fmt.Errorf("Write: %v", err)
-	}
-	file.Close()
 
 	if VERBOSE {
 		fmt.Printf("xkcd: ... database updated, %d records added\n", l-c)
@@ -183,30 +174,44 @@ func downloadAllXkcd(comics *DataBase) (*DataBase, error) {
 		fmt.Printf("\n")
 	}
 
+	err = writeDatabase(comics)
+	if err != nil {
+		return comics, fmt.Errorf("writeDatabase: %v", err)
+	}
+
+	return comics, nil
+}
+
+// writeDatabase writes a database struct to file in a readable json format.
+func writeDatabase(comics *DataBase) error {
+
+	if VERBOSE {
+		fmt.Printf("xkcd: opening database ...\n")
+	}
+
 	// Prepare for reading.
 	data, err := json.MarshalIndent(comics, "", "	")
 	if err != nil {
-		return comics, fmt.Errorf("MarshalIndent: %v", err)
+		return fmt.Errorf("MarshalIndent: %v", err)
 	}
 
 	// Open file for writing.
 	file, err := os.Create(cADDRESS + cNAME)
 	if err != nil {
-		return comics, fmt.Errorf("Create: %v", err)
+		return fmt.Errorf("Create: %v", err)
 	}
 	defer file.Close()
 
 	// Write data to file.
 	_, err = file.Write(data)
 	if err != nil {
-		return comics, fmt.Errorf("Write: %v", err)
+		return fmt.Errorf("Write: %v", err)
 	}
 
 	if VERBOSE {
 		fmt.Printf("xkcd: ... database written\n")
 	}
-
-	return comics, err
+	return err
 }
 
 // Update updates the comic database with the latest comic descriptions.

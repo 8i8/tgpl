@@ -17,15 +17,13 @@ var cADDRESS = "data/"
 
 // Verbouse program output whilst running.
 var (
-	VERBOSE   bool
-	UPDATE    bool
-	SEARCH    bool
-	BTREE     bool
-	BTREESYNC bool
-	LISTSYNC  bool
-	DBGET     uint
-	WEBGET    uint
-	TESTRUN   uint
+	VERBOSE bool
+	UPDATE  bool
+	SEARCH  bool
+	TITLE   bool
+	DBGET   uint
+	WEBGET  uint
+	TESTRUN uint
 )
 
 // setConfig sets required state variables for desired program run mode.

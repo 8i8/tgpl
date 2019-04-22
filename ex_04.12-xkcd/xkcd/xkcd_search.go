@@ -70,7 +70,7 @@ func searchList(t *ds.Trie, comics *DataBase, args []string) []uint {
 		}
 		// Count instances of each index so as to isolate only the
 		// comics that contain all words sought.
-		for id, _ := range temp {
+		for id := range temp {
 			m[id]++
 		}
 	}
@@ -105,7 +105,11 @@ func (d *DataBase) Search(args []string) {
 	m := buildSearchMapList(d)
 	t := buildSearchTrieList(m)
 	results := searchList(t, d, cleanArgs(args))
-	printResults(d, results)
+	if TITLE {
+		d.printTitleList(results)
+	} else {
+		d.printList(results)
+	}
 
 	if VERBOSE {
 		fmt.Printf("\nxkcd: ~~~ output end\n")

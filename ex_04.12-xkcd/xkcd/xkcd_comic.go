@@ -2,6 +2,7 @@ package xkcd
 
 import (
 	"fmt"
+	"strconv"
 )
 
 // Comic contains an xkcd cartoon.
@@ -17,6 +18,7 @@ type Comic struct {
 	Img        string
 	Title      string
 	Day        string
+	URL        string
 }
 
 // Num returns the comic number.
@@ -47,27 +49,25 @@ func WebGet(n uint) {
 	}
 }
 
-/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *  Print
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-
-func printComic(c *DataBase, i uint) {
-	printSingle(c.Edition[i])
+// setURL auto generates the comics web url.
+func setURL(i uint) string {
+	return "https://xkcd.com/" + strconv.Itoa(int(i)) + "/"
 }
 
-func printSingle(c Comic) {
-	fmt.Printf("Number:     %d\n", c.Number)
-	fmt.Printf("Month:      %s\n", c.Month)
-	fmt.Printf("Link:       %s\n", c.Link)
-	fmt.Printf("News:	%s\n", c.News)
-	fmt.Printf("SafeTitle:  %s\n", c.SafeTitle)
-	fmt.Printf("Transcript: %s\n", c.Transcript)
-	fmt.Printf("Alt:        %s\n", c.Alt)
-	fmt.Printf("Img:        %s\n", c.Img)
-	fmt.Printf("Title:      %s\n", c.Title)
-	fmt.Printf("Day:        %s\n", c.Day)
-}
+// setURLOnAllcomics does just that, setting the web url of the comic on each
+// database entry.
+func setURLOnAll(comics *DataBase) error {
 
-func printTitle(c Comic) {
-	fmt.Printf("xkcd: %d %v\n", c.Number, c.SafeTitle)
+	for i, comic := range comics.Edition {
+		comics.Edition[i].URL = setURL(comic.Number)
+	}
+	err := writeDatabase(comics)
+	if err != nil {
+		return fmt.Errorf("setURLOnAll: %v", err)
+	}
+
+	if VERBOSE {
+		fmt.Printf("xkcd: url set on database.\n")
+	}
+	return nil
 }
