@@ -1,8 +1,6 @@
 package xkcd
 
-import (
-	"strings"
-)
+import "strings"
 
 // cleanArgs breaks the arguments list down in to single words and if the
 // appropriate flag is set coverts them all to lower case glyphs.

@@ -1,54 +1,46 @@
 package xkcd
 
 import (
-	"8i8/ds"
 	"fmt"
 	"sort"
+
+	"tgpl/ex_04.12-xkcd/ds"
 )
 
-/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *  Build map
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-
 // scanComicMap runs extract words on every text field in a Comic struct.
-func scanComicMap(m ds.MList, c Comic) ds.MList {
+func scanComicMapList(m ds.MList, c Comic) ds.MList {
 
-	m = ds.ExtractStrings(m, c.Link, c.Number)
-	m = ds.ExtractStrings(m, c.News, c.Number)
-	m = ds.ExtractStrings(m, c.SafeTitle, c.Number)
-	m = ds.ExtractStrings(m, c.Transcript, c.Number)
-	m = ds.ExtractStrings(m, c.Alt, c.Number)
-	m = ds.ExtractStrings(m, c.Title, c.Number)
+	m = ds.ExtractAndMap(m, c.Link, c.Number)
+	m = ds.ExtractAndMap(m, c.News, c.Number)
+	m = ds.ExtractAndMap(m, c.SafeTitle, c.Number)
+	m = ds.ExtractAndMap(m, c.Transcript, c.Number)
+	m = ds.ExtractAndMap(m, c.Alt, c.Number)
+	m = ds.ExtractAndMap(m, c.Title, c.Number)
 
 	return m
 }
 
 // buildSearchMap scans the comic database and creates a map of all words
 // found, linking them to the comics that they are from.
-func buildSearchMap(comics *DataBase) ds.MList {
+func buildSearchMapList(comics *DataBase) ds.MList {
 
 	// Scan and map comics.
 	m := make(ds.MList)
 
 	for _, comic := range comics.Edition {
-		scanComicMap(m, comic)
+		scanComicMapList(m, comic)
 	}
 
 	return m
 }
 
-/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *  Build trie
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-
-// buildSearchTrie constructs a search trie from a map of words.
-func buildSearchTrie(m ds.MList) *ds.Trie {
+// buildSearchTrie constructs a search trie from a search map.
+func buildSearchTrieList(m ds.MList) *ds.Trie {
 
 	t := new(ds.Trie)
-	for word, list := range m {
-		t.Add(word, list)
+	for word, indices := range m {
+		t.Add(word, indices)
 	}
-
 	return t
 }
 
@@ -56,8 +48,8 @@ func buildSearchTrie(m ds.MList) *ds.Trie {
  *  Search
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-// search prepares a list of comics that contain the given search terms.
-func search(t *ds.Trie, comics *DataBase, args []string) []uint {
+// searchList prepares a list of comics that contain the given search terms.
+func searchList(t *ds.Trie, comics *DataBase, args []string) []uint {
 
 	if VERBOSE {
 		fmt.Printf("xkcd: starting search list\n")
@@ -67,13 +59,13 @@ func search(t *ds.Trie, comics *DataBase, args []string) []uint {
 	// out comics that do not contain all of the required search words.
 	datalist := t.SearchWords(args)
 
-	// Add all indices to a map and count occurrence.
-	m := make(ds.Count)
+	// Add all indicies to a map and count occurance.
+	m := make(map[uint]int)
 	for _, data := range datalist {
-		temp := make(ds.Count)
-		// Generate a map from all the linked data such that only one
+		temp := make(map[uint]int)
+		// Generate a map from all the linked btrees such that only one
 		// instance of every comic index can exist per word searched.
-		for _, id := range data.List {
+		for _, id := range data.Links {
 			temp[id] = 0
 		}
 		// Count instances of each index so as to isolate only the
@@ -83,8 +75,8 @@ func search(t *ds.Trie, comics *DataBase, args []string) []uint {
 		}
 	}
 
-	// Extract from map only those indices that contain every search term,
-	// check the number of occurrence of the id against the number of search words.
+	// Extract from map only those indicies that contain every search term,
+	// check the number of occurance of the id againt the number of search words.
 	var filter []uint
 	l := len(args)
 	for id, count := range m {
@@ -110,9 +102,9 @@ func (d *DataBase) Search(args []string) {
 		fmt.Printf("xkcd: output start ~~~\n\n")
 	}
 
-	m := buildSearchMap(d)
-	t := buildSearchTrie(m)
-	results := search(t, d, cleanArgs(args))
+	m := buildSearchMapList(d)
+	t := buildSearchTrieList(m)
+	results := searchList(t, d, cleanArgs(args))
 	printResults(d, results)
 
 	if VERBOSE {

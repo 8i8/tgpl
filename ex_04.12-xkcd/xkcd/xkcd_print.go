@@ -1,8 +1,6 @@
 package xkcd
 
-import (
-	"8i8/ds"
-)
+import "tgpl/ex_04.12-xkcd/ds"
 
 // type Comic struct {
 // 	Month      string
@@ -22,6 +20,7 @@ func printMap(m *ds.Trie) {
 }
 
 func printResults(c *DataBase, r []uint) {
+	//fmt.Println(r)
 	for _, i := range r {
 		// -1 offset due to array of comics starting at 0.
 		printTitle(c.Edition[i-1])
