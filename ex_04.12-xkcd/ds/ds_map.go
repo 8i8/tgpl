@@ -1,6 +1,7 @@
 package ds
 
 import (
+	"strconv"
 	"unicode"
 	"unicode/utf8"
 )
@@ -62,4 +63,8 @@ func ExtractAndMap(m MList, s string, index uint) MList {
 		b = b[size:]
 	}
 	return m
+}
+
+func IdToMap(m MList, index uint) MList {
+	return addToMap(m, strconv.Itoa(int(index)), index)
 }

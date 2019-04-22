@@ -63,12 +63,13 @@ func Run(args []string) {
 		return
 	}
 
-	if SEARCH {
+	if UPDATE {
+		comics.Update()
+	}
+
+	if len(args) > 0 {
 		comics.Search(args)
 		return
 	}
 
-	if UPDATE {
-		comics.Update()
-	}
 }

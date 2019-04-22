@@ -16,6 +16,7 @@ func scanComicMapList(m ds.MList, c Comic) ds.MList {
 	m = ds.ExtractAndMap(m, c.Transcript, c.Number)
 	m = ds.ExtractAndMap(m, c.Alt, c.Number)
 	m = ds.ExtractAndMap(m, c.Title, c.Number)
+	m = ds.IdToMap(m, c.Number)
 
 	return m
 }
