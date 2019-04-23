@@ -11,9 +11,9 @@ func init() {
 	flag.BoolVar(&xkcd.UPDATE, "u", false, "")  // Update database.
 	flag.BoolVar(&xkcd.SEARCH, "s", false, "")  // Search for <args>
 	flag.BoolVar(&xkcd.TITLE, "l", false, "")   // Print a list of title number and address.
-	flag.UintVar(&xkcd.TESTRUN, "test", 0, "")  // Test database.
-	flag.UintVar(&xkcd.DBGET, "n", -1, "")      // Display comic 'n'.
-	flag.UintVar(&xkcd.WEBGET, "w", 0, "")      // Display comic 'n' http.
+	flag.IntVar(&xkcd.TESTRUN, "test", 0, "")   // Test database.
+	flag.IntVar(&xkcd.DBGET, "n", -1, "")       // Display comic 'n'.
+	flag.IntVar(&xkcd.WEBGET, "w", 0, "")       // Display comic 'n' http.
 }
 
 func main() {

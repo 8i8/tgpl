@@ -7,11 +7,11 @@ import (
 )
 
 // MList is a map containing arrays of indices.
-type MList map[string][]uint
+type MList map[string][]int
 
 // addToMap checks a MList map for a preexisting entry and returns the
 // map with the index and word added, if not already present.
-func addToMap(m MList, s string, index uint) MList {
+func addToMap(m MList, s string, index int) MList {
 
 	list := m[s]
 
@@ -36,7 +36,7 @@ func addToMap(m MList, s string, index uint) MList {
 }
 
 // ExtractAndMap adds every word in a string to a MList map.
-func ExtractAndMap(m MList, s string, index uint) MList {
+func ExtractAndMap(m MList, s string, index int) MList {
 
 	var word []rune
 	var isInWord bool
@@ -65,6 +65,6 @@ func ExtractAndMap(m MList, s string, index uint) MList {
 	return m
 }
 
-func IdToMap(m MList, index uint) MList {
+func IdToMap(m MList, index int) MList {
 	return addToMap(m, strconv.Itoa(int(index)), index)
 }

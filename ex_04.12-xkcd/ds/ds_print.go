@@ -3,7 +3,7 @@ package ds
 import "fmt"
 
 var mark bool
-var prevList []uint
+var prevList []int
 
 func printTrieList(n *node) {
 
@@ -28,7 +28,7 @@ func printTrieList(n *node) {
 	}
 }
 
-func printList(list []uint) {
+func printList(list []int) {
 	for _, l := range list {
 		fmt.Print("[", l, "]")
 	}

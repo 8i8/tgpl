@@ -8,7 +8,7 @@ import (
 )
 
 // newComicHTTP returns the specified comic from the website.
-func newComicHTTP(i uint) (Comic, int, error) {
+func newComicHTTP(i int) (Comic, int, error) {
 
 	var req quest.HttpQuest
 	var comic Comic
@@ -44,7 +44,7 @@ func newLatestComicHTTP() (Comic, int, error) {
 }
 
 // getLatestNumber returns the referance number of the latest xkcd comic.
-func getLatestNumber() (uint, error) {
+func getLatestNumber() (int, error) {
 
 	if TESTRUN > 0 {
 		return TESTRUN, nil

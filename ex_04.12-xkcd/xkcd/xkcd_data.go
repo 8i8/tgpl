@@ -8,7 +8,7 @@ import (
 
 // DataBase is an array of xkcd cartoons.
 type DataBase struct {
-	Len     uint
+	Len     int
 	Edition []Comic
 }
 
@@ -65,7 +65,7 @@ func loadDatabase(comics *DataBase, path string) error {
 // growDatastructure expands the array that holds the comic structs to a
 // specified length, the latest comic is retrievable as such the required
 // length is known.
-func growDatastructure(comics *DataBase, l uint) *DataBase {
+func growDatastructure(comics *DataBase, l int) *DataBase {
 
 	// If required, make a new data structure and copy over any comics
 	// present.
@@ -107,7 +107,7 @@ func updateDatabase(comics *DataBase) (*DataBase, bool, error) {
 	comics = growDatastructure(comics, l)
 
 	// Fill array with new comics.
-	for i := uint(c); i < l; i++ {
+	for i := int(c); i < l; i++ {
 		comic, code, err := newComicHTTP(i + 1)
 		if err != nil && code != 404 {
 			return comics, false, fmt.Errorf("newComicHTTP: %d: %v", i, err)
@@ -154,7 +154,7 @@ func downloadAllXkcd(comics *DataBase) (*DataBase, error) {
 	comics.Len = l
 
 	// Fill array with comics.
-	for i := uint(0); i < l && i < 400; i++ {
+	for i := int(0); i < l && i < 400; i++ {
 		comic, code, err := newComicHTTP(i + 1)
 		if err != nil && code != 404 {
 			return comics, fmt.Errorf("GetComicNum: %d: %v", i, err)
@@ -225,7 +225,7 @@ func (d *DataBase) Update() bool {
 
 // DbGet prints out the given comic description from the database, requesting
 // comic 0 will raise the most recent comic.
-func (d *DataBase) DbGet(n uint) {
+func (d *DataBase) DbGet(n int) {
 
 	if VERBOSE {
 		fmt.Printf("xkcd: database access ~~~\n\n")

@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-var count uint
+var count int
 
 // respDecode reads and stores an http response body.
 func respDecode(req *HttpQuest, resp *http.Response) error {

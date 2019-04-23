@@ -87,6 +87,6 @@ func Run(args []string) {
 	// When the program is run with no arguments print out a random comic
 	// from the database.
 	rand.Seed(time.Now().UnixNano())
-	comics.DbGet(uint(rand.Intn(int(comics.Len))))
+	comics.DbGet(int(rand.Intn(int(comics.Len))))
 
 }

@@ -10,13 +10,16 @@ import (
 // scanComicMap runs extract words on every text field in a Comic struct.
 func scanComicMapList(m ds.MList, c Comic) ds.MList {
 
-	m = ds.ExtractAndMap(m, c.Link, c.Number)
-	m = ds.ExtractAndMap(m, c.News, c.Number)
-	m = ds.ExtractAndMap(m, c.SafeTitle, c.Number)
-	m = ds.ExtractAndMap(m, c.Transcript, c.Number)
-	m = ds.ExtractAndMap(m, c.Alt, c.Number)
-	m = ds.ExtractAndMap(m, c.Title, c.Number)
-	m = ds.IdToMap(m, c.Number)
+	// Offset comic number for array index.
+	index := c.Number - 1
+
+	m = ds.ExtractAndMap(m, c.Link, index)
+	m = ds.ExtractAndMap(m, c.News, index)
+	m = ds.ExtractAndMap(m, c.SafeTitle, index)
+	m = ds.ExtractAndMap(m, c.Transcript, index)
+	m = ds.ExtractAndMap(m, c.Alt, index)
+	m = ds.ExtractAndMap(m, c.Title, index)
+	m = ds.IdToMap(m, index)
 
 	return m
 }
@@ -50,7 +53,7 @@ func buildSearchTrieList(m ds.MList) *ds.Trie {
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
 // searchList prepares a list of comics that contain the given search terms.
-func searchList(t *ds.Trie, comics *DataBase, args []string) []uint {
+func searchList(t *ds.Trie, comics *DataBase, args []string) []int {
 
 	if VERBOSE {
 		fmt.Printf("xkcd: starting search list\n")
@@ -61,9 +64,9 @@ func searchList(t *ds.Trie, comics *DataBase, args []string) []uint {
 	datalist := t.SearchWords(args)
 
 	// Add all indicies to a map and count occurance.
-	m := make(map[uint]int)
+	m := make(map[int]int)
 	for _, data := range datalist {
-		temp := make(map[uint]int)
+		temp := make(map[int]int)
 		// Generate a map from all the linked btrees such that only one
 		// instance of every comic index can exist per word searched.
 		for _, id := range data.List {
@@ -78,7 +81,7 @@ func searchList(t *ds.Trie, comics *DataBase, args []string) []uint {
 
 	// Extract from map only those indicies that contain every search term,
 	// check the number of occurance of the id againt the number of search words.
-	var filter []uint
+	var filter []int
 	l := len(args)
 	for id, count := range m {
 		if count == l {

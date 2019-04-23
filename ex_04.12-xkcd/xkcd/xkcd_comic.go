@@ -8,7 +8,7 @@ import (
 // Comic contains an xkcd cartoon.
 type Comic struct {
 	Month      string
-	Number     uint `json:"num"`
+	Number     int `json:"num"`
 	Link       string
 	Year       string
 	News       string
@@ -22,12 +22,12 @@ type Comic struct {
 }
 
 // Num returns the comic number.
-func (c Comic) Num() uint {
+func (c Comic) Num() int {
 	return c.Number
 }
 
 // WebGet outputs the given comic from the internet by making a http request.
-func WebGet(n uint) {
+func WebGet(n int) {
 
 	if VERBOSE {
 		fmt.Printf("xkcd: make http request\n")
@@ -50,7 +50,7 @@ func WebGet(n uint) {
 }
 
 // setURL auto generates the comics web url.
-func setURL(i uint) string {
+func setURL(i int) string {
 	return "https://xkcd.com/" + strconv.Itoa(int(i)) + "/"
 }
 

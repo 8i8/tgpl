@@ -16,16 +16,16 @@ type Trie struct {
 type node struct {
 	count int // The number of times that the word has been added.
 	next  hash
-	list  []uint
+	list  []int
 }
 
 type Data struct {
 	found bool
 	word  string
-	List  []uint
+	List  []int
 }
 
-type debug = uint
+type debug = int
 
 var d debug
 
@@ -37,7 +37,7 @@ func init() {
 	//d |= VERBOSE
 }
 
-func (t *Trie) Add(s string, list []uint) {
+func (t *Trie) Add(s string, list []int) {
 
 	// If first use, initialise.
 	if t.start == nil {
@@ -108,10 +108,10 @@ func (n *node) goCheckWord(d Data, s string, ch chan<- Data) {
 }
 
 // goGetAllWords
-func (n *node) goGetAllWords(ch chan<- []uint) {
+func (n *node) goGetAllWords(ch chan<- []int) {
 
-	ch1 := make(chan []uint)
-	var list []uint
+	ch1 := make(chan []int)
+	var list []int
 
 	// If the current node has linked data, store it.
 	if n.list != nil {
@@ -145,7 +145,7 @@ func getAllWords(n *node, data Data) Data {
 		}
 	}
 
-	ch := make(chan []uint)
+	ch := make(chan []int)
 
 	// For every rune in the map, call goGetAllWords.
 	for _, n1 := range n.next {
@@ -230,3 +230,12 @@ func (t *Trie) SearchWords(s []string) []Data {
 
 	return results
 }
+
+// // serialise is a helper function for Serialise.
+// func serialise(n *node, f *File) {
+
+// }
+
+// func (t *Trie) Serialise(f *File) {
+// 	serialise(t.start, f)
+// }

@@ -4,18 +4,17 @@ import (
 	"fmt"
 )
 
-func (d *DataBase) printList(list []uint) {
+func (d *DataBase) printList(list []int) {
 	for _, i := range list {
-		// -1 offset due to array of comics starting at 0.
 		if TITLE {
-			printTitle(d.Edition[i-1])
+			printTitle(d.Edition[i])
 		} else {
-			printSingle(d.Edition[i-1])
+			printSingle(d.Edition[i])
 		}
 	}
 }
 
-func (d *DataBase) printComic(n uint) {
+func (d *DataBase) printComic(n int) {
 	if TITLE {
 		printTitle(d.Edition[n-1])
 	} else {
