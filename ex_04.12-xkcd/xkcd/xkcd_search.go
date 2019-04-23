@@ -66,7 +66,7 @@ func searchList(t *ds.Trie, comics *DataBase, args []string) []uint {
 		temp := make(map[uint]int)
 		// Generate a map from all the linked btrees such that only one
 		// instance of every comic index can exist per word searched.
-		for _, id := range data.Links {
+		for _, id := range data.List {
 			temp[id] = 0
 		}
 		// Count instances of each index so as to isolate only the
@@ -105,9 +105,12 @@ func (d *DataBase) Search(args []string) {
 
 	m := buildSearchMapList(d)
 	t := buildSearchTrieList(m)
-	results := searchList(t, d, cleanArgs(args))
+	args, ok := cleanArgs(args)
+	if !ok {
+		return
+	}
+	results := searchList(t, d, args)
 	d.printList(results)
-
 	if VERBOSE {
 		fmt.Printf("\nxkcd: ~~~ output end\n")
 	}

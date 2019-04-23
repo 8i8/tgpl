@@ -20,10 +20,9 @@ type node struct {
 }
 
 type Data struct {
-	//id        int
 	found bool
 	word  string
-	Links []uint
+	List  []uint
 }
 
 type debug = uint
@@ -32,22 +31,10 @@ var d debug
 
 const (
 	VERBOSE debug = 1 << iota
-	ADD
-	SEARCHWORDS
-	GOSEARCHFIRTSRUNE
-	GETALLWORDS
-	GOGETALLWORDS
-	BTREEADD
-	BTREECOUNT
 )
 
 func init() {
 	//d |= VERBOSE
-	//d |= ADD
-	//d |= SEARCHWORDS
-	//d |= GOSEARCHFIRTSRUNE
-	//d |= GETALLWORDS
-	//d |= GOGETALLWORDS
 }
 
 func (t *Trie) Add(s string, list []uint) {
@@ -93,8 +80,8 @@ func addData(data, newdata *Data) *Data {
 		data.found = true
 	}
 
-	for _, l := range newdata.Links {
-		data.Links = append(data.Links, l)
+	for _, l := range newdata.List {
+		data.List = append(data.List, l)
 	}
 	return data
 }
@@ -154,7 +141,7 @@ func getAllWords(n *node, data Data) Data {
 	// If the currend node has linked data, store it.
 	if n.list != nil {
 		for _, l := range n.list {
-			data.Links = append(data.Links, l)
+			data.List = append(data.List, l)
 		}
 	}
 
@@ -169,7 +156,7 @@ func getAllWords(n *node, data Data) Data {
 	for range n.next {
 		list := <-ch
 		for _, l := range list {
-			data.Links = append(data.Links, l)
+			data.List = append(data.List, l)
 		}
 	}
 
@@ -236,7 +223,7 @@ func (t *Trie) SearchWords(s []string) []Data {
 	if d&VERBOSE > 0 {
 		for _, data := range results {
 			fmt.Printf("%s: ", data.word)
-			printList(data.Links)
+			printList(data.List)
 			fmt.Println()
 		}
 	}

@@ -28,7 +28,7 @@ func getStatus(req *HttpQuest, resp *http.Response) *HttpQuest {
 	req.Code = resp.StatusCode
 	req.Message = http.StatusText(resp.StatusCode)
 
-	if VERBOSE || UPDATE {
+	if VERBOSE {
 		count++
 		i := count % 6
 		switch i {

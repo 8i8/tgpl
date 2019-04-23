@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-
-	"tgpl/ex_04.12-xkcd/quest"
 )
 
 // DataBase is an array of xkcd cartoons.
@@ -103,9 +101,6 @@ func updateDatabase(comics *DataBase) (*DataBase, bool, error) {
 		return comics, false, nil
 	}
 
-	// Enable signaling for new records, irrespective of VERBOSE state.
-	quest.UPDATE = true
-
 	// Record current length and grow to accommodate new records if
 	// required.
 	c := comics.Len
@@ -125,7 +120,7 @@ func updateDatabase(comics *DataBase) (*DataBase, bool, error) {
 
 	// Adds \n after the quest.http status responses which use \r to avoid
 	// flooding.
-	if VERBOSE || UPDATE {
+	if VERBOSE {
 		fmt.Printf("\n")
 	}
 
@@ -134,7 +129,7 @@ func updateDatabase(comics *DataBase) (*DataBase, bool, error) {
 		return comics, false, fmt.Errorf("writeDatabase: %v", err)
 	}
 
-	if VERBOSE || UPDATE {
+	if VERBOSE {
 		fmt.Printf("xkcd: ... database updated, %d records added\n", l-c)
 	}
 
@@ -215,25 +210,31 @@ func writeDatabase(comics *DataBase) error {
 	return err
 }
 
-// Update updates the comic database with the latest comic descriptions.
-func (d *DataBase) Update() {
+// Update updates the comic database with the latest comic descriptions,
+// returns true if the database has been updated or false if there are no new
+// comics.
+func (d *DataBase) Update() bool {
 
-	var err error
-	d, _, err = updateDatabase(d)
+	_, ok, err := updateDatabase(d)
 	if err != nil {
 		fmt.Printf("error: updateDatabase: %v\n", err)
-		return
+		return false
 	}
+	return ok
 }
 
-// DbGet prints out the given comic description from the database.
+// DbGet prints out the given comic description from the database, requesting
+// comic 0 will raise the most recent comic.
 func (d *DataBase) DbGet(n uint) {
 
 	if VERBOSE {
 		fmt.Printf("xkcd: database access ~~~\n\n")
 	}
-	if d.Len > DBGET-1 {
+	if d.Len >= n && n > 0 {
 		d.printComic(n)
+		// If DBGET == 0 print the most recent comic.
+	} else if n == 0 {
+		d.printComic(d.Len)
 	} else {
 		fmt.Printf("xkcd: most recent addition is Number %d.", d.Len)
 	}

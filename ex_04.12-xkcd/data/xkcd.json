@@ -1,5 +1,5 @@
 {
-	"Len": 2139,
+	"Len": 2140,
 	"Edition": [
 		{
 			"Month": "1",
@@ -29946,6 +29946,20 @@
 			"Title": "Email Settings",
 			"Day": "19",
 			"URL": "https://xkcd.com/2139/"
+		},
+		{
+			"Month": "4",
+			"num": 2140,
+			"Link": "",
+			"Year": "2019",
+			"News": "",
+			"safe_title": "Reinvent the Wheel",
+			"Transcript": "",
+			"Alt": "Right now it's a bicycle wheel, so we've had to move to lighter vehicles, but the reduced overhead is worth it. There was one week when a wheel of cheese got dangerously close to the first page, though.",
+			"Img": "https://imgs.xkcd.com/comics/reinvent_the_wheel.png",
+			"Title": "Reinvent the Wheel",
+			"Day": "22",
+			"URL": "https://xkcd.com/2140/"
 		}
 	]
 }

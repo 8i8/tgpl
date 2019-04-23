@@ -4,7 +4,6 @@ import "strconv"
 
 var (
 	VERBOSE bool
-	UPDATE  bool
 )
 
 // Header key value pairs.

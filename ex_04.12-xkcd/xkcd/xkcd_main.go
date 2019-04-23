@@ -2,6 +2,8 @@ package xkcd
 
 import (
 	"fmt"
+	"math/rand"
+	"time"
 
 	"tgpl/ex_04.12-xkcd/ds"
 	"tgpl/ex_04.12-xkcd/quest"
@@ -21,9 +23,9 @@ var (
 	UPDATE  bool
 	SEARCH  bool
 	TITLE   bool
-	DBGET   uint
-	WEBGET  uint
-	TESTRUN uint
+	DBGET   int
+	WEBGET  int
+	TESTRUN int
 )
 
 // setConfig sets required state variables for desired program run mode.
@@ -54,22 +56,37 @@ func Run(args []string) {
 
 	comics, err := xkcdInit()
 	if err != nil {
-		fmt.Printf("error: %v\n", err)
+		fmt.Printf("error: xkcdInit: %v\n", err)
 		return
 	}
 
 	if DBGET > 0 {
-		comics.DbGet(DBGET - 1)
+		comics.DbGet(DBGET)
 		return
 	}
 
+	// Prints the latest comic
+	if DBGET == 0 {
+		comics.DbGet(0)
+		return
+	}
+
+	// Print out the latest comic if the data base has been updated.
 	if UPDATE {
-		comics.Update()
+		if comics.Update() {
+			comics.DbGet(0)
+		}
+		return
 	}
 
 	if len(args) > 0 {
 		comics.Search(args)
 		return
 	}
+
+	// When the program is run with no arguments print out a random comic
+	// from the database.
+	rand.Seed(time.Now().UnixNano())
+	comics.DbGet(uint(rand.Intn(int(comics.Len))))
 
 }
