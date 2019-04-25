@@ -15,6 +15,7 @@ const cTailURL = "/info.0.json"
 
 // Database file name.
 var cNAME = "xkcd.json"
+var cCACHE = "cache.data"
 var cADDRESS = "data/"
 
 // Verbouse program output whilst running.
@@ -80,7 +81,7 @@ func Run(args []string) {
 	}
 
 	if len(args) > 0 {
-		comics.Search(args)
+		comics.SearchXkcd(args)
 		return
 	}
 

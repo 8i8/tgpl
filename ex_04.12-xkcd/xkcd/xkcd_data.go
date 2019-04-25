@@ -44,6 +44,7 @@ func loadDatabase(comics *DataBase, path string) error {
 		//return nil, fmt.Errorf("Open: %v", err)
 		// TODO ask user whether a new database is to be made.
 		comics, err = downloadAllXkcd(comics)
+
 		if err != nil {
 			return fmt.Errorf("downloadAllXkcd: %v", err)
 		}

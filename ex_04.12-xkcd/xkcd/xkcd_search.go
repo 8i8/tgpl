@@ -38,22 +38,12 @@ func buildSearchMapList(comics *DataBase) ds.MList {
 	return m
 }
 
-// buildSearchTrie constructs a search trie from a search map.
-func buildSearchTrieList(m ds.MList) *ds.Trie {
-
-	t := new(ds.Trie)
-	for word, indices := range m {
-		t.Add(word, indices)
-	}
-	return t
-}
-
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *  Search
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-// searchList prepares a list of comics that contain the given search terms.
-func searchList(t *ds.Trie, comics *DataBase, args []string) []int {
+// searchXkcd prepares a list of comics that contain the given search terms.
+func searchXkcd(t *ds.Trie, comics *DataBase, args []string) []int {
 
 	if VERBOSE {
 		fmt.Printf("xkcd: starting search list\n")
@@ -61,9 +51,9 @@ func searchList(t *ds.Trie, comics *DataBase, args []string) []int {
 
 	// Count occurrence of each search word over all comics, used to filter
 	// out comics that do not contain all of the required search words.
-	datalist := t.SearchWords(args)
+	datalist := t.SearchTrie(args)
 
-	// Add all indicies to a map and count occurance.
+	// Add all indices to a map and count occurrence.
 	m := make(map[int]int)
 	for _, data := range datalist {
 		temp := make(map[int]int)
@@ -79,8 +69,8 @@ func searchList(t *ds.Trie, comics *DataBase, args []string) []int {
 		}
 	}
 
-	// Extract from map only those indicies that contain every search term,
-	// check the number of occurance of the id againt the number of search words.
+	// Extract from map only those indices that contain every search term,
+	// check the number of occurrence of the id against the number of search words.
 	var filter []int
 	l := len(args)
 	for id, count := range m {
@@ -99,20 +89,32 @@ func searchList(t *ds.Trie, comics *DataBase, args []string) []int {
 	return filter
 }
 
-// Search searches the local database of comic descriptions for the given
+// SearchXkcd searches the local database of comic descriptions for the given
 // arguments.
-func (d *DataBase) Search(args []string) {
+func (d *DataBase) SearchXkcd(args []string) {
+
+	// Get verbal.
 	if VERBOSE {
 		fmt.Printf("xkcd: output start ~~~\n\n")
 	}
 
+	// Construct a map of all words in the database, remove all spaces and
+	// characters that are not letters.
 	m := buildSearchMapList(d)
-	t := buildSearchTrieList(m)
+	t, err := ds.InitaliseTrie(m, cADDRESS+cCACHE)
+	if err != nil {
+		fmt.Printf("error: InitialiseTrie: %v\n", err)
+		return
+	}
+
+	// Convert all words in argument array to lowercase and remove spaces.
 	args, ok := cleanArgs(args)
 	if !ok {
 		return
 	}
-	results := searchList(t, d, args)
+
+	// Launch a search of the xkcd database.
+	results := searchXkcd(t, d, args)
 	d.printList(results)
 	if VERBOSE {
 		fmt.Printf("\nxkcd: ~~~ output end\n")
