@@ -98,14 +98,10 @@ func (d *DataBase) SearchXkcd(args []string) {
 		fmt.Printf("xkcd: output start ~~~\n\n")
 	}
 
-	// Construct a map of all words in the database, remove all spaces and
-	// characters that are not letters.
+	// Construct a search tree of all words in the database.
+	t := &ds.Trie{}
 	m := buildSearchMapList(d)
-	t, err := ds.InitaliseTrie(m, cADDRESS+cCACHE)
-	if err != nil {
-		fmt.Printf("error: InitialiseTrie: %v\n", err)
-		return
-	}
+	t.BuildFromMap(m)
 
 	// Convert all words in argument array to lowercase and remove spaces.
 	args, ok := cleanArgs(args)

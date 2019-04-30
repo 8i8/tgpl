@@ -2,11 +2,8 @@ package ds
 
 import (
 	"fmt"
-	"os"
-	"strconv"
+	"sort"
 	"unicode"
-
-	"tgpl/ex_04.12-xkcd/msg"
 )
 
 type hash map[rune]*node
@@ -37,32 +34,12 @@ const (
 )
 
 func init() {
-	d |= VERBOSE
+	// d |= VERBOSE
 }
 
-// buildTrieFromMap constructs a search trie from a search map.
-func buildTrieFromMap(t *Trie, m MList) {
-
-	for word, indices := range m {
-		t.Add(word, indices)
-	}
-}
-
-func InitaliseTrie(m MList, addr string) (*Trie, error) {
-
-	t := new(Trie)
-	if _, err := os.Stat(addr); err == nil {
-		err = deserialiseTrieFromFile(t, addr)
-		if err != nil {
-			return t, fmt.Errorf("t.Deserialise: %v", err)
-		}
-	} else {
-		buildTrieFromMap(t, m)
-		serialiseTrieToFile(t, addr)
-	}
-
-	return t, nil
-}
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ *  Build
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
 // addRuneToMap adds a rune to the hashmap adding a new hashmap if required.
 func (n *node) addRuneToMap(r rune) {
@@ -100,6 +77,17 @@ func (t *Trie) Add(s string, list []int) {
 	n.list = list
 }
 
+func (t *Trie) BuildFromMap(m MList) {
+
+	for word, indices := range m {
+		t.Add(word, indices)
+	}
+}
+
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ *  Trie Search
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
 // addData combines two data structs.
 func addData(data, newdata *Data) *Data {
 
@@ -117,28 +105,8 @@ func addData(data, newdata *Data) *Data {
 	return data
 }
 
-// goCheckWord verifies using multiple goroutines if the given string exists in
-// the trie as a complete word, from the given node.
-func (n *node) goCheckWord(d Data, s string, ch chan<- Data) {
-
-	// Keep the address of the first node, this is required when calling
-	// getAllWords, so as to retrieve the linked ntree data that relates to
-	// the current word.
-	for _, r := range s {
-		if n.next[r] == nil {
-			ch <- d
-			return
-		}
-		n = n.next[r]
-	}
-	d.found = true
-
-	d = getAllWords(n, d)
-	ch <- d
-	return
-}
-
-// goGetAllWords
+// goGetAllWords recursive fuction for searching for all word termination
+// points in the trie branch.
 func (n *node) goGetAllWords(ch chan<- []int) {
 
 	ch1 := make(chan []int)
@@ -192,6 +160,27 @@ func getAllWords(n *node, data Data) Data {
 	}
 
 	return data
+}
+
+// goCheckWord verifies using multiple goroutines if the given string exists in
+// the trie as a complete word, from the given node.
+func (n *node) goCheckWord(d Data, s string, ch chan<- Data) {
+
+	// Keep the address of the first node, this is required when calling
+	// getAllWords, so as to retrieve the linked ntree data that relates to
+	// the current word.
+	for _, r := range s {
+		if n.next[r] == nil {
+			ch <- d
+			return
+		}
+		n = n.next[r]
+	}
+	d.found = true
+
+	d = getAllWords(n, d)
+	ch <- d
+	return
 }
 
 // goSearchForFirstRune itterates over and launches a new word search upon
@@ -265,153 +254,69 @@ func (t *Trie) SearchTrie(s []string) []Data {
 }
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *  Trie Serialisation
+ *  Expand Trie
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-// writeList writes the data list from a node to the given bufio buffer.
-func writeList(n *node, w *msg.ErrWriter) {
+// goExpandTrie is a recursive helper function for ExpandTrie.
+func goExpandTrie(n *node, suffix string, ch1 chan<- []string) {
 
-	w.WriteRune(' ')
-	for i, id := range n.list {
-		w.WriteInt(id)
-		// Add a comma between all integers, except for the last.
-		if i != len(n.list)-1 {
-			w.WriteRune(',')
-		}
+	// To receive all suffix that are to be returned.
+	var wordlist []string
+
+	// This is the end of a word, return the stem.
+	if len(n.list) > 0 {
+		wordlist = append(wordlist, suffix)
 	}
-	w.WriteRune(' ')
 
-	// If there is a writer error, indicate the function.
-	if w.Err != nil {
-		w.Err = fmt.Errorf("serialise: %v", w.Err)
-	}
-}
-
-// serialiseTrie is a helper function for SerialiseTrie.
-func serialiseTrie(n *node, w *msg.ErrWriter) {
-
-	// Denote a leaf node in the serialisation.
+	// This is a leaf node, stop here.
 	if n.next == nil {
-		w.WriteRune('¬')
+		ch1 <- wordlist
 		return
 	}
 
-	// If there is associated data, write it.
-	if len(n.list) > 0 {
-		writeList(n, w)
+	// Launch a goroutine for every hash bucket in the map.
+	ch2 := make(chan []string)
+	for r, _ := range n.next {
+		// Add the rune to the current suffix and reiterate.
+		go goExpandTrie(n.next[r], suffix+string(r), ch2)
 	}
-
-	// Go recursively to all other nodes in the trie.
-	i := 0
-	for r, next := range n.next {
-		i++
-		w.WriteRune(r)
-		serialiseTrie(next, w)
-	}
-
-	// If there is a writer error, indicate the function.
-	if w.Err != nil {
-		w.Err = fmt.Errorf("serialise: %v", w.Err)
-	}
-}
-
-// SerialiseTrie writes the content of the trie structure to disk, used as a cache
-// for the trie data structure.
-func (t *Trie) SerialiseTrie(w *msg.ErrWriter) error {
-
-	if d&VERBOSE > 0 {
-		fmt.Printf("ds: trie serialisation started ...\n")
-	}
-
-	// Begin serialisation of trie data structure.
-	serialiseTrie(t.start, w)
-	if w.Err != nil {
-		return fmt.Errorf("serialise: %v", w.Err)
-	}
-
-	if d&VERBOSE > 0 {
-		fmt.Printf("ds: ... trie serialisation done\n")
-	}
-
-	return nil
-}
-
-// gerIds read until the next \t is reached, record all integer id's until
-// then.
-func getIds(n *node, rw *msg.ErrReader) (rune, *msg.ErrReader, error) {
-
-	var err error
-	var str []rune
-	var r rune
-	i := 0
-
-	// read until the next \t.
-	for r != ' ' {
-		r, _, err = rw.ReadRune()
-		// The integers are space separated.
-		for r != ',' {
-			str = append(str, r)
-			r, _, err = rw.ReadRune()
-			if err != nil {
-				return r, rw, err
-			}
+	// Concatenate any returned stems as suffix to the current word.
+	for range n.next {
+		stemlist := <-ch2
+		for _, stem := range stemlist {
+			wordlist = append(wordlist, stem)
 		}
-		if err != nil {
-			return r, rw, err
-		}
-		// Change to an integer type and store in the nodes list.
-		i, err = strconv.Atoi(string(str))
-		n.list = append(n.list, i)
-		str = str[:0]
-	}
-	// The last one.
-	i, err = strconv.Atoi(string(str))
-	n.list = append(n.list, i)
-	if err != nil {
-		return r, rw, fmt.Errorf("strconv.Atoi: %v", err)
 	}
 
-	r, _, err = rw.ReadRune()
-	if err != nil {
-		return r, rw, err
-	}
-
-	return r, rw, nil
+	// Send the composite stems to be added as suffix to the root stems.
+	ch1 <- wordlist
 }
 
-// deserialiseTrie is a helper function for Deserialise.
-func deserialiseTrie(n *node, rw *msg.ErrReader) (rune, error) {
+// // ExpandTrie returns a sorted list of all words included in the trie.
+func (t *Trie) ExpandTrie() []string {
 
-	r, _, err := rw.ReadRune()
-	if err != nil {
-		return r, err
+	// Retrieve first node.
+	n := t.start
+
+	// Prepare to receive the entire list of words stored in the trie.
+	var results []string
+
+	// For each character in the hashmap run the goPrint command.
+	ch := make(chan []string)
+	for r, _ := range n.next {
+		// Add the first rune to the function to start reconstruction.
+		go goExpandTrie(n.next[r], string(r), ch)
 	}
 
-	// If the leaf marker has been read, return and continue onto the next
-	// branch.
-	if r == '\n' {
-		print('\n')
-		return r, err
+	// Compile a list of all returned words.
+	for range n.next {
+		wordlist := <-ch
+		for _, word := range wordlist {
+			results = append(results, word)
+		}
 	}
+	// Sort the results.
+	sort.Strings(results)
 
-	// If the node requires linked information, add it.
-	if r == ' ' {
-		r, rw, err = getIds(n, rw)
-	}
-
-	// Until a leaf node is reached, keep putting the next rune in a node
-	// and moving to it.
-	for r != '\n' && r != ' ' {
-		n.addRuneToMap(r)
-		r, err = deserialiseTrie(n.next[r], rw)
-	}
-
-	// // Keep putting the next rune into a node and moving to that node.
-	// for _, r := range buf {
-	// 	n.addRuneToMap(r)
-	// 	print(r)
-	// 	err = deserialise(n.next[r], rw)
-	// }
-
-	return r, err
+	return results
 }

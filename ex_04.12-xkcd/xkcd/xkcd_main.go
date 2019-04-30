@@ -14,9 +14,8 @@ const cBaseURL = "https://xkcd.com/"
 const cTailURL = "/info.0.json"
 
 // Database file name.
-var cNAME = "xkcd.json"
-var cCACHE = "cache.data"
-var cADDRESS = "data/"
+var cNAME = "data/xkcd.json"
+var cCACHE = "data/cache.data"
 
 // Verbouse program output whilst running.
 var (
@@ -41,6 +40,7 @@ func setConfig() {
 	// Sets program to generate a test database.
 	if TESTRUN > 0 {
 		cNAME = "test.json"
+		cCACHE = "cache.test.data"
 	}
 }
 

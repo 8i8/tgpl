@@ -19,7 +19,7 @@ func xkcdInit() (*DataBase, error) {
 	var comics DataBase
 
 	// load db into memory.
-	err := loadDatabase(&comics, cADDRESS+cNAME)
+	err := loadDatabase(&comics, cNAME)
 	if err != nil {
 		return &comics, fmt.Errorf("loadDatabase: %v", err)
 	}
@@ -193,7 +193,7 @@ func writeDatabase(comics *DataBase) error {
 	}
 
 	// Open file for writing.
-	file, err := os.Create(cADDRESS + cNAME)
+	file, err := os.Create(cNAME)
 	if err != nil {
 		return fmt.Errorf("Create: %v", err)
 	}
