@@ -1,4 +1,6 @@
-package gitish
+package dates
+
+import "time"
 
 type cal uint
 
@@ -8,6 +10,15 @@ const (
 	dMORE
 	dERROR
 )
+
+// date is used to translate a time.Time object into a calculable format.
+type date struct {
+	i int
+	y int
+	m time.Month
+	d int
+	p bool
+}
 
 // lessThanMonth returns true for dates that are less than a month apart.
 func lessThanMonth(now, rec date) bool {
@@ -31,7 +42,7 @@ func yearOnward(now, rec date) bool {
 }
 
 // dateSort returns a bitfield with the flag set.
-func dateSort(now, rec date) cal {
+func DateSort(now, rec date) cal {
 
 	switch {
 	case yearOnward(now, rec):

@@ -10,9 +10,9 @@ import (
 func printIssues(Issues IssueMap) {
 
 	issue := *Issues.M
-	imonth := *Issues.Imonth
-	iyear := *Issues.Iyear
-	imore := *Issues.Imore
+	imonth := Issues.Imonth
+	iyear := Issues.Iyear
+	imore := Issues.Imore
 	now := date{}
 	now.y, now.m, now.d = time.Now().Date()
 	fmt.Printf("%d issues:\n", len(issue))
@@ -32,7 +32,7 @@ func printList(index []date, issue map[int]Issue, header string) {
 	if len(index) > 0 {
 		fmt.Println(header)
 		for n, d := range index {
-			item := issue[d.r]
+			item := issue[d.i]
 			printLine(item)
 			index[n].p = true
 		}
@@ -74,7 +74,9 @@ func outputResponse(c Config, reply Reply) error {
 	var err error
 	switch {
 	case f&cLIST > 0:
-		err = listIssues(c, reply)
+		resp := IssueMap{}
+		resp, err = listIssues(reply)
+		printIssues(resp)
 	case f&cREAD > 0:
 		if f&cEDITOR > 0 {
 			editIssue(c, reply)
