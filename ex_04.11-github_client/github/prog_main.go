@@ -45,7 +45,9 @@ func EditIssue(c Config) error {
 	f &^= cEDIT
 	f &^= cAUTH
 	f |= cREAD
-	reportState("EditIssue READ")
+	if f&cVERBOSE > 0 {
+		reportState("EditIssue READ")
+	}
 
 	// Run with current configuration.
 	reply, err := makeRequest(c, nil)
@@ -63,7 +65,9 @@ func EditIssue(c Config) error {
 	f |= cEDIT
 	f |= cAUTH
 	f &^= cREAD
-	reportState("EditIssue EDIT")
+	if f&cVERBOSE > 0 {
+		reportState("EditIssue EDIT")
+	}
 
 	// Post issue.
 	_, err = makeRequest(c, json)

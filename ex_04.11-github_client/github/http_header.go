@@ -43,6 +43,7 @@ func lock(c Config) Header {
 	return h
 }
 
+// putZeroLength signals that the respoce will have no body.
 func putZeroLength(c Config) Header {
 	var h Header
 	h.Key = "Content-Length"
