@@ -24,10 +24,6 @@ func respDecode(c Config, resp *http.Response) (Reply, error) {
 		return reply, fmt.Errorf("json decoder body failed: %v", err)
 	}
 
-	// Record the current state.
-	// TODO is this used?
-	reply.Type = f
-
 	// Apply the decoding accorging to state.
 	switch {
 	case f&cLIST > 0:

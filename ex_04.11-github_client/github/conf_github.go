@@ -10,8 +10,7 @@ import (
 
 // Reply is an evelope to encapsulate http responses.
 type Reply struct {
-	Type flags
-	Msg  interface{}
+	Msg interface{}
 }
 
 // IssuesSearchResult is github API json object, a wrapper for an array of
