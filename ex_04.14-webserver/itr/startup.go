@@ -6,34 +6,56 @@ import (
 	"tgpl/ex_04.14-webserver/github"
 )
 
-var VERBOSE = true
+var (
+	VERBOSE = true
+	NAME    string
+	REPO    string
+	TOKEN   string
+)
 
-func ServerStartup() error {
+// LoadCache sets the connection details and then loads existing data from
+// localy saved files.
+func LoadCache() (*Cache, error) {
 
 	if VERBOSE {
 		github.VERBOSE = true
 	}
 
-	NAME, REPO, TOKEN, err := connectDetails("connect")
+	// Retreive a pointer to the data store.
+	cache := &data
+	cache.Init()
+	var err error
+
+	NAME, REPO, TOKEN, err = connectDetails("connect")
 	if err != nil {
-		return fmt.Errorf("connectionDetails: %v", err)
+		return cache, fmt.Errorf("connectionDetails: %v", err)
 	}
 
 	// Load cache if available.
-	cache, isCache, err := loadCache(NAME, REPO)
+	cache, err = loadCache(cache, NAME, REPO)
 	if err != nil {
-		return fmt.Errorf("loadCache: %v", err)
+		return cache, fmt.Errorf("loadCache: %v", err)
 	}
 
-	// If there is a cache, check for updates.
-	if isCache {
-		return nil
-	} else {
-		data, err = github.GetAllIssues(NAME, REPO, TOKEN)
-		if err != nil {
-			return fmt.Errorf("GetAllIssues: %v", err)
-		}
-		err = writeCache(NAME, REPO, data)
+	if VERBOSE {
+		fmt.Printf("LoadCache: cache loaded\n")
+		fmt.Printf("issues: %.10d\nusers: %.10d\nlabels: %.10d\nmilestones: %.10d\n",
+			len(cache.issues), len(cache.users), len(cache.labels), len(cache.milestones))
 	}
-	return nil
+
+	return cache, nil
+}
+
+// UpdateCache updates the cache adding new records downloaded from github.
+func UpdateCache(cache *Cache) (*Cache, error) {
+
+	cache, err := cache.GoUpdate()
+	cache.GenerateLists()
+	cache.SortByIdAsc()
+	if VERBOSE {
+		fmt.Printf("UpdateCache: cache updated\n")
+		fmt.Printf("issues: %.10d\nusers: %.10d\nlabels: %.10d\nmilestones: %.10d\n",
+			len(cache.issues), len(cache.users), len(cache.labels), len(cache.milestones))
+	}
+	return cache, err
 }

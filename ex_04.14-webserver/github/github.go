@@ -4,17 +4,10 @@ import "time"
 
 var VERBOSE bool
 
-// IssuesSearchResult is github API json object, a wrapper for an array of
-// github issues.
-type IssuesSearchResult struct {
-	TotalCount int      `json:"total_count"`
-	Items      []*Issue // Github issues.
-}
-
 // Issue a struct that stores a github API json object, containing the data
 // from a github repository issue.
 type Issue struct {
-	Id            int
+	Id            uint64
 	NodeId        string `json:"node_id"`
 	URL           string `json:"url"`
 	RepositoryURL string `json:"repository_url"`
@@ -22,30 +15,30 @@ type Issue struct {
 	CommentsURL   string `json:"comments_url"`
 	EventsURL     string `json:"events_url"`
 	HtmlURL       string `json:"html_url"`
-	Number        int
+	Number        uint64
 	State         string
 	Title         string
 	Body          string
 	User          User
-	Labels        []Labels
+	Labels        []Label
 	Assignee      User
 	Assignees     []User
 	Milestone     Milestone
 	Locked        bool
 	Reason        string `json:"active_lock_reason"`
 	Comments      int
-	PullRequest   *PullRequest
+	PullRequest   PullRequest
 	ClosedAt      time.Time `json:"closed_at"`
 	CreatedAt     time.Time `json:"created_at"`
 	UpdatedAt     time.Time `json:"updated_at"`
-	ClosedBy      *User     `json:"closed_by"`
+	ClosedBy      User      `json:"closed_by"`
 }
 
 // User is a struch that stores a github API json object, containing a github
 // user's details.
 type User struct {
 	Login            string
-	Id               int
+	Id               uint64
 	NodeId           string `json:"node_id"`
 	AvatarURL        string `json:"avatar_url"`
 	GravitarId       string `json:"gravitar_id"`
@@ -63,10 +56,10 @@ type User struct {
 	SiteAdmin        bool `json:"site_admin"`
 }
 
-// Labels are a struct that stores imformation about a github issues; Labels on
+// Label is a struct that stores imformation about a github issues; Labels on
 // GitHub help you organize and prioritize your work.
-type Labels struct {
-	Id          int
+type Label struct {
+	Id          uint64
 	NodeId      string `json:"node_id"`
 	URL         string `json:"url"`
 	Name        string
@@ -81,13 +74,13 @@ type Milestone struct {
 	URL          string `json:"url"`
 	HtmlURL      string `json:"html_url"`
 	LabelsURL    string `json:"labels_url"`
-	Id           int
+	Id           uint64
 	NodeId       string `json:"node_id"`
-	Number       int
+	Number       uint64
 	State        string
 	Title        string
 	Description  string
-	Creator      *User
+	Creator      User
 	OpenIssues   int       `json:"open_issues"`
 	ClosedIssues int       `json:"closed_issues"`
 	CreatedAt    time.Time `json:"created_at"`

@@ -33,6 +33,8 @@
 			?state=all to get both open and closed issues.
 			&per_page=100 to increase the pageinate amount.
 
+		generate indexe lists and sort
+
 	Write new data to local cache.
 	Open bug reports page in list view.
 	Open milestones
