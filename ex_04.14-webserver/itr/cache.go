@@ -19,48 +19,48 @@ type Milestones map[uint64]Milestone
 // Cache is a struct that contains all the local cache data from a github
 // repos list.
 type Cache struct {
-	envIssues
-	envUsers
-	envLabels
-	envMilestones
+	EnvIssues
+	EnvUsers
+	EnvLabels
+	EnvMilestones
 }
 
-type envIssues struct {
-	issues     Issues
+type EnvIssues struct {
+	Issues     Issues
 	listIssues []uint64
 }
 
-type envUsers struct {
-	users     Users
+type EnvUsers struct {
+	Users     Users
 	listUsers []uint64
 }
 
-type envLabels struct {
-	labels     Labels
+type EnvLabels struct {
+	Labels     Labels
 	listLabels []uint64
 }
 
-type envMilestones struct {
-	milestones     Milestones
+type EnvMilestones struct {
+	Milestones     Milestones
 	listMilestones []uint64
 }
 
 func (c *Cache) Init() {
-	c.issues = make(Issues)
-	c.users = make(Users)
-	c.labels = make(Labels)
-	c.milestones = make(Milestones)
+	c.Issues = make(Issues)
+	c.Users = make(Users)
+	c.Labels = make(Labels)
+	c.Milestones = make(Milestones)
 }
 
-// data contains the data used to run the site.
-var data Cache
+// Data contains the data used to run the site.
+var Data Cache
 
 // GenerateLists makes lists of all issue id's.
 func (c *Cache) GenerateLists() {
 
 	// Make issue index
-	c.listIssues = make([]uint64, 0, len(c.issues))
-	for _, issue := range c.issues {
+	c.listIssues = make([]uint64, 0, len(c.Issues))
+	for _, issue := range c.Issues {
 		c.listIssues = append(c.listIssues, issue.Id)
 	}
 	// Make user index

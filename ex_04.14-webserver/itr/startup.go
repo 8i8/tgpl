@@ -22,7 +22,7 @@ func LoadCache() (*Cache, error) {
 	}
 
 	// Retreive a pointer to the data store.
-	cache := &data
+	cache := &Data
 	cache.Init()
 	var err error
 

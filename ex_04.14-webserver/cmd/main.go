@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
 	"tgpl/ex_04.14-webserver/itr"
@@ -20,9 +21,10 @@ func main() {
 		fmt.Printf("error: %v\n", err)
 	}
 
-	//http.HandleFunc("/", issueTracker)
-	//log.Fatal(http.ListenAndServe("localhost:8000", nil))
+	http.HandleFunc("/", issueTracker)
+	log.Fatal(http.ListenAndServe("localhost:8000", nil))
 }
 
 func issueTracker(w http.ResponseWriter, r *http.Request) {
+	itr.HtmlReport(itr.Data.Issues)
 }
