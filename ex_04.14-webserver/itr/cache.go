@@ -231,6 +231,14 @@ func loadCache(cache *Cache, name, repo string) (*Cache, bool, error) {
 		fmt.Printf("loadCache: checking for cache file\n")
 	}
 
+	// Check that the cache directory is present, if not then make it.
+	if _, err := os.Stat("cache"); err != nil {
+		err = os.Mkdir("cache")
+		if err != nil {
+			return cache, false, fmt.Errorf("os.Mkdir: %v", err)
+		}
+	}
+
 	// If a file is not present return.
 	if _, err := os.Stat(pathIssues); err != nil {
 		if VERBOSE {
