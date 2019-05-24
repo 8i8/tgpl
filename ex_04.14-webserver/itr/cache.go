@@ -28,22 +28,22 @@ type Cache struct {
 
 type EnvIssues struct {
 	Issues     Issues
-	listIssues []uint64
+	ListIssues []uint64
 }
 
 type EnvUsers struct {
 	Users     Users
-	listUsers []uint64
+	ListUsers []uint64
 }
 
 type EnvLabels struct {
 	Labels     Labels
-	listLabels []uint64
+	ListLabels []uint64
 }
 
 type EnvMilestones struct {
 	Milestones     Milestones
-	listMilestones []uint64
+	ListMilestones []uint64
 }
 
 func (c *Cache) Init() {

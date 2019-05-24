@@ -50,7 +50,7 @@ func LoadCache() (*Cache, error) {
 func UpdateCache(cache *Cache) (*Cache, error) {
 	cache, err := cache.GoUpdate()
 	cache.GenerateLists()
-	cache.SortByIdAsc()
+	cache.SortByIdDes()
 	if VERBOSE {
 		fmt.Printf("UpdateCache: cache updated\n")
 		fmt.Printf("issues: %.10d\nusers: %.10d\nlabels: %.10d\nmilestones: %.10d\n",
