@@ -25,22 +25,22 @@ func LoadCache() (*Cache, error) {
 	cache := &Data
 	cache.Init()
 	var err error
+	var ok bool
 
-	NAME, REPO, TOKEN, err = connectDetails("connect")
+	NAME, REPO, TOKEN, err = github.ConnectDetails("connect")
 	if err != nil {
 		return cache, fmt.Errorf("connectionDetails: %v", err)
 	}
 
 	// Load cache if available.
-	cache, err = loadCache(cache, NAME, REPO)
+	cache, ok, err = loadCache(cache, NAME, REPO)
 	if err != nil {
 		return cache, fmt.Errorf("loadCache: %v", err)
 	}
 
-	if VERBOSE {
-		fmt.Printf("LoadCache: cache loaded\n")
+	if VERBOSE && ok {
 		fmt.Printf("issues: %.10d\nusers: %.10d\nlabels: %.10d\nmilestones: %.10d\n",
-			len(cache.issues), len(cache.users), len(cache.labels), len(cache.milestones))
+			len(cache.Issues), len(cache.Users), len(cache.Labels), len(cache.Milestones))
 	}
 
 	return cache, nil
@@ -48,14 +48,13 @@ func LoadCache() (*Cache, error) {
 
 // UpdateCache updates the cache adding new records downloaded from github.
 func UpdateCache(cache *Cache) (*Cache, error) {
-
 	cache, err := cache.GoUpdate()
 	cache.GenerateLists()
 	cache.SortByIdAsc()
 	if VERBOSE {
 		fmt.Printf("UpdateCache: cache updated\n")
 		fmt.Printf("issues: %.10d\nusers: %.10d\nlabels: %.10d\nmilestones: %.10d\n",
-			len(cache.issues), len(cache.users), len(cache.labels), len(cache.milestones))
+			len(cache.Issues), len(cache.Users), len(cache.Labels), len(cache.Milestones))
 	}
 	return cache, err
 }

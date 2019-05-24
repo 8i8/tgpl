@@ -26,5 +26,5 @@ func main() {
 }
 
 func issueTracker(w http.ResponseWriter, r *http.Request) {
-	itr.HtmlReport(itr.Data.Issues)
+	itr.HtmlReport(w, itr.Data)
 }
