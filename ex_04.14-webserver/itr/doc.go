@@ -16,6 +16,8 @@
 			?since=YYYY-MM-DDTHH:MM:SSZ
 		https://developer.github.com/v3/issues/#parameters-1
 
+		If cache folder does not exist, create it.
+
 		If data already in cache, download any that have been modified
 		since the last update date and time.
 
@@ -33,7 +35,13 @@
 			?state=all to get both open and closed issues.
 			&per_page=100 to increase the pageinate amount.
 
-		generate indexe lists and sort
+		generate index and sort
+
+		Display a list of issues with html, create a title header with
+		a search bar and fields for filtering the list.
+		Include labels in the listing.
+		Links in top bar for a similar milestones and users list, show
+		all related issues for both.
 
 	Write new data to local cache.
 	Open bug reports page in list view.

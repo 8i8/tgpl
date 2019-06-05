@@ -7,7 +7,7 @@ import (
 )
 
 // ConnectDetails loads the github api conection details from file.
-func ConnectDetails(path string) (user, repo, token string, err error) {
+func ConnectDetails(path string) (tokens []string, err error) {
 
 	file, err := os.Open(path)
 	if err != nil {
@@ -18,13 +18,11 @@ func ConnectDetails(path string) (user, repo, token string, err error) {
 
 	content := bufio.NewScanner(file)
 	var str []string
-	for i := 0; i < 3; i++ {
-		content.Scan()
+	ok := true
+	for ok {
+		ok = content.Scan()
 		str = append(str, content.Text())
 	}
-	user = str[0]
-	repo = str[1]
-	token = str[2]
 
-	return
+	return str, nil
 }

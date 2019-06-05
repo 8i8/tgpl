@@ -66,17 +66,13 @@ func GetAllIssues(name, repo, token string, page int) ([]Issue, error) {
 	return result, nil
 }
 
-// GoGetAllIssues returns a struct containing all of issues for the repo.
+// GoGetAllIssues retrieves the entire collection of issues for the given repo.
 func GoGetAllIssues(name, repo, token string, bucket Bucket, ch chan<- Bucket) {
-
-	if VERBOSE {
-		fmt.Printf("                                                                                \r")
-		fmt.Printf(" GetAllIssues: requesting data from github\r")
-	}
 
 	// Set the url and header, make request.
 	url := baseURL + name + "/" + repo + "/issues?state=all&page=" +
 		strconv.Itoa(bucket.Page) + "&per_page=100"
+
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		bucket.Err = err
@@ -86,16 +82,44 @@ func GoGetAllIssues(name, repo, token string, bucket Bucket, ch chan<- Bucket) {
 	}
 	req.Header.Set("Accept", "application/vnd.github.v3.text-match+json")
 	req.Header.Set("Authorization", "token "+token)
+	goGetHTTP(req, bucket, ch)
+}
+
+// GoUpdateAllIssues updates any issues that have been modified since the last
+// update.
+func GoUpdateAllIssues(name, repo, token, date string, bucket Bucket, ch chan<- Bucket) {
+
+	// Set the url and header, make request.
+	url := baseURL + name + "/" + repo + "/issues?state=all&page=" +
+		strconv.Itoa(bucket.Page) + "&per_page=100"
+
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		bucket.Err = err
+		fmt.Println("error: http.NewRequest")
+		ch <- bucket
+		return
+	}
+	req.Header.Set("Accept", "application/vnd.github.v3.text-match+json")
+	req.Header.Set("Authorization", "token "+token)
+	req.Header.Set("If-Modified-Since", date)
+	goGetHTTP(req, bucket, ch)
+}
+
+// GoGetAllIssues returns a struct containing all of issues for the repo.
+func goGetHTTP(req *http.Request, bucket Bucket, ch chan<- Bucket) {
+
+	if VERBOSE {
+		fmt.Printf("                                                                                \r")
+		fmt.Printf(" GetAllIssues: requesting data from github\r")
+	}
+
 	resp, err := http.DefaultClient.Do(req)
 
 	// Print status before dealing with errors.
 	if VERBOSE {
 		fmt.Printf("                                                                                \r")
-		// if resp.StatusCode == 200 {
-		// 	fmt.Printf(" StatusCode: %v\r", resp.Status)
-		// } else {
 		fmt.Printf(" StatusCode: %v: page: %d tries: %d\n", resp.Status, bucket.Page, bucket.Count)
-		// }
 	}
 	if resp.StatusCode != http.StatusOK {
 		resp.Body.Close()

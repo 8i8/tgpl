@@ -5,122 +5,11 @@ import (
 	"fmt"
 	"math/rand"
 	"os"
-	"sort"
 	"sync"
 	"time"
 
 	"tgpl/ex_04.14-webserver/github"
 )
-
-type Issues map[uint64]Issue
-type Users map[uint64]User
-type Labels map[uint64]Label
-type Milestones map[uint64]Milestone
-
-// Cache is a struct that contains all the local cache data from a github
-// repos list.
-type Cache struct {
-	EnvIssues
-	EnvUsers
-	EnvLabels
-	EnvMilestones
-}
-
-type EnvIssues struct {
-	Issues     Issues
-	ListIssues []uint64
-}
-
-type EnvUsers struct {
-	Users     Users
-	ListUsers []uint64
-}
-
-type EnvLabels struct {
-	Labels     Labels
-	ListLabels []uint64
-}
-
-type EnvMilestones struct {
-	Milestones     Milestones
-	ListMilestones []uint64
-}
-
-func (c *Cache) Init() {
-	c.Issues = make(Issues)
-	c.Users = make(Users)
-	c.Labels = make(Labels)
-	c.Milestones = make(Milestones)
-}
-
-// Data contains the data used to run the site.
-var Data Cache
-
-// GenerateLists makes lists of all issue id's.
-func (c *Cache) GenerateLists() {
-
-	// Make issue index
-	c.listIssues = make([]uint64, 0, len(c.Issues))
-	for _, issue := range c.Issues {
-		c.listIssues = append(c.listIssues, issue.Id)
-	}
-	// Make user index
-	c.listUsers = make([]uint64, 0, len(c.Users))
-	for _, issue := range c.Users {
-		c.listUsers = append(c.listUsers, issue.Id)
-	}
-	// Make label index
-	c.listLabels = make([]uint64, 0, len(c.Labels))
-	for _, issue := range c.Labels {
-		c.listLabels = append(c.listLabels, issue.Id)
-	}
-	// Make milestone index
-	c.listMilestones = make([]uint64, 0, len(c.Milestones))
-	for _, issue := range c.Milestones {
-		c.listMilestones = append(c.listMilestones, issue.Id)
-	}
-}
-
-// SortByIdDes makes lists of all issue id's.
-func (c *Cache) SortByIdDes() {
-
-	// Sort issues by id
-	sort.Slice(c.listIssues, func(i, j int) bool {
-		return c.listIssues[i] > c.listIssues[j]
-	})
-	// Sort users by id
-	sort.Slice(c.listUsers, func(i, j int) bool {
-		return c.listUsers[i] > c.listUsers[j]
-	})
-	// Sort labels by id
-	sort.Slice(c.listLabels, func(i, j int) bool {
-		return c.listLabels[i] > c.listLabels[j]
-	})
-	// Sort milestones by id
-	sort.Slice(c.listMilestones, func(i, j int) bool {
-		return c.listMilestones[i] > c.listMilestones[j]
-	})
-}
-
-func (c *Cache) SortByIdAsc() {
-
-	// Sort issues by id
-	sort.Slice(c.listIssues, func(i, j int) bool {
-		return c.listIssues[i] < c.listIssues[j]
-	})
-	// Sort users by id
-	sort.Slice(c.listUsers, func(i, j int) bool {
-		return c.listUsers[i] < c.listUsers[j]
-	})
-	// Sort labels by id
-	sort.Slice(c.listLabels, func(i, j int) bool {
-		return c.listLabels[i] < c.listLabels[j]
-	})
-	// Sort milestones by id
-	sort.Slice(c.listMilestones, func(i, j int) bool {
-		return c.listMilestones[i] < c.listMilestones[j]
-	})
-}
 
 func (c *Cache) Update() (*Cache, error) {
 
@@ -214,7 +103,7 @@ func (c *Cache) Report() {
 	if VERBOSE {
 		fmt.Println("PrintIssues: printing")
 	}
-	for i, id := range c.listIssues {
+	for i, id := range c.IssuesIndex {
 		fmt.Printf("%.3d: id: %v id:%v created: %v\n", i+1, id, c.Issues[id].Id, c.Issues[id].CreatedAt)
 	}
 }
@@ -222,10 +111,10 @@ func (c *Cache) Report() {
 // loadCache loads a repo's data from local cache files.
 func loadCache(cache *Cache, name, repo string) (*Cache, bool, error) {
 
-	pathIssues := "cache/" + name + "." + repo + ".Issues.json"
-	pathUsers := "cache/" + name + "." + repo + ".Users.json"
-	pathMilestones := "cache/" + name + "." + repo + ".Milestones.json"
-	pathLabels := "cache/" + name + "." + repo + ".Labels.json"
+	pathIssues := PATH + name + "." + repo + ".Issues.json"
+	pathUsers := PATH + name + "." + repo + ".Users.json"
+	pathMilestones := PATH + name + "." + repo + ".Milestones.json"
+	pathLabels := PATH + name + "." + repo + ".Labels.json"
 
 	if VERBOSE {
 		fmt.Printf("loadCache: checking for cache file\n")
@@ -233,7 +122,7 @@ func loadCache(cache *Cache, name, repo string) (*Cache, bool, error) {
 
 	// Check that the cache directory is present, if not then make it.
 	if _, err := os.Stat("cache"); err != nil {
-		err = os.Mkdir("cache")
+		err = os.Mkdir("cache", 0755)
 		if err != nil {
 			return cache, false, fmt.Errorf("os.Mkdir: %v", err)
 		}
@@ -508,4 +397,54 @@ func deserialise(cache *Cache, issues []github.Issue) (*Cache, bool) {
 	}
 
 	return cache, mod
+}
+
+// LoadCache sets the connection details and then loads existing data from
+// localy saved files.
+func LoadCache() (*Cache, error) {
+
+	if VERBOSE {
+		github.VERBOSE = true
+	}
+
+	// Retreive a pointer to the data store.
+	cache := &Data
+	cache.Init()
+	var err error
+	var ok bool
+
+	tokens, err := github.ConnectDetails(PATH + "connect")
+	if err != nil {
+		return cache, fmt.Errorf("connectionDetails: %v", err)
+	}
+	if len(tokens) != 4 {
+		return cache, fmt.Errorf("connectionDetails: insufficient tokens: %v", tokens)
+	}
+	NAME = tokens[0]
+	REPO = tokens[1]
+	TOKEN = tokens[2]
+
+	// Load cache if available.
+	cache, ok, err = loadCache(cache, NAME, REPO)
+	if err != nil {
+		return cache, fmt.Errorf("loadCache: %v", err)
+	}
+
+	if VERBOSE && ok {
+		fmt.Printf("issues: %.10d\nusers: %.10d\nlabels: %.10d\nmilestones: %.10d\n",
+			len(cache.Issues), len(cache.Users), len(cache.Labels), len(cache.Milestones))
+	}
+
+	return cache, nil
+}
+
+// UpdateCache updates the cache adding new records downloaded from github.
+func UpdateCache(cache *Cache) (*Cache, error) {
+	cache, err := cache.GoUpdate()
+	if VERBOSE {
+		fmt.Printf("UpdateCache: cache updated\n")
+		fmt.Printf("issues: %.10d\nusers: %.10d\nlabels: %.10d\nmilestones: %.10d\n",
+			len(cache.Issues), len(cache.Users), len(cache.Labels), len(cache.Milestones))
+	}
+	return cache, err
 }

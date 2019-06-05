@@ -4,6 +4,57 @@ import (
 	"time"
 )
 
+var (
+	VERBOSE = true
+	NAME    string
+	REPO    string
+	TOKEN   string
+)
+
+// PATH is the path used to store and read both the cache files and startup
+// default connecton details, if the folder does not exist it is created on
+// program start.
+const PATH = "cache/"
+
+// Cache is a struct that contains all the local cache data from a github
+// repos list.
+type Cache struct {
+	EnvIssues
+	EnvUsers
+	EnvLabels
+	EnvMilestones
+}
+
+type EnvIssues struct {
+	Issues      map[uint64]Issue
+	IssuesIndex []uint64
+}
+
+type EnvUsers struct {
+	Users      map[uint64]User
+	UsersIndex []uint64
+}
+
+type EnvLabels struct {
+	Labels      map[uint64]Label
+	LabelsIndex []uint64
+}
+
+type EnvMilestones struct {
+	Milestones      map[uint64]Milestone
+	MilestonesIndex []uint64
+}
+
+func (c *Cache) Init() {
+	c.Issues = make(map[uint64]Issue)
+	c.Users = make(map[uint64]User)
+	c.Labels = make(map[uint64]Label)
+	c.Milestones = make(map[uint64]Milestone)
+}
+
+// Data contains the data used to run the site.
+var Data Cache
+
 // Issue a struct that stores a github API json object, containing the data
 // from a github repository issue.
 type Issue struct {
