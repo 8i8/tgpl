@@ -2,6 +2,7 @@ package fl
 
 import (
 	"fmt"
+	"io"
 	"os"
 
 	"golang.org/x/net/html"
@@ -13,7 +14,7 @@ import (
 
 // findlinks prints the links in an HTML document read from standard input
 // using a loop.
-func Findlinks(in *os.File) {
+func Findlinks(in io.Reader) {
 	doc, err := html.Parse(in)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "findlinks: %v\n", err)

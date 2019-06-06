@@ -2,6 +2,7 @@ package fl
 
 import (
 	"fmt"
+	"io"
 	"os"
 
 	"golang.org/x/net/html"
@@ -12,7 +13,7 @@ import (
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
 // findlinksRec prints the links in an HTML document read from standard input.
-func FindlinksRec(in *os.File) {
+func FindlinksRec(in io.Reader) {
 	doc, err := html.Parse(in)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "findlinks: %v\n", err)
