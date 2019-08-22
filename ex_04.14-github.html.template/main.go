@@ -7,9 +7,11 @@ import (
 	"log"
 	"os"
 	"time"
-
-	"tgpl/ex_04.14-github.text.template/dates"
 )
+
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ *  HTML report, write to a file and then view in a browser.
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
 var issueList = template.Must(template.New("issuelist").Parse(`
 <h1>{{.TotalCount}} issues</h1>
@@ -43,6 +45,10 @@ func HtmlReport() {
 	}
 }
 
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ *  Basic report, run in the terminal to see stdout.
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
 const templ = `{{.TotalCount}} issues:
 {{range .Items}}--------------------------------------------------------------------------
 Number:	{{.Number}}
@@ -69,21 +75,11 @@ func Report() {
 	}
 }
 
-func ReportList() {
-	// Run search issues to get data from github.
-	reply, err := github.SearchIssues(os.Args[1:])
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// Make and fill a map from the result array.
-	err = dates.ListIssues(reply)
-	if err != nil {
-		log.Fatal(err)
-	}
-}
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ *
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
 func main() {
 
-	HtmlReport()
+	Report()
 }

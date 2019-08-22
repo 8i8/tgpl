@@ -12,7 +12,7 @@ import (
  *  Original program.
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-// findlinks prints the links in an HTML document read from standard input
+// Findlinks prints the links in an HTML document read from standard input
 // using a loop.
 func Findlinks(in io.Reader) {
 	doc, err := html.Parse(in)

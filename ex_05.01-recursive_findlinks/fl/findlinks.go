@@ -12,7 +12,7 @@ import (
  *  Recursive version.
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-// findlinksRec prints the links in an HTML document read from standard input.
+// FindlinksRec prints the links in an HTML document read from standard input.
 func FindlinksRec(in io.Reader) {
 	doc, err := html.Parse(in)
 	if err != nil {

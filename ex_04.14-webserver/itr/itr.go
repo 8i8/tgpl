@@ -52,7 +52,7 @@ func (c *Cache) Init() {
 	c.Milestones = make(map[uint64]Milestone)
 }
 
-// Data contains the data used to run the site.
+// Data contains global data used to run the site.
 var Data Cache
 
 // Issue a struct that stores a github API json object, containing the data

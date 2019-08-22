@@ -1,1 +1,1 @@
-./fetch golang.org | ./main
+GET golang.org | ./main

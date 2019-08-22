@@ -1,12 +1,13 @@
 package main
 
 import (
-	"../ex_02.2-unit_conversion_general_purpose/metric"
 	"bufio"
 	"fmt"
 	"io"
 	"os"
 	"strconv"
+
+	"tgpl/ex_02.02-unit_conversion/metric"
 )
 
 func main() {
