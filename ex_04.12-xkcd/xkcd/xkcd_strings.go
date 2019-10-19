@@ -11,7 +11,8 @@ func cleanArgs(args []string) ([]string, bool) {
 
 	var wordlist []string
 	for _, arg := range args {
-		words := url.QueryEscape(strings.Join(arg, " "))
+		arg = url.QueryEscape(arg)
+		words := strings.Split(arg, " ")
 		for _, word := range words {
 			// Remove empty strings.
 			if len(word) > 0 {

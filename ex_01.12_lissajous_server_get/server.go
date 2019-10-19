@@ -1,12 +1,13 @@
 package main
 
 import (
-	"../ex_01.12_lissajous_server/lissa"
 	"fmt"
 	"log"
 	"net/http"
 	"strconv"
 	"sync"
+
+	"tgpl/ex_01.12_lissajous_server_get/lissa"
 )
 
 var mu sync.Mutex
