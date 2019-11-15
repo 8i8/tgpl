@@ -14,7 +14,7 @@ func commaRec(s string) string {
 	return commaRec(s[:n-3]) + "," + s[n-3:]
 }
 
-// Displeased by the recopying of the string in the above function; I have
+// Displeased by the recopying of the string in the above function; I
 // decided to write another version, looking to increase efficiency.
 func commaBuf(s string) string {
 

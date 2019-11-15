@@ -20,8 +20,8 @@ func readyString(s string) string {
 	return buf.String()
 }
 
-// Check both s1 and s2 for character count to asses status as possible
-// anagrams. Both must contain both the same quantity of characters as well as
+// Check both s1 and s2 for character count to assess status as possible
+// anagram. Both must contain both the same quantity of characters as well as
 // the same quantity of each; The strings are evaluated for unicode code points.
 func anagram(s1, s2 string) bool {
 
@@ -52,7 +52,7 @@ func anagram(s1, s2 string) bool {
 	}
 
 	// Check one map against the other for discrepancies.
-	for key, _ := range m1 {
+	for key := range m1 {
 		if m1[key] != m2[key] {
 			return false
 		}

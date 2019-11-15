@@ -34,7 +34,7 @@ func commaBf1(s string) string {
 // another version, looking to increase efficiency.
 func commaBf2(s string) string {
 
-	// If less than a thousand, return.
+	// If less than a thousand, no commas are required, return.
 	n := len(s)
 	if n <= 3 {
 		return s
@@ -42,21 +42,22 @@ func commaBf2(s string) string {
 	var buf bytes.Buffer
 	var i int
 
-	// Get the required number of intermediary digits.
+	// Mod 3 gives us the number of digits after any thousands, the position
+	// of the first comma.
 	rem := n % 3
 	if rem > 0 {
 		buf.WriteString(s[:rem] + ",")
 	}
-	// Write the multiples of thousands that require a comma.
+	// Multiples of a thousand, each group of 3 zeros requires a comma.
 	for i = rem; i < n-rem-3; i += 3 {
 		buf.WriteString(s[i:i+3] + ",")
 	}
-	// Write the last thousand.
+	// Add the final remaining thousand.
 	buf.WriteString(s[i:])
 	return buf.String()
 }
 
-// Another version this time splitting the iteration by dividing the length
+// Another version, this time splitting the iteration by dividing the length
 // by 3 for each multiple of a thousand.
 func commaBf3(s string) string {
 
