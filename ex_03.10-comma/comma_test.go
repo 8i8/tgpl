@@ -6,6 +6,7 @@ import (
 
 func TestCommaBuf(t *testing.T) {
 	testComma(t, commaRec, "commaRec")
+	testComma(t, comma, "comma")
 	testComma(t, commaBf1, "commaBf1")
 	testComma(t, commaBf2, "commaBf2")
 	testComma(t, commaBf3, "cammoBf3")
@@ -41,6 +42,12 @@ func BenchmarkCommaRec(b *testing.B) {
 	}
 }
 
+func BenchmarkComma(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		benchComma(comma)
+	}
+}
+
 func BenchmarkCommaBf1(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		benchComma(commaBf1)
@@ -59,23 +66,23 @@ func BenchmarkCommaBf3(b *testing.B) {
 	}
 }
 
-func benchComma(bench_func func(string) string) {
+func benchComma(benchFunc func(string) string) {
 
-	bench1("1", bench_func)
-	bench1("10", bench_func)
-	bench1("100", bench_func)
-	bench1("1000", bench_func)
-	bench1("10000", bench_func)
-	bench1("100000", bench_func)
-	bench1("1000000", bench_func)
-	bench1("10000000", bench_func)
-	bench1("100000000", bench_func)
-	bench1("1000000000", bench_func)
-	bench1("10000000000", bench_func)
-	bench1("100000000000", bench_func)
-	bench1("1000000000000", bench_func)
+	bench1("1", benchFunc)
+	bench1("10", benchFunc)
+	bench1("100", benchFunc)
+	bench1("1000", benchFunc)
+	bench1("10000", benchFunc)
+	bench1("100000", benchFunc)
+	bench1("1000000", benchFunc)
+	bench1("10000000", benchFunc)
+	bench1("100000000", benchFunc)
+	bench1("1000000000", benchFunc)
+	bench1("10000000000", benchFunc)
+	bench1("100000000000", benchFunc)
+	bench1("1000000000000", benchFunc)
 }
 
-func bench1(control string, bench_func func(string) string) {
-	bench_func(control)
+func bench1(control string, benchFunc func(string) string) {
+	benchFunc(control)
 }

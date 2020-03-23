@@ -6,6 +6,7 @@ import (
 
 func TestCommaBuf(t *testing.T) {
 	testComma(t, commaBuf)
+	testComma(t, comma)
 }
 
 func testComma(t *testing.T, test func(string) string) {
@@ -139,5 +140,11 @@ func BenchmarkCommaRec(b *testing.B) {
 func BenchmarkCommaBuf(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		commaBuf("10000000000")
+	}
+}
+
+func BenchmarkComma(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		comma("10000000000")
 	}
 }

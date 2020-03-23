@@ -34,6 +34,7 @@ func main() {
 }
 
 func corner(i, j int) (float64, float64) {
+
 	// Find point (x,y) at corner of cell (i,j).
 	x := xyrange * (float64(i)/cells - 0.5)
 	y := xyrange * (float64(j)/cells - 0.5)

@@ -14,6 +14,40 @@ func commaRec(s string) string {
 	return commaRec(s[:n-3]) + "," + s[n-3:]
 }
 
+// Comma on revisiting the question this is how I would solve it today.
+func comma(s string) string {
+
+	n := len(s)
+	// If the string is shorter than 3, no commas are needed.
+	if n <= 3 {
+		return s
+	}
+
+	var b bytes.Buffer
+
+	// Offset the start for the correct comma placment.
+	st := n % 3
+
+	// If the offset is not a multiple of 3, we need to add the first few
+	// digits and comma to the buffer.
+	if st > 0 {
+		b.WriteString(s[:st])
+		b.WriteByte(',')
+	}
+
+	// For the remaining string each multiple of 3 requres copying and a
+	// comma placing after it, excepting the last, to determin when we are
+	// at the end we test with each iteration wheather the remaining lengh
+	// is shorter than the total lenght.
+	for i := st; i < n; i += 3 {
+		b.WriteString(s[i : i+3])
+		if i+3 < n {
+			b.WriteByte(',')
+		}
+	}
+	return b.String()
+}
+
 // Comma inserts commas into a non-negative integer string using a non recursive
 // function applying the bytes.Buffer in place of recursion and concatenation.
 func commaBf1(s string) string {
