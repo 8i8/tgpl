@@ -7,6 +7,6 @@ import (
 )
 
 func main() {
-	//fl.Findlinks(os.Stdin)
-	fl.FindlinksRec(os.Stdin)
+	fl.Findlinks(os.Stdin)
+	//fl.FindlinksOrig(os.Stdin)
 }

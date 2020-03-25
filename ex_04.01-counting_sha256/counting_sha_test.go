@@ -12,7 +12,7 @@ func BenchmarkCountingSha1(b *testing.B) {
 	c1 := sha256.Sum256([]byte("This"))
 	c2 := sha256.Sum256([]byte("That"))
 	for i := 0; i < b.N; i++ {
-		BitComp1(c1, c2)
+		bitComp1(c1, c2)
 	}
 }
 
@@ -20,7 +20,7 @@ func BenchmarkCountingSha2(b *testing.B) {
 	c1 := sha256.Sum256([]byte("This"))
 	c2 := sha256.Sum256([]byte("That"))
 	for i := 0; i < b.N; i++ {
-		BitComp2(c1, c2)
+		bitComp2(c1, c2)
 	}
 }
 
@@ -28,7 +28,7 @@ func BenchmarkCountingSha3(b *testing.B) {
 	c1 := sha256.Sum256([]byte("This"))
 	c2 := sha256.Sum256([]byte("That"))
 	for i := 0; i < b.N; i++ {
-		BitComp3(c1, c2)
+		bitComp3(c1, c2)
 	}
 }
 
@@ -36,7 +36,7 @@ func BenchmarkCountingSha4(b *testing.B) {
 	c1 := sha256.Sum256([]byte("This"))
 	c2 := sha256.Sum256([]byte("That"))
 	for i := 0; i < b.N; i++ {
-		BitComp4(c1, c2)
+		bitComp4(c1, c2)
 	}
 }
 
@@ -57,7 +57,7 @@ func BenchmarkCountingSha5(b *testing.B) {
 	}
 
 	for i := 0; i < b.N; i++ {
-		BitComp5(d1, d2)
+		bitComp5(d1, d2)
 	}
 }
 
@@ -65,13 +65,13 @@ func BenchmarkCountingSha6(b *testing.B) {
 	c1 := sha256.Sum256([]byte("This"))
 	c2 := sha256.Sum256([]byte("That"))
 	for i := 0; i < b.N; i++ {
-		BitsDifference(&c1, &c2)
+		bitsDifference(&c1, &c2)
 	}
 }
 func BenchmarkCountingSha7(b *testing.B) {
 	c1 := sha256.Sum256([]byte("This"))
 	c2 := sha256.Sum256([]byte("That"))
 	for i := 0; i < b.N; i++ {
-		DifferentBits(c1, c2)
+		differentbits(c1, c2)
 	}
 }

@@ -8,6 +8,7 @@ import (
 
 var pc [256]byte
 
+// Length of the returned sha byte slice.
 const (
 	SHA256 = 32
 )
@@ -18,7 +19,7 @@ func init() {
 	}
 }
 
-func BitCount(x uint64) int {
+func bitCount(x uint64) int {
 	x = x - ((x >> 1) & 0x5555555555555555)
 	x = (x & 0x3333333333333333) + ((x >> 2) & 0x3333333333333333)
 	x = (x + (x >> 4)) & 0x0f0f0f0f0f0f0f0f
@@ -30,7 +31,7 @@ func BitCount(x uint64) int {
 
 // Looping bitwise operations and the uint64 is bing drawn out of the byte
 // slice using binary.LittleEndian.Uint64.
-func BitComp1(c1, c2 [SHA256]byte) int {
+func bitComp1(c1, c2 [SHA256]byte) int {
 	var n uint64
 
 	for i := 0; i < 4; i++ {
@@ -52,7 +53,7 @@ func BitComp1(c1, c2 [SHA256]byte) int {
 
 // Fast bitwise operations and the uint64 is bing drawn out of the byte slice
 // using binary.LittleEndian.Uint64.
-func BitComp2(c1, c2 [SHA256]byte) int {
+func bitComp2(c1, c2 [SHA256]byte) int {
 
 	var n uint64
 	x := binary.LittleEndian.Uint64(c1[0:8])
@@ -107,7 +108,7 @@ func BitComp2(c1, c2 [SHA256]byte) int {
 }
 
 // To test if it is any faster calling only one line for all the counting.
-func BitComp3(c1, c2 [SHA256]byte) int {
+func bitComp3(c1, c2 [SHA256]byte) int {
 
 	x := binary.LittleEndian.Uint64(c1[0:8])
 	y := binary.LittleEndian.Uint64(c2[0:8])
@@ -154,7 +155,7 @@ func BitComp3(c1, c2 [SHA256]byte) int {
 
 // A test to see if it is any faster to set all the variables before counting
 // all the set bits.
-func BitComp4(c1, c2 [SHA256]byte) int {
+func bitComp4(c1, c2 [SHA256]byte) int {
 	var n uint64
 	x := binary.LittleEndian.Uint64(c1[0:8])
 	y := binary.LittleEndian.Uint64(c2[0:8])
@@ -214,7 +215,7 @@ type data struct {
 // This code uses the encode.Read function in the calling function to put all
 // the uint64 into a struct which is pased into the function. It is far to slow
 // when called inside the function.
-func BitComp5(d1, d2 data) int {
+func bitComp5(d1, d2 data) int {
 	var n uint64
 
 	x, x2, x3, x4 := d1.A, d1.B, d1.C, d1.D
@@ -264,7 +265,7 @@ func BitComp5(d1, d2 data) int {
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
 // An exaple of a looped version of the code taken from stack overflow.
-func BitsDifference(h1, h2 *[SHA256]byte) int {
+func bitsDifference(h1, h2 *[SHA256]byte) int {
 	n := 0
 	for i := range h1 {
 		for b := h1[i] ^ h2[i]; b != 0; b &= b - 1 {
@@ -274,8 +275,8 @@ func BitsDifference(h1, h2 *[SHA256]byte) int {
 	return n
 }
 
-// bitCount counts the number of bits set in x
-func bitCount(x uint8) int {
+// bitCount1 counts the number of bits set in x
+func bitCount1(x uint8) int {
 	count := 0
 	for x != 0 {
 		x &= x - 1
@@ -285,10 +286,10 @@ func bitCount(x uint8) int {
 }
 
 // An exaple of a looped version of the code taken from stack overflow.
-func DifferentBits(c1, c2 [SHA256]uint8) int {
+func differentbits(c1, c2 [SHA256]uint8) int {
 	var counter int
 	for x := range c1 {
-		counter += bitCount(c1[x] ^ c2[x])
+		counter += bitCount1(c1[x] ^ c2[x])
 	}
 	return counter
 }
@@ -298,8 +299,8 @@ func main() {
 	c1 := sha256.Sum256([]byte("This"))
 	c2 := sha256.Sum256([]byte("That"))
 
-	n = BitComp2(c1, c2)
+	n = bitComp2(c1, c2)
 	fmt.Printf("there are %d differance between the sha's\n", n)
-	n = BitComp4(c1, c2)
+	n = bitComp4(c1, c2)
 	fmt.Printf("there are %d differance between the sha's\n", n)
 }
