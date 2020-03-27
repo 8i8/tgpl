@@ -13,15 +13,17 @@ import (
 func main() {
 	words := make(map[string]int)
 	in := bufio.NewScanner(os.Stdin)
+	// Split the input into words by passing the ScanWords function into
+	// the Split function.
 	in.Split(bufio.ScanWords)
 
 	for in.Scan() {
-		// Scan input splitting between words.
+		// Get the first word.
 		b := []byte(in.Text())
 		// Remove all extraneous characters, replacing punctuation with
 		// spaces.
 		str := string(removeNonAlphaNumeric(b))
-		// Split again to catch words that were punctuated.
+		// Split again to catch any words that were punctuated.
 		s := strings.Split(str, " ")
 		for _, str := range s {
 			if str != "" {

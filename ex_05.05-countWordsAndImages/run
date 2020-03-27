@@ -1,0 +1,3 @@
+#!/bin/bash
+
+go run main.go http://8i8.fr

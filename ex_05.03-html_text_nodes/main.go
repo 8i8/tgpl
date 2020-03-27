@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"golang.org/x/net/html"
 )
@@ -10,33 +11,29 @@ import (
 func main() {
 	doc, err := html.Parse(os.Stdin)
 	if err != nil {
-		fmt.Fprint(os.Stderr, "error: %v", err)
+		fmt.Fprintf(os.Stderr, "error: %v", err)
 	}
-	textnodes(nil, doc)
+	text := textNodes(nil, doc)
+	for _, n := range text {
+		fmt.Println(n)
+	}
 }
 
-func textnodes(stack [], n *html.Node) {
-	depth := 0
-	for {
-		tt := z.Next()
-		switch tt {
-		case html.ErrorToken:
-			return z.Err()
-		case html.TextToken:
-			if depth > 0 {
-				// emitBytes should copy the []byte it receives,
-				// if it doesn't process it immediately.
-				emitBytes(z.Text())
-			}
-		case html.StartTagToken, html.EndTagToken:
-			tn, _ := z.TagName()
-			if len(tn) == 1 && tn[0] == 'a' {
-				if tt == html.StartTagToken {
-					depth++
-				} else {
-					depth--
-				}
+func textNodes(text []string, n *html.Node) []string {
+	if n.Type == html.TextNode {
+		if len(n.Data) > 0 {
+			str := strings.TrimSpace(n.Data)
+			if len(str) > 1 {
+				text = append(text, str)
 			}
 		}
 	}
+
+	if n.FirstChild != nil && n.Data != "script" && n.Data != "style" {
+		text = textNodes(text, n.FirstChild)
+	}
+	if n.NextSibling != nil {
+		text = textNodes(text, n.NextSibling)
+	}
+	return text
 }

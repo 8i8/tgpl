@@ -1,0 +1,5 @@
+#!/bin/sh
+
+go build -o prg main.go
+# GET golang.org | ./main
+GET 8i8.fr | ./prg

@@ -1,0 +1,4 @@
+#!/bin/sh
+
+GET 8i8.fr | ./main
+# GET golang.org | ./main

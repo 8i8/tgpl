@@ -1,1 +1,3 @@
+#!/bin/sh
+
 GET golang.org | ./main
