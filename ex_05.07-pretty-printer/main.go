@@ -76,12 +76,12 @@ func forEachNode(w io.Writer, n *html.Node, pre, post func(w io.Writer, n *html.
 	m = norm
 }
 
-// mode tracks the state of the pretty printer, when inside of elements that
-// require a different behavior.
+// mode keeps the state of the pretty printer.
 type mode int
 
 const (
 	norm mode = 1 << iota
+	script
 	shortForm
 )
 
@@ -133,6 +133,7 @@ func startElementNode(w io.Writer, n *html.Node) {
 	if n.Data == "script" || n.Data == "style" {
 		// Dissable short form mode.
 		m = m &^ shortForm
+		m = m | script
 	}
 	for _, a := range n.Attr {
 		buf.WriteString(fmt.Sprintf(" %s=\"%s\"", a.Key, a.Val))
@@ -156,6 +157,10 @@ func endElementNode(w io.Writer, n *html.Node) {
 func startTextNode(w io.Writer, n *html.Node) {
 	str := strings.TrimSpace(n.Data)
 	if len(str) > 0 && str != "\n" {
+		if m&script > 0 {
+			fmt.Fprintf(w, "%s\n", str)
+			return
+		}
 		fmt.Fprintf(w, "%*s%s\n", depth*2, "", str)
 	}
 }
