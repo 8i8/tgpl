@@ -21,14 +21,14 @@ func main() {
 	stream := os.Stdin
 	info, err := stream.Stat()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "os.Stdin: in.Stat: %v", err)
+		fmt.Fprintf(os.Stderr, "io stream: %s", err)
 		os.Exit(1)
 	}
 	// Check for data in the pipe.
 	if info.Mode()&os.ModeNamedPipe != 0 {
 		doc, err := html.Parse(stream)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "stream: html.Parse: %s\n", err)
+			fmt.Fprintf(os.Stderr, "io stream parse: %s\n", err)
 			os.Exit(1)
 		}
 		forEachNode(out, doc, startElement, endElement)
@@ -37,13 +37,14 @@ func main() {
 	for _, url := range os.Args[1:] {
 		resp, err := http.Get(url)
 		if err != nil {
-			return
+			fmt.Fprintf(os.Stderr, "cmd url: %s\n", err)
+			os.Exit(1)
 		}
 		doc, err := html.Parse(resp.Body)
 		resp.Body.Close()
 		if err != nil {
-			err = fmt.Errorf("args: html.Parse: %s", err)
-			return
+			fmt.Fprintf(os.Stderr, "cmd parse: %s\n", err)
+			os.Exit(1)
 		}
 		forEachNode(out, doc, startElement, endElement)
 	}
