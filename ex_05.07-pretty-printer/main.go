@@ -35,19 +35,36 @@ func main() {
 	}
 	// If there are args, assume that they are urls.
 	for _, url := range os.Args[1:] {
-		resp, err := http.Get(url)
+		err = PrettyPrint(out, url)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "cmd url: %s\n", err)
+			fmt.Fprintf(os.Stderr, "url: %q: %s", url, err)
 			os.Exit(1)
 		}
-		doc, err := html.Parse(resp.Body)
-		resp.Body.Close()
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "cmd parse: %s\n", err)
-			os.Exit(1)
-		}
-		forEachNode(out, doc, startElement, endElement)
 	}
+}
+
+func CheckPrefix(url string) string {
+	if strings.HasPrefix(strings.ToLower(url), "http://") == false &&
+		strings.HasPrefix(strings.ToLower(url), "https://") == false {
+		url = "http://" + url
+	}
+	return url
+}
+
+func PrettyPrint(w io.Writer, url string) error {
+	fname := "PrettyPrint"
+	url = CheckPrefix(url)
+	resp, err := http.Get(url)
+	if err != nil {
+		return fmt.Errorf(fname+"getting: %s\n", err)
+	}
+	doc, err := html.Parse(resp.Body)
+	resp.Body.Close()
+	if err != nil {
+		return fmt.Errorf(fname+"parsing: %s\n", err)
+	}
+	forEachNode(w, doc, startElement, endElement)
+	return nil
 }
 
 // forEachNode iterates over an HTML document tree.
