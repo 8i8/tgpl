@@ -13,8 +13,8 @@ const prefixs = "https://"
 
 func main() {
 	for _, url := range os.Args[1:] {
-		if strings.HasPrefix(strings.ToLower(url), prefix) == false ||
-			strings.HasPrefix(strings.ToLower(url), prefix) == false {
+		if strings.HasPrefix(strings.ToLower(url), prefix) == false &&
+			strings.HasPrefix(strings.ToLower(url), prefixs) == false {
 			url = prefix + url
 		}
 
