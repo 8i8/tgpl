@@ -4,9 +4,8 @@ import (
 	"fmt"
 	"math/rand"
 	"time"
-
-	"tgpl/ex_04.12-xkcd/ds"
-	"tgpl/ex_04.12-xkcd/quest"
+	"xkcd/ds"
+	"xkcd/quest"
 )
 
 const cLastURL = "https://xkcd.com/info.0.json"

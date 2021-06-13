@@ -4,8 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-
-	"tgpl/ex_04.12-xkcd/quest"
+	"xkcd/quest"
 )
 
 // xkcdDecode decodes the raw json responce and marshals it into a Comic

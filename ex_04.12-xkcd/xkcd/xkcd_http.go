@@ -3,8 +3,7 @@ package xkcd
 import (
 	"fmt"
 	"strconv"
-
-	"tgpl/ex_04.12-xkcd/quest"
+	"xkcd/quest"
 )
 
 // newComicHTTP returns the specified comic from the website.

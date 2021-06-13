@@ -3,8 +3,7 @@ package xkcd
 import (
 	"fmt"
 	"sort"
-
-	"tgpl/ex_04.12-xkcd/ds"
+	"xkcd/ds"
 )
 
 // scanComicMap runs extract words on every text field in a Comic struct.

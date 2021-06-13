@@ -2,8 +2,7 @@ package main
 
 import (
 	"flag"
-
-	"tgpl/ex_04.12-xkcd/xkcd"
+	"xkcd/xkcd"
 )
 
 func init() {
