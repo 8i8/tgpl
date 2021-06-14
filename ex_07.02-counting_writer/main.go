@@ -7,6 +7,8 @@ package main
 
 import "io"
 
+// ByteCounter wraps an io.Writer with a struct that keeps count of the
+// total number of bytes written.
 type ByteCounter struct {
 	c *int64
 	w io.Writer
