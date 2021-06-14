@@ -125,12 +125,11 @@ func (s *IntSet) DifferenceWith(t *IntSet) {
 // SymmetricDifference sets s to the symmetric difference between s and
 // t.
 func (s *IntSet) SymmetricDifferenceWith(t *IntSet) {
+	if len(t.words) > len(s.words) {
+		s.words, t.words = t.words, s.words
+	}
 	for i, tword := range t.words {
-		if i < len(s.words) {
-			s.words[i] ^= tword
-		} else {
-			s.words = append(s.words, tword)
-		}
+		s.words[i] ^= tword
 	}
 }
 
