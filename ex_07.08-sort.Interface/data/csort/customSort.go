@@ -1,5 +1,7 @@
 package csort
 
+import "bytes"
+
 const (
 	Equal = iota
 	Left
@@ -33,11 +35,13 @@ func (x Custom) Swap(i, j int)      { x.t[i], x.t[j] = x.t[j], x.t[i] }
 // SortFn are the functions used by the customSort less() function call.
 type SortFn func(x, y interface{}) int
 
-// SortFnBuffer maintains a ring buffer of the last n sort functions that
+// SortBuffer maintains a ring buffer of the last n sort functions that
 // have been called.
-type SortFnBuffer struct {
+type SortBuffer struct {
 	Funcs  []SortFn
 	list   []SortFn
+	cmds   []string
+	slist  bytes.Buffer
 	i      int
 	l      int
 	Max    int
@@ -45,17 +49,27 @@ type SortFnBuffer struct {
 }
 
 // List returns a slice for itteration from the sort order ring buffer.
-func (s *SortFnBuffer) List() []SortFn {
+func (s *SortBuffer) List() []SortFn {
 	s.list = s.list[:0]
 	for i := 0; i < s.l; i++ {
-		s.list = append(s.list, s.Funcs[((s.i+s.Max)-i-1)%s.Max])
+		s.list = append(s.list, s.Funcs[((s.i+s.l)-i-1)%s.l])
 	}
 	return s.list
 }
 
+func (s *SortBuffer) String() string {
+	s.slist.Reset()
+	s.slist.WriteString(s.cmds[((s.i)-1)%s.l])
+	for i := 1; i < s.l; i++ {
+		s.slist.WriteByte(',')
+		s.slist.WriteString(s.cmds[((s.i)+i-1)%s.l])
+	}
+	return s.slist.String()
+}
+
 // SortFunction runs all of the conditional functions in the list of sort
 // function returned from the SortFnBuffer List call.
-func SortFunction(buf *SortFnBuffer) func(x, y interface{}) bool {
+func SortFunction(buf *SortBuffer) func(x, y interface{}) bool {
 	return func(x, y interface{}) bool {
 		for _, fn := range buf.List() {
 			if res := fn(x, y); res > Equal {
@@ -71,27 +85,35 @@ func SortFunction(buf *SortFnBuffer) func(x, y interface{}) bool {
 
 // NewSortBuffer returns a new sort buffer, a ring buffer that retains
 // the last n sort function calls in hitorical order.
-func NewSortBuffer(s func(string) SortFn, v ...int) *SortFnBuffer {
+func NewSortBuffer(s func(string) SortFn, v ...int) *SortBuffer {
 	var l int
 	if len(v) == 0 {
 		l = 5
 	} else {
 		l = v[0]
 	}
-	return &SortFnBuffer{
+	return &SortBuffer{
 		Funcs:  make([]SortFn, l),
 		list:   make([]SortFn, 0, l),
+		cmds:   make([]string, l),
 		Max:    l,
 		SortBy: s,
 	}
 }
 
 // Add adds a sort function to the buffer.
-func (s *SortFnBuffer) Add(cmd string) {
-	s.i %= s.Max
-	s.Funcs[s.i] = s.SortBy(cmd)
-	s.i++
-	if s.l < s.Max {
-		s.l++
+func (s *SortBuffer) Add(cmd ...string) {
+	const fname = "Add"
+	if len(cmd) == 0 || cmd[0] == "" {
+		return
+	}
+	for i := range cmd {
+		s.i %= s.Max
+		s.Funcs[s.i] = s.SortBy(cmd[i])
+		s.cmds[s.i] = cmd[i]
+		s.i++
+		if s.l < s.Max {
+			s.l++
+		}
 	}
 }
