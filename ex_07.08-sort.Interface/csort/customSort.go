@@ -1,7 +1,5 @@
 package csort
 
-import "log"
-
 const (
 	Equal = iota
 	Left
@@ -35,7 +33,7 @@ func (x Custom) Swap(i, j int)      { x.t[i], x.t[j] = x.t[j], x.t[i] }
 // SortFn are the functions used by the customSort less() function call.
 type SortFn func(x, y interface{}) int
 
-// SortFnBuffer maintains a ring bufferof the last n sort functions that
+// SortFnBuffer maintains a ring buffer of the last n sort functions that
 // have been called.
 type SortFnBuffer struct {
 	Funcs  []SortFn
@@ -59,10 +57,9 @@ func (s *SortFnBuffer) List() []SortFn {
 // function returned from the SortFnBuffer List call.
 func SortFunction(buf *SortFnBuffer) func(x, y interface{}) bool {
 	return func(x, y interface{}) bool {
-		log.Fatal(buf)
 		for _, fn := range buf.List() {
-			if res := fn(x, y); res > 0 {
-				if res == 1 {
+			if res := fn(x, y); res > Equal {
+				if res == Left {
 					return true
 				}
 				return false

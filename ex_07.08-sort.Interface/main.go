@@ -44,8 +44,8 @@ func printTracks(tracks []*Track) {
 	tw.Flush()
 }
 
-// sortBy returns a sort function tha examins the given struct element.
-func sortBy(cmd string) csort.SortFn {
+// less returns a sort function tha examins the given struct element.
+func less(cmd string) csort.SortFn {
 	return func(xi, yi interface{}) int {
 		x, ok := xi.(*Track)
 		if !ok {
@@ -98,11 +98,28 @@ func sortBy(cmd string) csort.SortFn {
 	}
 }
 
+// wrapInter returns the given slice as a slice of interfaces.
+func wrapInter(tracks []*Track) []interface{} {
+	inter := make([]interface{}, len(tracks))
+	for i := range tracks {
+		inter[i] = tracks[i]
+	}
+	return inter
+}
+
+func unwrapInter(inter []interface{}, tracks []*Track) {
+	for i := range inter {
+		tracks[i] = inter[i].(*Track)
+	}
+}
+
 func main() {
-	buf := csort.NewSortFnBuffer(sortBy)
+	buf := csort.NewSortBuffer(less)
 	// buf.Add("length")
-	// buf.Add("year")
+	//buf.Add("year")
 	buf.Add("title")
-	sort.Sort(csort.New(csort.SortFunction(buf), tracks))
+	inter := wrapInter(tracks)
+	sort.Sort(csort.New(csort.SortFunction(buf), inter))
+	unwrapInter(inter, tracks)
 	printTracks(tracks)
 }
