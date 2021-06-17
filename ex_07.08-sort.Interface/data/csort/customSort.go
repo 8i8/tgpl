@@ -48,41 +48,6 @@ type SortBuffer struct {
 	SortBy func(string) SortFn
 }
 
-// List returns a slice for itteration from the sort order ring buffer.
-func (s *SortBuffer) List() []SortFn {
-	s.list = s.list[:0]
-	for i := 0; i < s.l; i++ {
-		s.list = append(s.list, s.Funcs[((s.i+s.l)-i-1)%s.l])
-	}
-	return s.list
-}
-
-func (s *SortBuffer) String() string {
-	s.slist.Reset()
-	s.slist.WriteString(s.cmds[((s.i)-1)%s.l])
-	for i := 1; i < s.l; i++ {
-		s.slist.WriteByte(',')
-		s.slist.WriteString(s.cmds[((s.i)+i-1)%s.l])
-	}
-	return s.slist.String()
-}
-
-// SortFunction runs all of the conditional functions in the list of sort
-// function returned from the SortFnBuffer List call.
-func SortFunction(buf *SortBuffer) func(x, y interface{}) bool {
-	return func(x, y interface{}) bool {
-		for _, fn := range buf.List() {
-			if res := fn(x, y); res > Equal {
-				if res == Left {
-					return true
-				}
-				return false
-			}
-		}
-		return false
-	}
-}
-
 // NewSortBuffer returns a new sort buffer, a ring buffer that retains
 // the last n sort function calls in hitorical order.
 func NewSortBuffer(s func(string) SortFn, v ...int) *SortBuffer {
@@ -115,5 +80,43 @@ func (s *SortBuffer) Add(cmd ...string) {
 		if s.l < s.Max {
 			s.l++
 		}
+	}
+}
+
+// List returns a slice for itteration from the sort order ring buffer.
+func (s *SortBuffer) List() []SortFn {
+	s.list = s.list[:0]
+	for i := 0; i < s.l; i++ {
+		s.list = append(s.list, s.Funcs[((s.i+s.l)-i)%s.l])
+	}
+	return s.list
+}
+
+func (s *SortBuffer) String() string {
+	if len(s.cmds) == 0 {
+		return ""
+	}
+	s.slist.Reset()
+	s.slist.WriteString(s.cmds[(s.i)%s.l])
+	for i := 1; i < s.l; i++ {
+		s.slist.WriteByte(',')
+		s.slist.WriteString(s.cmds[((s.i)+i)%s.l])
+	}
+	return s.slist.String()
+}
+
+// LoadSortFn runs all of the conditional functions in the list of sort
+// function returned from the SortBuffer List call.
+func (s *SortBuffer) LoadSortFn() func(x, y interface{}) bool {
+	return func(x, y interface{}) bool {
+		for _, fn := range s.List() {
+			if res := fn(x, y); res > Equal {
+				if res == Left {
+					return true
+				}
+				return false
+			}
+		}
+		return false
 	}
 }

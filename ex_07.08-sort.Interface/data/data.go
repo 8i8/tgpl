@@ -153,14 +153,18 @@ func unwrapInter(inter []interface{}, tracks []*Track) {
 
 func Sort(buf *csort.SortBuffer, tracks []*Track) []*Track {
 	inter := wrapInter(Tracks)
-	sort.Sort(csort.New(csort.SortFunction(buf), inter))
+	sort.Sort(csort.New(buf.LoadSortFn(), inter))
 	unwrapInter(inter, Tracks)
 	return Tracks
 }
 
+func StableSort(tracks []*Track, cmd string) []*Track {
+	t := Tlist{tr: tracks}
+	sort.Stable(t.stableSort(t, cmd))
+	return t.tr
+}
+
 func Data() (*csort.SortBuffer, []*Track) {
-
 	buf := csort.NewSortBuffer(Less)
-
 	return buf, Tracks
 }
