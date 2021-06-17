@@ -104,7 +104,7 @@ func less(x, y *Track, cmd string) int {
 			}
 			return Right
 		}
-	case "":
+	case "", "NUL":
 	default:
 		log.Fatal("unknown command: " + cmd)
 	}

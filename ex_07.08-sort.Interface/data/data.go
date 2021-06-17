@@ -129,7 +129,7 @@ func Less(cmd string) csort.SortFn {
 				}
 				return csort.Right
 			}
-		case "":
+		case "", "NUL":
 		default:
 			log.Fatal("unknown command: " + cmd)
 		}
