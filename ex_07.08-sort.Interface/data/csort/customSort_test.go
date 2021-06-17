@@ -5,6 +5,17 @@ import (
 	"testing"
 )
 
+func TestSortBufferPeek(t *testing.T) {
+	const fname = "TestSortBufferPeek"
+	buf := NewSortBuffer(empty)
+	buf.Load("title", "artist", "length", "length")
+	str := buf.Peek()
+	exp := "length"
+	if str != exp {
+		t.Errorf("%s: want %q got %q", fname, exp, str)
+	}
+}
+
 func TestCustomSort(t *testing.T) {
 	const fname = "TestCustomSort"
 	data := []int{1, 43, 234, 3, 14, 65, 89, 879}
