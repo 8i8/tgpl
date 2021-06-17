@@ -12,7 +12,7 @@ import (
 var templ = template.Must(template.ParseFiles("assets/templ.gohtml"))
 
 type links struct {
-	Href, Tag, Next string
+	Href, Tag, Next, Mode string
 }
 
 func table(buf *csort.SortBuffer, tracks []*data.Track) http.HandlerFunc {
@@ -41,9 +41,10 @@ func table(buf *csort.SortBuffer, tracks []*data.Track) http.HandlerFunc {
 		}{
 			data.Sort(buf, tracks),
 			links{
-				"\"/stable\"",
-				"stable sort",
+				"/stable",
+				"goto stable sort",
 				"/",
+				"using a ring buffer",
 			},
 		}
 		http.SetCookie(res, cookie)
@@ -64,7 +65,7 @@ func stable(tracks []*data.Track) http.HandlerFunc {
 	return func(res http.ResponseWriter, req *http.Request) {
 
 		next := req.URL.RawQuery
-		if prev == next {
+		if prev == next && prev != "" {
 			next = reverse(prev)
 		}
 		d := struct {
@@ -73,9 +74,10 @@ func stable(tracks []*data.Track) http.HandlerFunc {
 		}{
 			data.StableSort(tracks, next),
 			links{
-				"\"/\"",
-				"ring buffer sort",
+				"/",
+				"goto ring buffer sort",
 				"/stable",
+				"with stable sort",
 			},
 		}
 		templ.ExecuteTemplate(res, "main", d)
