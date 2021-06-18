@@ -165,7 +165,17 @@ func StableSort(tracks []*Track, cmd string) []*Track {
 	return t.tr
 }
 
-func Data() (*csort.SortBuffer, []*Track) {
+func StableSortRev(tracks []*Track, cmd string) []*Track {
+	t := Tlist{tr: tracks}
+	sort.Stable(sort.Reverse(t.stableSort(t, cmd)))
+	return t.tr
+}
+
+func Init() (*csort.SortBuffer, []*Track) {
 	buf := csort.NewSortBuffer(Less)
 	return buf, Tracks
+}
+
+func Print(tracks []*Track) {
+	printTracks(tracks)
 }
