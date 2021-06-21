@@ -147,13 +147,22 @@ func parsePrimary(lex *lexer) Expr {
 
 	case '(':
 		lex.next() // consume '('
-		e := parseExpr(lex)
+		var args []Expr
 		if lex.token != ')' {
-			msg := fmt.Sprintf("got %s, want ')'", lex.describe())
-			panic(lexPanic(msg))
+			for {
+				args = append(args, parseExpr(lex))
+				if lex.token == ')' {
+					break
+				}
+				lex.next() // consume
+			}
+			if lex.token == scanner.EOF {
+				msg := fmt.Sprintf("got %s, want ')'", lex.describe())
+				panic(lexPanic(msg))
+			}
 		}
 		lex.next() // consume ')'
-		return e
+		return bracket{args}
 	}
 	msg := fmt.Sprintf("unexpected %s", lex.describe())
 	panic(lexPanic(msg))

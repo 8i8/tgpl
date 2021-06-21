@@ -3,6 +3,7 @@ package eval
 import (
 	"fmt"
 	"math"
+	"strings"
 )
 
 type Expr interface {
@@ -106,4 +107,26 @@ func (c call) String() string {
 		return fmt.Sprintf("%s(%s)", c.fn, c.args[0].String())
 	}
 	return ""
+}
+
+type bracket struct {
+	args []Expr
+}
+
+func (b bracket) Eval(env Env) float64 {
+	var f float64
+	for i := range b.args {
+		f = b.args[i].Eval(env)
+	}
+	return f
+}
+
+func (b bracket) String() string {
+	buf := strings.Builder{}
+	buf.WriteByte('(')
+	for i := range b.args {
+		buf.WriteString(b.args[i].String())
+	}
+	buf.WriteByte(')')
+	return buf.String()
 }
