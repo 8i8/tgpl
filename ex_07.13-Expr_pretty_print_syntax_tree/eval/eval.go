@@ -113,12 +113,11 @@ type bracket struct {
 	args []Expr
 }
 
-func (b bracket) Eval(env Env) float64 {
-	var f float64
+func (b bracket) Eval(env Env) (f float64) {
 	for i := range b.args {
 		f = b.args[i].Eval(env)
 	}
-	return f
+	return
 }
 
 func (b bracket) String() string {
