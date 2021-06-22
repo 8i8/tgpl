@@ -119,13 +119,17 @@ func (c call) Eval(env Env) float64 {
 		return math.Pow(c.args[0].Eval(env), c.args[1].Eval(env))
 	case "sin":
 		return math.Sin(c.args[0].Eval(env))
+	case "cos":
+		return math.Cos(c.args[0].Eval(env))
+	case "tan":
+		return math.Tan(c.args[0].Eval(env))
 	case "sqrt":
 		return math.Sqrt(c.args[0].Eval(env))
 	}
 	panic(fmt.Sprintf("unsupported function call: %s", c.fn))
 }
 
-var numParams = map[string]int{"pow": 2, "sin": 1, "sqrt": 1}
+var numParams = map[string]int{"pow": 2, "sin": 1, "cos": 1, "tan": 1, "sqrt": 1}
 
 func (c call) Check(vars map[Var]bool) error {
 	arity, ok := numParams[c.fn]
@@ -155,6 +159,10 @@ func (c call) String() string {
 	return ""
 }
 
+// A bracket is an empty place holder when parsing an expression, it is
+// required to maintain information about the position of brackets in an
+// input expression, enabling the correct functioning of the Stringer
+// interface for pretty printing an expression.
 type bracket struct {
 	args []Expr
 }

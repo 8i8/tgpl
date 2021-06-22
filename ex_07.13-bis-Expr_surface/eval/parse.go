@@ -111,6 +111,9 @@ func parseUnary(lex *lexer) Expr {
 //         | id '(' expr ',' ... ',' expr ')'
 //         | num
 //         | '(' expr ')'
+//
+// The case of '(' has been extended within this function by my self so
+// as to answer the question 7.13 in The Go Programming Language book.
 func parsePrimary(lex *lexer) Expr {
 	switch lex.token {
 	case scanner.Ident:

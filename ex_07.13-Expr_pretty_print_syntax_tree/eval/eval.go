@@ -109,6 +109,10 @@ func (c call) String() string {
 	return ""
 }
 
+// A bracket is an empty place holder when parsing an expression, it is
+// required to maintain information about the position of brackets in an
+// input expression, enabling the correct functioning of the Stringer
+// interface for pretty printing an expression.
 type bracket struct {
 	args []Expr
 }
