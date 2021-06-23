@@ -8,6 +8,7 @@ import (
 
 type Expr interface {
 	Eval(env Env) float64
+	Check(vars map[Var]bool) error
 	String() string
 }
 
@@ -21,6 +22,11 @@ func (v Var) Eval(env Env) float64 {
 	return env[v]
 }
 
+func (v Var) Check(vars map[Var]bool) error {
+	vars[v] = true
+	return nil
+}
+
 func (v Var) String() string {
 	return string(v)
 }
@@ -30,6 +36,10 @@ type literal float64
 
 func (l literal) Eval(env Env) float64 {
 	return float64(l)
+}
+
+func (l literal) Check(vars map[Var]bool) error {
+	return nil
 }
 
 func (l literal) String() string {
@@ -50,6 +60,13 @@ func (u unary) Eval(env Env) float64 {
 		return -u.x.Eval(env)
 	}
 	panic(fmt.Sprintf("unsupparted unary operator: %q", u.op))
+}
+
+func (u unary) Check(vars map[Var]bool) error {
+	if !strings.ContainsRune("+-", u.op) {
+		return fmt.Errorf("unexpected enary op %q", u.op)
+	}
+	return u.x.Check(vars)
 }
 
 func (u unary) String() string {
@@ -76,6 +93,16 @@ func (b binary) Eval(env Env) float64 {
 	panic(fmt.Sprintf("unsupparted binary operator: %q", b.op))
 }
 
+func (b binary) Check(vars map[Var]bool) error {
+	if !strings.ContainsRune("+-*/", b.op) {
+		return fmt.Errorf("unsupported binary op %q", b.op)
+	}
+	if err := b.x.Check(vars); err != nil {
+		return err
+	}
+	return b.y.Check(vars)
+}
+
 func (b binary) String() string {
 	return fmt.Sprintf("%s%c%s", b.x.String(), b.op, b.y.String())
 }
@@ -98,6 +125,25 @@ func (c call) Eval(env Env) float64 {
 		return math.Min(c.args[0].Eval(env), c.args[1].Eval(env))
 	}
 	panic(fmt.Sprintf("unsupported function call: %s", c.fn))
+}
+
+var numParams = map[string]int{"pow": 2, "sin": 1, "cos": 1, "tan": 1, "sqrt": 1}
+
+func (c call) Check(vars map[Var]bool) error {
+	arity, ok := numParams[c.fn]
+	if !ok {
+		return fmt.Errorf("unknown function %q", c.fn)
+	}
+	if len(c.args) != arity {
+		return fmt.Errorf("call to %s has %d args, want %d",
+			c.fn, len(c.args), arity)
+	}
+	for _, arg := range c.args {
+		if err := arg.Check(vars); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (c call) String() string {
@@ -124,6 +170,13 @@ func (b bracket) Eval(env Env) (f float64) {
 		f = b.args[i].Eval(env)
 	}
 	return
+}
+
+func (b bracket) Check(vars map[Var]bool) error {
+	for i := range b.args {
+		b.args[i].Check(vars)
+	}
+	return nil
 }
 
 func (b bracket) String() string {

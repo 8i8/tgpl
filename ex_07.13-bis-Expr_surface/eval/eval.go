@@ -175,6 +175,9 @@ func (b bracket) Eval(env Env) (f float64) {
 }
 
 func (b bracket) Check(vars map[Var]bool) error {
+	for i := range b.args {
+		b.args[i].Check(vars)
+	}
 	return nil
 }
 
