@@ -12,6 +12,7 @@ func TestEval(t *testing.T) {
 		env  Env
 		want string
 	}{
+		{"(x + 5) * 4 + 5", Env{"x": 5}, "45"},
 		{"sqrt(A / pi)", Env{"A": 87616, "pi": math.Pi}, "167"},
 		{"pow(x, 3) + pow(y, 3)", Env{"x": 12, "y": 1}, "1729"},
 		{"pow(x, 3) + pow(y, 3)", Env{"x": 9, "y": 10}, "1729"},
@@ -47,6 +48,7 @@ func TestStringer(t *testing.T) {
 		env  Env
 		want string
 	}{
+		{"(x + 5) * 4 + 5", Env{"x": 5}, "45"},
 		{"sqrt(A / pi)", Env{"A": 87616, "pi": math.Pi}, "167"},
 		{"pow(x, 3) + pow(y, 3)", Env{"x": 12, "y": 1}, "1729"},
 		{"pow(x, 3) + pow(y, 3)", Env{"x": 9, "y": 10}, "1729"},
