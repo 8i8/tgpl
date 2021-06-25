@@ -383,10 +383,10 @@ func (h helpout) String() string {
 	buf := strings.Builder{}
 	for _, arg := range args {
 		for key, val := range fnData {
-			if h.mode == Help && key == arg {
+			if h.mode == help && key == arg {
 				printhelp(&buf, key, val)
 			}
-			if h.mode == Helpful && strings.Contains(key, arg) {
+			if h.mode == helpful && strings.Contains(key, arg) {
 				printhelpful(&buf, key, val)
 			}
 		}

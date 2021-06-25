@@ -5,6 +5,7 @@ package eval
 
 import (
 	"fmt"
+	"math"
 	"strconv"
 	"strings"
 	"text/scanner"
@@ -49,22 +50,61 @@ func precedence(op rune) int {
 type rmode int // running mode
 
 const (
-	Nop rmode = iota
-	Plot
-	Help
-	Helpful
+	nop rmode = iota
+	plot
+	help
+	helpful
+	pi
+	nan
+	inf
+	e
+	phi
+	sqrt2
+	sqrte
+	sqrtpi
+	sqrtphi
+	ln2
+	log2e
+	ln10
+	log10e
 )
 
-func checkMode(id string) rmode {
+func checkIdent(id string) rmode {
 	switch id {
 	case "plot":
-		return Plot
+		return plot
 	case "help":
-		return Help
+		return help
 	case "helpful":
-		return Helpful
+		return helpful
+	case "pi":
+		return pi
+	case "nan":
+		return nan
+	case "inf":
+		return inf
+	case "e":
+		return e
+	case "phi":
+		return phi
+	case "sqrt2":
+		return sqrt2
+	case "sqrte":
+		return sqrte
+	case "sqrtpi":
+		return sqrtpi
+	case "sqrtphi":
+		return sqrtphi
+	case "ln2":
+		return ln2
+	case "log2e":
+		return log2e
+	case "ln10":
+		return ln10
+	case "log10e":
+		return log10e
 	}
-	return Nop
+	return nop
 }
 
 // ---- parser ----
@@ -140,13 +180,37 @@ func parsePrimary(lex *lexer) Expr {
 	case scanner.Ident:
 		id := lex.text()
 		lex.next() // consume Ident
-		switch checkMode(id) {
-		case Plot:
+		switch checkIdent(id) {
+		case plot:
 			return mode{id, readExpressions(lex)}
-		case Help:
-			return helpout{Help, readHelp(lex)}
-		case Helpful:
-			return helpout{Helpful, readHelp(lex)}
+		case help:
+			return helpout{help, readHelp(lex)}
+		case helpful:
+			return helpout{helpful, readHelp(lex)}
+		case pi:
+			return literal(math.Pi)
+		case nan:
+			return literal(math.NaN())
+		case e:
+			return literal(math.E)
+		case phi:
+			return literal(math.Phi)
+		case sqrt2:
+			return literal(math.Sqrt2)
+		case sqrte:
+			return literal(math.SqrtE)
+		case sqrtpi:
+			return literal(math.SqrtPi)
+		case sqrtphi:
+			return literal(math.SqrtPhi)
+		case ln2:
+			return literal(math.Ln2)
+		case log2e:
+			return literal(math.Log2E)
+		case ln10:
+			return literal(math.Ln10)
+		case log10e:
+			return literal(math.Log10E)
 		}
 		if lex.token != '(' {
 			return Var(id)
