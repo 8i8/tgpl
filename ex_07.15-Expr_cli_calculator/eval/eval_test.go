@@ -12,12 +12,12 @@ func TestEval(t *testing.T) {
 		env  Env
 		want string
 	}{
-		{"sqrt(A / pi)", Env{"A": 87616, "pi": math.Pi}, "167"},
-		{"pow(x, 3) + pow(y, 3)", Env{"x": 12, "y": 1}, "1729"},
-		{"pow(x, 3) + pow(y, 3)", Env{"x": 9, "y": 10}, "1729"},
-		{"5 / 9 * (F - 32)", Env{"F": -40}, "-40"},
-		{"5 / 9 * (F - 32)", Env{"F": 32}, "0"},
-		{"5 / 9 * (F - 32)", Env{"F": 212}, "100"},
+		{"sqrt(A / pi)", Env{m: map[Var]float64{"A": 87616, "pi": math.Pi}}, "167"},
+		{"pow(x, 3) + pow(y, 3)", Env{m: map[Var]float64{"x": 12, "y": 1}}, "1729"},
+		{"pow(x, 3) + pow(y, 3)", Env{m: map[Var]float64{"x": 9, "y": 10}}, "1729"},
+		{"5 / 9 * (F - 32)", Env{m: map[Var]float64{"F": -40}}, "-40"},
+		{"5 / 9 * (F - 32)", Env{m: map[Var]float64{"F": 32}}, "0"},
+		{"5 / 9 * (F - 32)", Env{m: map[Var]float64{"F": 212}}, "100"},
 	}
 	var prevExpr string
 	for _, test := range tests {
@@ -46,12 +46,12 @@ func TestStringer(t *testing.T) {
 		env  Env
 		want string
 	}{
-		{"sqrt(A / pi)", Env{"A": 87616, "pi": math.Pi}, "167"},
-		{"pow(x, 3) + pow(y, 3)", Env{"x": 12, "y": 1}, "1729"},
-		{"pow(x, 3) + pow(y, 3)", Env{"x": 9, "y": 10}, "1729"},
-		{"5 / 9 * (F - 32)", Env{"F": -40}, "-40"},
-		{"5 / 9 * (F - 32)", Env{"F": 32}, "0"},
-		{"5 / 9 * (F - 32)", Env{"F": 212}, "100"},
+		{"sqrt(A / pi)", Env{m: map[Var]float64{"A": 87616, "pi": math.Pi}}, "167"},
+		{"pow(x, 3) + pow(y, 3)", Env{m: map[Var]float64{"x": 12, "y": 1}}, "1729"},
+		{"pow(x, 3) + pow(y, 3)", Env{m: map[Var]float64{"x": 9, "y": 10}}, "1729"},
+		{"5 / 9 * (F - 32)", Env{m: map[Var]float64{"F": -40}}, "-40"},
+		{"5 / 9 * (F - 32)", Env{m: map[Var]float64{"F": 32}}, "0"},
+		{"5 / 9 * (F - 32)", Env{m: map[Var]float64{"F": 212}}, "100"},
 	}
 	var prevExpr string
 	for _, test := range tests {
@@ -86,12 +86,12 @@ func TestEnv(t *testing.T) {
 		env  Env
 		want string
 	}{
-		{"sqrt(A / pi)", Env{"A": 87616, "pi": math.Pi}, "167"},
-		{"pow(x, 3) + pow(y, 3)", Env{"x": 12, "y": 1}, "1729"},
-		{"pow(x, 3) + pow(y, 3)", Env{"x": 9, "y": 10}, "1729"},
-		{"5 / 9 * (F - 32)", Env{"F": -40}, "-40"},
-		{"5 / 9 * (F - 32)", Env{"F": 32}, "0"},
-		{"5 / 9 * (F - 32)", Env{"F": 212}, "100"},
+		{"sqrt(A / pi)", Env{m: map[Var]float64{"A": 87616, "pi": math.Pi}}, "167"},
+		{"pow(x, 3) + pow(y, 3)", Env{m: map[Var]float64{"x": 12, "y": 1}}, "1729"},
+		{"pow(x, 3) + pow(y, 3)", Env{m: map[Var]float64{"x": 9, "y": 10}}, "1729"},
+		{"5 / 9 * (F - 32)", Env{m: map[Var]float64{"F": -40}}, "-40"},
+		{"5 / 9 * (F - 32)", Env{m: map[Var]float64{"F": 32}}, "0"},
+		{"5 / 9 * (F - 32)", Env{m: map[Var]float64{"F": 212}}, "100"},
 	}
 	var prevExpr string
 	for _, test := range tests {
@@ -112,7 +112,7 @@ func TestEnv(t *testing.T) {
 			t.Error(err) // parse error
 			continue
 		}
-		for v, _ := range test.env {
+		for v, _ := range test.env.m {
 			if !vars[v] {
 				t.Errorf("%s not found in vars\n", v)
 				continue

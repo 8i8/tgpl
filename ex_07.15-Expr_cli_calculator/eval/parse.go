@@ -38,12 +38,33 @@ func (lex *lexer) describe() string {
 
 func precedence(op rune) int {
 	switch op {
-	case '*', '/':
+	case '*', '/', '^':
 		return 2
 	case '+', '-':
 		return 1
 	}
 	return 0
+}
+
+type rmode int // running mode
+
+const (
+	Nop rmode = iota
+	Plot
+	Help
+	Helpful
+)
+
+func checkMode(id string) rmode {
+	switch id {
+	case "plot":
+		return Plot
+	case "help":
+		return Help
+	case "helpful":
+		return Helpful
+	}
+	return Nop
 }
 
 // ---- parser ----
@@ -119,25 +140,18 @@ func parsePrimary(lex *lexer) Expr {
 	case scanner.Ident:
 		id := lex.text()
 		lex.next() // consume Ident
+		switch checkMode(id) {
+		case Plot:
+			return mode{id, readExpressions(lex)}
+		case Help:
+			return helpout{Help, readHelp(lex)}
+		case Helpful:
+			return helpout{Helpful, readHelp(lex)}
+		}
 		if lex.token != '(' {
 			return Var(id)
 		}
-		lex.next() // consume '('
-		var args []Expr
-		if lex.token != ')' {
-			for {
-				args = append(args, parseExpr(lex))
-				if lex.token != ',' {
-					break
-				}
-				lex.next() // consume ','
-			}
-			if lex.token != ')' {
-				msg := fmt.Sprintf("got %s, want ')'", lex.describe())
-				panic(lexPanic(msg))
-			}
-		}
-		lex.next() // consume ')'
+		args := readArgs(lex)
 		return call{id, args}
 
 	case scanner.Int, scanner.Float:
@@ -149,24 +163,58 @@ func parsePrimary(lex *lexer) Expr {
 		return literal(f)
 
 	case '(':
-		lex.next() // consume '('
-		var args []Expr
-		if lex.token != ')' {
-			for {
-				args = append(args, parseExpr(lex))
-				if lex.token == ')' {
-					break
-				}
-				lex.next() // consume
-			}
-			if lex.token == scanner.EOF {
-				msg := fmt.Sprintf("got %s, want ')'", lex.describe())
-				panic(lexPanic(msg))
-			}
-		}
-		lex.next() // consume ')'
-		return bracket{args}
+		return bracket{readExpressions(lex)}
 	}
 	msg := fmt.Sprintf("unexpected %s", lex.describe())
 	panic(lexPanic(msg))
+}
+
+func readArgs(lex *lexer) []Expr {
+	lex.next() // consume '('
+	var args []Expr
+	if lex.token != ')' {
+		for {
+			args = append(args, parseExpr(lex))
+			if lex.token != ',' {
+				break
+			}
+			lex.next() // consume ','
+		}
+		if lex.token != ')' {
+			msg := fmt.Sprintf("got %s, want ')'", lex.describe())
+			panic(lexPanic(msg))
+		}
+	}
+	lex.next() // consume ')'
+	return args
+}
+
+func readExpressions(lex *lexer) []Expr {
+	lex.next() // consume '('
+	var args []Expr
+	if lex.token != ')' {
+		for {
+			args = append(args, parseExpr(lex))
+			if lex.token == ')' {
+				break
+			}
+			lex.next() // consume
+		}
+		if lex.token == scanner.EOF {
+			msg := fmt.Sprintf("got %s, want ')'", lex.describe())
+			panic(lexPanic(msg))
+		}
+	}
+	lex.next() // consume ')'
+	return args
+}
+
+func readHelp(lex *lexer) (str string) {
+	lex.next() // consume '('
+	for lex.token != ')' {
+		str += lex.text()
+		lex.next() // consume arg
+	}
+	lex.next() // consume ')'
+	return
 }
