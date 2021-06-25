@@ -272,7 +272,7 @@ func (c call) Check(vars map[Var]bool) error {
 	}
 	if len(c.args) != arity.params {
 		return fmt.Errorf("call to %s has %d args, want %d",
-			c.fn, len(c.args), arity)
+			c.fn, len(c.args), arity.params)
 	}
 	for _, arg := range c.args {
 		if err := arg.Check(vars); err != nil {
