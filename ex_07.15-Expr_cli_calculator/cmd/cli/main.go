@@ -1,4 +1,4 @@
-package cli
+package main
 
 import (
 	"Expr_cli_calculator/eval"
@@ -99,7 +99,7 @@ func cliArgInput(sc *bufio.Scanner) {
 	fmt.Println(res)
 }
 
-func Run() {
+func main() {
 	sc := bufio.NewScanner(os.Stdin)
 	if len(os.Args) > 1 {
 		cliArgInput(sc)

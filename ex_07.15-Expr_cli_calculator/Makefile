@@ -1,6 +1,6 @@
 all:
 	clear
-	go run main.go
+	go run cmd/cli/main.go
 test:
 	clear
 	go test ./...
