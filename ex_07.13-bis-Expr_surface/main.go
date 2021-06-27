@@ -64,8 +64,8 @@ func index(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	http.HandleFunc("/plot", draw)
 	http.HandleFunc("/", index)
+	http.HandleFunc("/plot", draw)
 	err := http.ListenAndServe(":8000", nil)
 	if err != nil {
 		log.Fatal(err)
