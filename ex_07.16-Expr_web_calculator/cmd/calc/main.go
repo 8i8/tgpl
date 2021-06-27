@@ -60,7 +60,7 @@ func cliArgExpression(exp string) (eval.Expr, map[eval.Var]bool) {
 // variables sets any variables that do not already have a value by
 // asking the user for input.
 func variables(sc *bufio.Scanner, vars map[eval.Var]bool) eval.Env {
-	env := eval.NewEnv()
+	env := make(eval.Env)
 	var val float64
 	var err error
 	for key, _ := range vars {
@@ -74,7 +74,7 @@ func variables(sc *bufio.Scanner, vars map[eval.Var]bool) eval.Env {
 			}
 			break
 		}
-		env.Add(key, val)
+		env[key] = val
 	}
 	return env
 }
