@@ -69,6 +69,47 @@ const (
 	log10e
 )
 
+func (r rmode) String() string {
+	switch r {
+	case nop:
+		return "nop"
+	case plot:
+		return "plot"
+	case help:
+		return "help"
+	case helpful:
+		return "helpful"
+	case pi:
+		return "pi"
+	case nan:
+		return "nan"
+	case inf:
+		return "inf"
+	case e:
+		return "e"
+	case phi:
+		return "phi"
+	case sqrt2:
+		return "sqrt2"
+	case sqrte:
+		return "sqrte"
+	case sqrtpi:
+		return "sqrtpi"
+	case sqrtphi:
+		return "sqrtphi"
+	case ln2:
+		return "ln2"
+	case log2e:
+		return "log2e"
+	case ln10:
+		return "ln10"
+	case log10e:
+		return "log10e"
+	default:
+		return fmt.Sprintf("(!%s)", r)
+	}
+}
+
 func checkIdent(id string) rmode {
 	switch id {
 	case "plot":
@@ -182,7 +223,7 @@ func parsePrimary(lex *lexer) Expr {
 		lex.next() // consume Ident
 		switch checkIdent(id) {
 		case plot:
-			return mode{id, readExpressions(lex)}
+			return mode{plot, readExpressions(lex)}
 		case help:
 			return helpout{help, readHelp(lex)}
 		case helpful:

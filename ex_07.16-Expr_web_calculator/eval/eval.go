@@ -44,6 +44,9 @@ type Var string
 // Env maps envirnoment variable names to values.
 type Env map[Var]float64
 
+// Vars keeps track of which variables have been checked.
+type Vars map[Var]bool
+
 func (v Var) Eval(env Env) Response {
 	return Response{tFloat64, env[v]}
 }
@@ -317,13 +320,15 @@ func (b bracket) String() string {
 // mode sets a different running mode on the calculator, used primarily
 // to redirect output type.
 type mode struct {
-	id   string
+	id   rmode
 	args []Expr
 }
 
 func (m mode) Eval(env Env) (r Response) {
 	for i := range m.args {
 		r = m.args[i].Eval(env)
+	}
+	if m.id == plot {
 	}
 	return
 }
@@ -337,7 +342,7 @@ func (m mode) Check(vars map[Var]bool) error {
 
 func (m mode) String() string {
 	buf := strings.Builder{}
-	buf.WriteString(m.id)
+	buf.WriteString(m.id.String())
 	buf.WriteByte('(')
 	for i := range m.args {
 		buf.WriteString(m.args[i].String())
