@@ -47,13 +47,13 @@ func precedence(op rune) int {
 	return 0
 }
 
-type rmode int // running mode
+type ident int // running identity or mode.
 
 const (
-	nop rmode = iota
-	plot
-	help
-	helpful
+	nop ident = iota
+	Plot
+	Help
+	Helpful
 	pi
 	nan
 	inf
@@ -69,15 +69,15 @@ const (
 	log10e
 )
 
-func (r rmode) String() string {
+func (r ident) String() string {
 	switch r {
 	case nop:
 		return "nop"
-	case plot:
+	case Plot:
 		return "plot"
-	case help:
+	case Help:
 		return "help"
-	case helpful:
+	case Helpful:
 		return "helpful"
 	case pi:
 		return "pi"
@@ -110,14 +110,14 @@ func (r rmode) String() string {
 	}
 }
 
-func checkIdent(id string) rmode {
+func checkIdent(id string) ident {
 	switch id {
 	case "plot":
-		return plot
+		return Plot
 	case "help":
-		return help
+		return Help
 	case "helpful":
-		return helpful
+		return Helpful
 	case "pi":
 		return pi
 	case "nan":
@@ -222,12 +222,12 @@ func parsePrimary(lex *lexer) Expr {
 		id := lex.text()
 		lex.next() // consume Ident
 		switch checkIdent(id) {
-		case plot:
-			return mode{plot, readExpressions(lex)}
-		case help:
-			return helpout{help, readHelp(lex)}
-		case helpful:
-			return helpout{helpful, readHelp(lex)}
+		case Plot:
+			return mode{Plot, readExpressions(lex)}
+		case Help:
+			return helpout{Help, readHelp(lex)}
+		case Helpful:
+			return helpout{Helpful, readHelp(lex)}
 		case pi:
 			return literal(math.Pi)
 		case nan:

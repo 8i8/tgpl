@@ -16,6 +16,7 @@ const (
 type Response struct {
 	Type  T
 	value interface{}
+	Mode  ident
 }
 
 func (r Response) String() string {
@@ -48,7 +49,7 @@ type Env map[Var]float64
 type Vars map[Var]bool
 
 func (v Var) Eval(env Env) Response {
-	return Response{tFloat64, env[v]}
+	return Response{tFloat64, env[v], nop}
 }
 
 func (v Var) Check(vars map[Var]bool) error {
@@ -64,7 +65,7 @@ func (v Var) String() string {
 type literal float64
 
 func (l literal) Eval(env Env) Response {
-	return Response{tFloat64, float64(l)}
+	return Response{tFloat64, float64(l), nop}
 }
 
 func (l literal) Check(vars map[Var]bool) error {
@@ -85,9 +86,9 @@ func (u unary) Eval(env Env) Response {
 	val := u.x.Eval(env)
 	switch u.op {
 	case '+':
-		return Response{tFloat64, +val.value.(float64)}
+		return Response{tFloat64, +val.value.(float64), nop}
 	case '-':
-		return Response{tFloat64, -val.value.(float64)}
+		return Response{tFloat64, -val.value.(float64), nop}
 	}
 	panic(fmt.Sprintf("unsupparted unary operator: %q", u.op))
 }
@@ -114,15 +115,15 @@ func (b binary) Eval(env Env) Response {
 	y := b.y.Eval(env).Float()
 	switch b.op {
 	case '+':
-		return Response{tFloat64, x + y}
+		return Response{tFloat64, x + y, nop}
 	case '-':
-		return Response{tFloat64, x - y}
+		return Response{tFloat64, x - y, nop}
 	case '*':
-		return Response{tFloat64, x * y}
+		return Response{tFloat64, x * y, nop}
 	case '/':
-		return Response{tFloat64, x / y}
+		return Response{tFloat64, x / y, nop}
 	case '^':
-		return Response{tFloat64, math.Pow(x, y)}
+		return Response{tFloat64, math.Pow(x, y), nop}
 	}
 	panic(fmt.Sprintf("unsupparted binary operator: %q", b.op))
 }
@@ -154,101 +155,101 @@ func (c call) Eval(env Env) Response {
 	}
 	switch c.fn {
 	case "cos":
-		return Response{tFloat64, math.Cos(args[0])}
+		return Response{tFloat64, math.Cos(args[0]), nop}
 	case "asin":
-		return Response{tFloat64, math.Asin(args[0])}
+		return Response{tFloat64, math.Asin(args[0]), nop}
 	case "acos":
-		return Response{tFloat64, math.Acos(args[0])}
+		return Response{tFloat64, math.Acos(args[0]), nop}
 	case "atan":
-		return Response{tFloat64, math.Atan(args[0])}
+		return Response{tFloat64, math.Atan(args[0]), nop}
 	case "asinh":
-		return Response{tFloat64, math.Asinh(args[0])}
+		return Response{tFloat64, math.Asinh(args[0]), nop}
 	case "acosh":
-		return Response{tFloat64, math.Acosh(args[0])}
+		return Response{tFloat64, math.Acosh(args[0]), nop}
 	case "atanh":
-		return Response{tFloat64, math.Atanh(args[0])}
+		return Response{tFloat64, math.Atanh(args[0]), nop}
 	case "atan2":
-		return Response{tFloat64, math.Atan2(args[0], args[1])}
+		return Response{tFloat64, math.Atan2(args[0], args[1]), nop}
 	case "abs":
-		return Response{tFloat64, math.Abs(args[0])}
+		return Response{tFloat64, math.Abs(args[0]), nop}
 	case "ceil":
-		return Response{tFloat64, math.Ceil(args[0])}
+		return Response{tFloat64, math.Ceil(args[0]), nop}
 	case "cbrt":
-		return Response{tFloat64, math.Cbrt(args[0])}
+		return Response{tFloat64, math.Cbrt(args[0]), nop}
 	case "copysign":
-		return Response{tFloat64, math.Copysign(args[0], args[1])}
+		return Response{tFloat64, math.Copysign(args[0], args[1]), nop}
 	case "dim":
-		return Response{tFloat64, math.Dim(args[0], args[1])}
+		return Response{tFloat64, math.Dim(args[0], args[1]), nop}
 	case "exp":
-		return Response{tFloat64, math.Exp(args[0])}
+		return Response{tFloat64, math.Exp(args[0]), nop}
 	case "exp2":
-		return Response{tFloat64, math.Exp2(args[0])}
+		return Response{tFloat64, math.Exp2(args[0]), nop}
 	case "expm1":
-		return Response{tFloat64, math.Expm1(args[0])}
+		return Response{tFloat64, math.Expm1(args[0]), nop}
 	case "FMA":
-		return Response{tFloat64, math.FMA(args[0], args[1], args[2])}
+		return Response{tFloat64, math.FMA(args[0], args[1], args[2]), nop}
 	case "floor":
-		return Response{tFloat64, math.Floor(args[0])}
+		return Response{tFloat64, math.Floor(args[0]), nop}
 	case "gamma":
-		return Response{tFloat64, math.Gamma(args[0])}
+		return Response{tFloat64, math.Gamma(args[0]), nop}
 	case "hypot":
-		return Response{tFloat64, math.Hypot(args[0], args[1])}
+		return Response{tFloat64, math.Hypot(args[0], args[1]), nop}
 	case "inf":
-		return Response{tFloat64, math.Inf(int(args[0]))}
+		return Response{tFloat64, math.Inf(int(args[0])), nop}
 	case "J0":
-		return Response{tFloat64, math.J0(args[0])}
+		return Response{tFloat64, math.J0(args[0]), nop}
 	case "J1":
-		return Response{tFloat64, math.J1(args[0])}
+		return Response{tFloat64, math.J1(args[0]), nop}
 	case "Jn":
-		return Response{tFloat64, math.Jn(int(args[0]), args[1])}
+		return Response{tFloat64, math.Jn(int(args[0]), args[1]), nop}
 	case "ldexp":
-		return Response{tFloat64, math.Ldexp(args[0], int(args[0]))}
+		return Response{tFloat64, math.Ldexp(args[0], int(args[0])), nop}
 	case "log":
-		return Response{tFloat64, math.Log(args[0])}
+		return Response{tFloat64, math.Log(args[0]), nop}
 	case "log10":
-		return Response{tFloat64, math.Log10(args[0])}
+		return Response{tFloat64, math.Log10(args[0]), nop}
 	case "log1p":
-		return Response{tFloat64, math.Log1p(args[0])}
+		return Response{tFloat64, math.Log1p(args[0]), nop}
 	case "log2":
-		return Response{tFloat64, math.Log2(args[0])}
+		return Response{tFloat64, math.Log2(args[0]), nop}
 	case "logb":
-		return Response{tFloat64, math.Logb(args[0])}
+		return Response{tFloat64, math.Logb(args[0]), nop}
 	case "max":
-		return Response{tFloat64, math.Max(args[0], args[1])}
+		return Response{tFloat64, math.Max(args[0], args[1]), nop}
 	case "min":
-		return Response{tFloat64, math.Min(args[0], args[1])}
+		return Response{tFloat64, math.Min(args[0], args[1]), nop}
 	case "mod":
-		return Response{tFloat64, math.Mod(args[0], args[1])}
+		return Response{tFloat64, math.Mod(args[0], args[1]), nop}
 	case "nextafter":
-		return Response{tFloat64, math.Nextafter(args[0], args[1])}
+		return Response{tFloat64, math.Nextafter(args[0], args[1]), nop}
 	case "pow":
-		return Response{tFloat64, math.Pow(args[0], args[1])}
+		return Response{tFloat64, math.Pow(args[0], args[1]), nop}
 	case "pow10":
-		return Response{tFloat64, math.Pow10(int(args[0]))}
+		return Response{tFloat64, math.Pow10(int(args[0])), nop}
 	case "remainder":
-		return Response{tFloat64, math.Remainder(args[0], args[1])}
+		return Response{tFloat64, math.Remainder(args[0], args[1]), nop}
 	case "round":
-		return Response{tFloat64, math.Round(args[0])}
+		return Response{tFloat64, math.Round(args[0]), nop}
 	case "roundtoeven":
-		return Response{tFloat64, math.RoundToEven(args[0])}
+		return Response{tFloat64, math.RoundToEven(args[0]), nop}
 	case "sin":
-		return Response{tFloat64, math.Sin(args[0])}
+		return Response{tFloat64, math.Sin(args[0]), nop}
 	case "sinh":
-		return Response{tFloat64, math.Sinh(args[0])}
+		return Response{tFloat64, math.Sinh(args[0]), nop}
 	case "sqrt":
-		return Response{tFloat64, math.Sqrt(args[0])}
+		return Response{tFloat64, math.Sqrt(args[0]), nop}
 	case "tan":
-		return Response{tFloat64, math.Tan(args[0])}
+		return Response{tFloat64, math.Tan(args[0]), nop}
 	case "tanh":
-		return Response{tFloat64, math.Tanh(args[0])}
+		return Response{tFloat64, math.Tanh(args[0]), nop}
 	case "trunc":
-		return Response{tFloat64, math.Trunc(args[0])}
+		return Response{tFloat64, math.Trunc(args[0]), nop}
 	case "Y0":
-		return Response{tFloat64, math.Y0(args[0])}
+		return Response{tFloat64, math.Y0(args[0]), nop}
 	case "Y1":
-		return Response{tFloat64, math.Y1(args[0])}
+		return Response{tFloat64, math.Y1(args[0]), nop}
 	case "Yn":
-		return Response{tFloat64, math.Yn(int(args[0]), args[1])}
+		return Response{tFloat64, math.Yn(int(args[0]), args[1]), nop}
 	}
 	panic(fmt.Sprintf("unsupported function call: %s", c.fn))
 }
@@ -320,7 +321,7 @@ func (b bracket) String() string {
 // mode sets a different running mode on the calculator, used primarily
 // to redirect output type.
 type mode struct {
-	id   rmode
+	id   ident
 	args []Expr
 }
 
@@ -328,8 +329,7 @@ func (m mode) Eval(env Env) (r Response) {
 	for i := range m.args {
 		r = m.args[i].Eval(env)
 	}
-	if m.id == plot {
-	}
+	r.Mode = m.id
 	return
 }
 
@@ -353,12 +353,12 @@ func (m mode) String() string {
 
 // helpout sets help output data for a given calulator function.
 type helpout struct {
-	mode  rmode
+	mode  ident
 	usage string
 }
 
 func (h helpout) Eval(env Env) Response {
-	return Response{tString, h.String()}
+	return Response{tString, h.String(), h.mode}
 }
 
 func (h helpout) Check(vars map[Var]bool) error {
@@ -373,10 +373,10 @@ func (h helpout) String() string {
 	buf := strings.Builder{}
 	for _, arg := range args {
 		for key, val := range fnData {
-			if h.mode == help && key == arg {
+			if h.mode == Help && key == arg {
 				printhelp(&buf, key, val)
 			}
-			if h.mode == helpful && strings.Contains(key, arg) {
+			if h.mode == Helpful && strings.Contains(key, arg) {
 				printhelpful(&buf, key, val)
 			}
 		}
