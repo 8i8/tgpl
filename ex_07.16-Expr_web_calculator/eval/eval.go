@@ -1,6 +1,7 @@
 package eval
 
 import (
+	"errors"
 	"fmt"
 	"math"
 	"strings"
@@ -30,6 +31,10 @@ func (r Response) String() string {
 }
 
 func (r Response) Float() float64 {
+	if r.value == nil {
+		fmt.Println("error: Response nil failed")
+		return math.NaN()
+	}
 	return r.value.(float64)
 }
 
@@ -57,8 +62,13 @@ func NewCheckList() *Check {
 	return &Check{make(map[Var]bool), nop}
 }
 
-func (c *Check) Mode() ident {
-	return c.mode
+var errBlankError = errors.New("")
+
+func (c *Check) Mode() (ident, error) {
+	if c == nil {
+		return nop, errBlankError
+	}
+	return c.mode, nil
 }
 
 func (v *Check) Map() map[Var]bool {
@@ -268,7 +278,7 @@ func (c call) Eval(env Env) Response {
 	case "Yn":
 		return Response{tFloat64, math.Yn(int(args[0]), args[1]), nop}
 	}
-	panic(fmt.Sprintf("unsupported function call: %s", c.fn))
+	panic(lexPanic(fmt.Sprintf("unsupported function call: %s", c.fn)))
 }
 
 func (c call) Check(vars *Check) error {
