@@ -381,15 +381,16 @@ func (m mode) String() string {
 
 // helpout sets help output data for a given calulator function.
 type helpout struct {
-	mode  ident
+	id    ident
 	usage string
 }
 
 func (h helpout) Eval(env Env) Response {
-	return Response{tString, h.String(), h.mode}
+	return Response{tString, h.String(), h.id}
 }
 
 func (h helpout) Check(vars *Check) error {
+	vars.mode = h.id
 	return nil
 }
 
@@ -401,10 +402,10 @@ func (h helpout) String() string {
 	buf := strings.Builder{}
 	for _, arg := range args {
 		for key, val := range fnData {
-			if h.mode == Help && key == arg {
+			if h.id == Help && key == arg {
 				printhelp(&buf, key, val)
 			}
-			if h.mode == Helpful && strings.Contains(key, arg) {
+			if h.id == Helpful && strings.Contains(key, arg) {
 				printhelpful(&buf, key, val)
 			}
 		}
