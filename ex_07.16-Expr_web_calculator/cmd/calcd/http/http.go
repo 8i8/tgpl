@@ -185,7 +185,8 @@ func screen(p Plotter) http.HandlerFunc {
 		// Are we making a plot?
 		mode, err = c.Mode()
 		if err != nil {
-			http.Error(res, err.Error(), http.StatusNotAcceptable)
+			http.Error(res, err.Error(),
+				http.StatusNotAcceptable)
 			return
 		}
 		if mode == eval.Help || mode == eval.Helpful {
