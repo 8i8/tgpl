@@ -118,6 +118,35 @@ func setVariables(res http.ResponseWriter, req *http.Request, strs []string) {
 	}
 }
 
+func singleCalculation(res http.ResponseWriter, req *http.Request,
+	c *eval.Check) (env eval.Env, done bool) {
+	env = make(eval.Env)
+	for v := range c.Map() {
+		var x string
+		if x = req.Form.Get(v.String()); len(x) == 0 {
+			http.Error(res, errVar.Error()+": "+v.String(),
+				http.StatusNotAcceptable)
+			done = true
+			return
+		}
+		if x != "" {
+			f, err := strconv.ParseFloat(x, 10)
+			if err != nil {
+				exp, err := eval.Parse(x)
+				if err != nil {
+					http.Error(res, err.Error(),
+						http.StatusNotAcceptable)
+					done = true
+					return
+				}
+				f = exp.Eval(make(eval.Env)).Float()
+			}
+			env[v] = f
+		}
+	}
+	return
+}
+
 func screen(p Plotter) http.HandlerFunc {
 	return func(res http.ResponseWriter, req *http.Request) {
 
@@ -145,27 +174,9 @@ func screen(p Plotter) http.HandlerFunc {
 		}
 
 		// Compute single value.
-		env := make(eval.Env)
-		for v := range c.Map() {
-			var x string
-			if x = req.Form.Get(v.String()); len(x) == 0 {
-				http.Error(res, errVar.Error()+": "+v.String(),
-					http.StatusNotAcceptable)
-				return
-			}
-			if x != "" {
-				f, err := strconv.ParseFloat(x, 10)
-				if err != nil {
-					exp, err := eval.Parse(x)
-					if err != nil {
-						http.Error(res, err.Error(),
-							http.StatusNotAcceptable)
-						return
-					}
-					f = exp.Eval(make(eval.Env)).Float()
-				}
-				env[v] = f
-			}
+		env, done := singleCalculation(res, req, c)
+		if done {
+			return
 		}
 
 		// Load page.
