@@ -11,11 +11,11 @@ import (
 // expression takes input from the command line until an exceptible
 // expressoin has been parsed.
 func expression(sc *bufio.Scanner, prompt string) (
-	eval.Expr, map[eval.Var]bool) {
+	eval.Expr, *eval.Check) {
 
 	var expr eval.Expr
 	var err error
-	var vars map[eval.Var]bool
+	vars := eval.NewCheckList()
 	for {
 		fmt.Print(prompt)
 		sc.Scan()
@@ -30,7 +30,6 @@ func expression(sc *bufio.Scanner, prompt string) (
 		}
 		break
 	}
-	vars = make(map[eval.Var]bool)
 	err = expr.Check(vars)
 	if err != nil {
 		fmt.Println(err)
@@ -41,13 +40,13 @@ func expression(sc *bufio.Scanner, prompt string) (
 }
 
 // cliArgExpression parses the given string as a mathmatical expression.
-func cliArgExpression(exp string) (eval.Expr, map[eval.Var]bool) {
+func cliArgExpression(exp string) (eval.Expr, *eval.Check) {
 	expr, err := eval.Parse(exp)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	vars := make(map[eval.Var]bool)
+	vars := eval.NewCheckList()
 	err = expr.Check(vars)
 	if err != nil {
 		fmt.Println(err)
@@ -59,11 +58,11 @@ func cliArgExpression(exp string) (eval.Expr, map[eval.Var]bool) {
 
 // variables sets any variables that do not already have a value by
 // asking the user for input.
-func variables(sc *bufio.Scanner, vars map[eval.Var]bool) eval.Env {
+func variables(sc *bufio.Scanner, vars *eval.Check) eval.Env {
 	env := make(eval.Env)
 	var val float64
 	var err error
-	for key, _ := range vars {
+	for key, _ := range vars.Map() {
 		for {
 			fmt.Printf("%s = ", key)
 			sc.Scan()
