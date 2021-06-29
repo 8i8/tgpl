@@ -54,7 +54,7 @@ func getData(req *http.Request) data {
 	}
 }
 
-func parseExprssion(res http.ResponseWriter, req *http.Request) (
+func parseExprssion(res http.ResponseWriter, req *http.Request, tmpl string) (
 	strs []string, expr eval.Expr, c *eval.Check, done bool) {
 
 	// Retrieve the expression if there is one, open the
@@ -63,7 +63,7 @@ func parseExprssion(res http.ResponseWriter, req *http.Request) (
 	str := req.Form.Get("expr")
 	if len(str) == 0 {
 		res.Header().Set("Content-Type", "text/html")
-		templ.ExecuteTemplate(res, "screen", getData(req))
+		templ.ExecuteTemplate(res, tmpl, getData(req))
 		done = true
 		return
 	}
@@ -151,7 +151,7 @@ func screen(p Plotter) http.HandlerFunc {
 	return func(res http.ResponseWriter, req *http.Request) {
 
 		// Prepare data.
-		strs, expr, c, done := parseExprssion(res, req)
+		strs, expr, c, done := parseExprssion(res, req, "screen")
 		if done {
 			return
 		}
@@ -201,7 +201,7 @@ func screen(p Plotter) http.HandlerFunc {
 func index(res http.ResponseWriter, req *http.Request) {
 
 	// Prepare data.
-	strs, _, _, done := parseExprssion(res, req)
+	strs, _, _, done := parseExprssion(res, req, "main")
 	if done {
 		return
 	}
