@@ -31,6 +31,8 @@ type data struct {
 	env     eval.Env
 }
 
+// SetExpr outputs the expression with any variables in an unescaped URL
+// GET format, to postfix href links in anchor tag.
 func (d data) SetExpr() string {
 	d.Expr = html.UnescapeString(d.Expr)
 	if len(d.X) > 0 {
@@ -45,6 +47,7 @@ func (d data) SetExpr() string {
 	return d.Expr
 }
 
+// getData fills a data struct with the required data for a plot.
 func getData(req *http.Request) data {
 	return data{
 		Expr: req.Form.Get("expr"),
@@ -54,6 +57,10 @@ func getData(req *http.Request) data {
 	}
 }
 
+// parseExpression retrieves any expression in the request form,
+// splitting it to sepearte out any & seperated key value pairs from GET
+// requests, then parses the exprssion and generates and runs a
+// eval.Check checklist for checking for variables and running mode.
 func parseExprssion(res http.ResponseWriter, req *http.Request, tmpl string) (
 	strs []string, expr eval.Expr, c *eval.Check, done bool) {
 
@@ -84,30 +91,15 @@ func parseExprssion(res http.ResponseWriter, req *http.Request, tmpl string) (
 		done = true
 		return
 	}
+	// Remove the expression to leave only any key value pairs.
+	strs = strs[1:]
 	return
 }
 
-func plot(res http.ResponseWriter, c *eval.Check, expr eval.Expr, p Plotter) {
-
-	// Set environment with given variables.
-	for v := range c.Map() {
-		if v.String() != "x" && v.String() != "y" &&
-			v.String() != "r" {
-			http.Error(res, errVar.Error()+": "+v.String(),
-				http.StatusNotAcceptable)
-			return
-		}
-	}
-	res.Header().Set("Content-Type", "image/svg+xml")
-	p.Surface(res, func(x, y float64) float64 {
-		r := math.Hypot(x, y) // distance from (0,0)
-		return expr.Eval(eval.Env{"x": x, "y": y, "r": r}).Float()
-	})
-	return
-}
-
+// setVariables sets any variables in the array of strings into the Form
+// value map.
 func setVariables(res http.ResponseWriter, req *http.Request, strs []string) {
-	for i := 1; i < len(strs); i++ {
+	for i := 0; i < len(strs); i++ {
 		str := strings.Split(strs[i], "=")
 		if len(str) < 2 {
 			http.Error(res, "not a valid variable: "+
@@ -118,6 +110,7 @@ func setVariables(res http.ResponseWriter, req *http.Request, strs []string) {
 	}
 }
 
+// singleCalculation evaluate a simple calculator expression.
 func singleCalculation(res http.ResponseWriter, req *http.Request,
 	c *eval.Check) (env eval.Env, done bool) {
 	env = make(eval.Env)
@@ -147,6 +140,29 @@ func singleCalculation(res http.ResponseWriter, req *http.Request,
 	return
 }
 
+// isometricPlot evaluates the given expression, running it with an
+// environment that consists of x, y and r variables. Plotting the
+// result to a 3D surface.
+func isometricPlot(res http.ResponseWriter, c *eval.Check, expr eval.Expr, p Plotter) {
+
+	// Set environment with given variables.
+	for v := range c.Map() {
+		if v.String() != "x" && v.String() != "y" &&
+			v.String() != "r" {
+			http.Error(res, errVar.Error()+": "+v.String(),
+				http.StatusNotAcceptable)
+			return
+		}
+	}
+	res.Header().Set("Content-Type", "image/svg+xml")
+	p.Surface(res, func(x, y float64) float64 {
+		r := math.Hypot(x, y) // distance from (0,0)
+		return expr.Eval(eval.Env{"x": x, "y": y, "r": r}).Float()
+	})
+	return
+}
+
+// screen handles the iframe that is used by the calculator.
 func screen(p Plotter) http.HandlerFunc {
 	return func(res http.ResponseWriter, req *http.Request) {
 
@@ -164,12 +180,12 @@ func screen(p Plotter) http.HandlerFunc {
 			return
 		}
 		if mode == eval.Plot {
-			plot(res, c, expr, p)
+			isometricPlot(res, c, expr, p)
 			return
 		}
 
 		// Set variables from get request if present.
-		if len(strs) > 1 {
+		if len(strs) > 0 {
 			setVariables(res, req, strs)
 		}
 
@@ -199,6 +215,7 @@ func screen(p Plotter) http.HandlerFunc {
 	}
 }
 
+// index handles the main calculator page.
 func index(res http.ResponseWriter, req *http.Request) {
 
 	// Prepare data.
