@@ -2,6 +2,7 @@ package http
 
 import (
 	"Expr_web_calculator/eval"
+	"Expr_web_calculator/svg"
 	"errors"
 	"fmt"
 	"html"
@@ -16,6 +17,8 @@ import (
 	"strings"
 )
 
+// Plotter is passed into the plot function/s and used buy the
+// calculator to generate graphs.
 type Plotter interface {
 	Surface(io.Writer, func(x, y float64) float64)
 }
@@ -24,6 +27,7 @@ var templ = template.Must(template.ParseFiles("./assets/templ.gohtml"))
 
 var errVar = errors.New("undefined variable")
 
+// data contains the data for html template ouput.
 type data struct {
 	Expr    string
 	Val     interface{}
@@ -34,17 +38,18 @@ type data struct {
 // SetExpr outputs the expression with any variables in an unescaped URL
 // GET format, to postfix href links in anchor tag.
 func (d data) SetExpr() string {
-	d.Expr = html.UnescapeString(d.Expr)
+	buf := strings.Builder{}
+	buf.WriteString("?expr=" + html.UnescapeString(d.Expr))
 	if len(d.X) > 0 {
-		d.Expr += "&x=" + d.X
+		buf.WriteString("&x=" + d.X)
 	}
 	if len(d.Y) > 0 {
-		d.Expr += "&y=" + d.Y
+		buf.WriteString("&y=" + d.Y)
 	}
 	if len(d.R) > 0 {
-		d.Expr += "&r=" + d.R
+		buf.WriteString("&r=" + d.R)
 	}
-	return d.Expr
+	return buf.String()
 }
 
 // getData fills a data struct with the required data for a plot.
@@ -163,55 +168,62 @@ func isometricPlot(res http.ResponseWriter, c *eval.Check, expr eval.Expr, p Plo
 }
 
 // screen handles the iframe that is used by the calculator.
-func screen(p Plotter) http.HandlerFunc {
-	return func(res http.ResponseWriter, req *http.Request) {
+func plot(res http.ResponseWriter, req *http.Request) {
+	p := svg.NewIsoSurface()
+	// Prepare data.
+	strs, expr, c, done := parseExprssion(res, req, "plot")
+	if done {
+		return
+	}
 
-		// Prepare data.
-		strs, expr, c, done := parseExprssion(res, req, "screen")
-		if done {
-			return
-		}
+	// Are we making a plot?
+	mode, err := c.Mode()
+	if err != nil {
+		http.Error(res, err.Error(), http.StatusNotAcceptable)
+		return
+	}
+	if mode == eval.Plot {
+		isometricPlot(res, c, expr, p)
+		return
+	}
 
-		// Are we making a plot?
-		mode, err := c.Mode()
-		if err != nil {
-			http.Error(res, err.Error(),
-				http.StatusNotAcceptable)
-			return
-		}
-		if mode == eval.Plot {
-			isometricPlot(res, c, expr, p)
-			return
-		}
+	// Set variables from get request if present.
+	if len(strs) > 0 {
+		setVariables(res, req, strs)
+	}
 
-		// Set variables from get request if present.
-		if len(strs) > 0 {
-			setVariables(res, req, strs)
-		}
+	// Compute single value.
+	env, done := singleCalculation(res, req, c)
+	if done {
+		return
+	}
 
-		// Compute single value.
-		env, done := singleCalculation(res, req, c)
-		if done {
-			return
-		}
+	// Load page.
+	data := getData(req)
+	data.Val = expr.Eval(env)
+	mode, err = c.Mode()
+	if err != nil {
+		http.Error(res, err.Error(),
+			http.StatusNotAcceptable)
+		return
+	}
+	if mode == eval.Help || mode == eval.Helpful {
+		res.Header().Set("Content-Type", "text/plain")
+		res.Write([]byte(data.Val.(eval.Response).String()))
+	} else {
+		res.Header().Set("Content-Type", "text/html")
+		templ.ExecuteTemplate(res, "plot", data)
+	}
+}
 
-		// Load page.
-		data := getData(req)
-		data.Val = expr.Eval(env)
-		// Are we making a plot?
-		mode, err = c.Mode()
-		if err != nil {
-			http.Error(res, err.Error(),
-				http.StatusNotAcceptable)
-			return
-		}
-		if mode == eval.Help || mode == eval.Helpful {
-			res.Header().Set("Content-Type", "text/plain")
-			res.Write([]byte(data.Val.(eval.Response).String()))
-		} else {
-			res.Header().Set("Content-Type", "text/html")
-			templ.ExecuteTemplate(res, "screen", data)
-		}
+// screen handles the intermediary calculator screen that wraps either a
+// plot or a calculation, nested in the main page.
+func screen(res http.ResponseWriter, req *http.Request) {
+	// Load page.
+	res.Header().Set("Content-Type", "text/html")
+	err := templ.ExecuteTemplate(res, "screen", nil)
+	if err != nil {
+		log.Fatal(err)
 	}
 }
 
@@ -237,11 +249,11 @@ func index(res http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func Serve(plot Plotter) {
+func Serve() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", index)
-	mux.HandleFunc("/calc", index)
-	mux.HandleFunc("/screen", screen(plot))
+	mux.HandleFunc("/screen", screen)
+	mux.HandleFunc("/screen/plot", plot)
 	err := http.ListenAndServe(":8000", mux)
 	if err != nil {
 		log.Fatal(err)
