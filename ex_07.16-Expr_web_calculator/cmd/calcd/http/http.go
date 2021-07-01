@@ -170,9 +170,11 @@ func isometricPlot(res http.ResponseWriter,
 
 // plot handles the iframe that is used by the calculator.
 func plot(res http.ResponseWriter, req *http.Request) {
+	const fname = "plot"
 	p := svg.NewIsoSurface()
+
 	// Prepare data.
-	strs, expr, c, done := parseExprssion(res, req, "plot")
+	strs, expr, c, done := parseExprssion(res, req, fname)
 	if done {
 		return
 	}
@@ -213,16 +215,18 @@ func plot(res http.ResponseWriter, req *http.Request) {
 		res.Write([]byte(data.Val.(eval.Response).String()))
 	} else {
 		res.Header().Set("Content-Type", "text/html")
-		templ.ExecuteTemplate(res, "plot", data)
+		templ.ExecuteTemplate(res, fname, data)
 	}
 }
 
 // screen handles the intermediary calculator screen that wraps either a
 // plot or a calculation, nested in the main page.
 func screen(res http.ResponseWriter, req *http.Request) {
+	const fname = "screen"
+
 	// Load page.
 	res.Header().Set("Content-Type", "text/html")
-	err := templ.ExecuteTemplate(res, "screen", nil)
+	err := templ.ExecuteTemplate(res, fname, prepareData(req))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -230,9 +234,10 @@ func screen(res http.ResponseWriter, req *http.Request) {
 
 // index handles the main calculator page.
 func index(res http.ResponseWriter, req *http.Request) {
+	const fname = "index"
 
 	// Prepare data.
-	strs, _, _, done := parseExprssion(res, req, "main")
+	strs, _, _, done := parseExprssion(res, req, fname)
 	if done {
 		return
 	}
