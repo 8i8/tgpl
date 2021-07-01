@@ -11,7 +11,7 @@ import (
 // expression takes input from the command line until an exceptible
 // expressoin has been parsed.
 func expression(sc *bufio.Scanner, prompt string) (
-	eval.Expr, *eval.Check) {
+	eval.Expr, *eval.CheckList) {
 
 	var expr eval.Expr
 	var err error
@@ -40,7 +40,7 @@ func expression(sc *bufio.Scanner, prompt string) (
 }
 
 // cliArgExpression parses the given string as a mathmatical expression.
-func cliArgExpression(exp string) (eval.Expr, *eval.Check) {
+func cliArgExpression(exp string) (eval.Expr, *eval.CheckList) {
 	expr, err := eval.Parse(exp)
 	if err != nil {
 		fmt.Println(err)
@@ -58,7 +58,7 @@ func cliArgExpression(exp string) (eval.Expr, *eval.Check) {
 
 // variables sets any variables that do not already have a value by
 // asking the user for input.
-func variables(sc *bufio.Scanner, vars *eval.Check) eval.Env {
+func variables(sc *bufio.Scanner, vars *eval.CheckList) eval.Env {
 	env := make(eval.Env)
 	var val float64
 	var err error

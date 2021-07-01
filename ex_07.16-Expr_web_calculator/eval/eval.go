@@ -40,7 +40,7 @@ func (r Response) Float() float64 {
 
 type Expr interface {
 	Eval(env Env) Response
-	Check(vars *Check) error
+	Check(vars *CheckList) error
 	String() string
 }
 
@@ -50,28 +50,28 @@ type Var string
 // Env maps envirnoment variable names to values.
 type Env map[Var]float64
 
-// Check keeps track of which variables have been checked and the
+// CheckList keeps track of which variables have been checked and the
 // requested running mode of the evaluation, used to distuinguish plot
 // and help requests from standard evaluations.
-type Check struct {
+type CheckList struct {
 	vars map[Var]bool
 	mode ident
 }
 
-func NewCheckList() *Check {
-	return &Check{make(map[Var]bool), nop}
+func NewCheckList() *CheckList {
+	return &CheckList{make(map[Var]bool), nop}
 }
 
 var errBlankError = errors.New("")
 
-func (c *Check) Mode() (ident, error) {
+func (c *CheckList) Mode() (ident, error) {
 	if c == nil {
 		return nop, errBlankError
 	}
 	return c.mode, nil
 }
 
-func (v *Check) Map() map[Var]bool {
+func (v *CheckList) Map() map[Var]bool {
 	return v.vars
 }
 
@@ -79,7 +79,7 @@ func (v Var) Eval(env Env) Response {
 	return Response{tFloat64, env[v], nop}
 }
 
-func (v Var) Check(vars *Check) error {
+func (v Var) Check(vars *CheckList) error {
 	vars.vars[v] = true
 	return nil
 }
@@ -95,7 +95,7 @@ func (l literal) Eval(env Env) Response {
 	return Response{tFloat64, float64(l), nop}
 }
 
-func (l literal) Check(vars *Check) error {
+func (l literal) Check(vars *CheckList) error {
 	return nil
 }
 
@@ -120,7 +120,7 @@ func (u unary) Eval(env Env) Response {
 	panic(fmt.Sprintf("unsupparted unary operator: %q", u.op))
 }
 
-func (u unary) Check(vars *Check) error {
+func (u unary) Check(vars *CheckList) error {
 	if !strings.ContainsRune("+-", u.op) {
 		return fmt.Errorf("unexpected unary op %q", u.op)
 	}
@@ -155,7 +155,7 @@ func (b binary) Eval(env Env) Response {
 	panic(fmt.Sprintf("unsupparted binary operator: %q", b.op))
 }
 
-func (b binary) Check(vars *Check) error {
+func (b binary) Check(vars *CheckList) error {
 	if !strings.ContainsRune("+-*/^", b.op) {
 		return fmt.Errorf("unsupported binary op %q", b.op)
 	}
@@ -281,7 +281,7 @@ func (c call) Eval(env Env) Response {
 	panic(lexPanic(fmt.Sprintf("unsupported function call: %s", c.fn)))
 }
 
-func (c call) Check(vars *Check) error {
+func (c call) Check(vars *CheckList) error {
 	arity, ok := fnData[c.fn]
 	if !ok {
 		return fmt.Errorf("unknown function %q", c.fn)
@@ -328,7 +328,7 @@ func (b bracket) Eval(env Env) (r Response) {
 	return
 }
 
-func (b bracket) Check(vars *Check) error {
+func (b bracket) Check(vars *CheckList) error {
 	for i := range b.args {
 		b.args[i].Check(vars)
 	}
@@ -360,7 +360,7 @@ func (m mode) Eval(env Env) (r Response) {
 	return
 }
 
-func (m mode) Check(vars *Check) error {
+func (m mode) Check(vars *CheckList) error {
 	for i := range m.args {
 		m.args[i].Check(vars)
 	}
@@ -389,7 +389,7 @@ func (h helpout) Eval(env Env) Response {
 	return Response{tString, h.String(), h.id}
 }
 
-func (h helpout) Check(vars *Check) error {
+func (h helpout) Check(vars *CheckList) error {
 	vars.mode = h.id
 	return nil
 }

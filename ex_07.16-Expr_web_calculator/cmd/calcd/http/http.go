@@ -67,7 +67,7 @@ func getData(req *http.Request) data {
 // requests, then parses the exprssion and generates and runs a
 // eval.Check checklist for checking for variables and running mode.
 func parseExprssion(res http.ResponseWriter, req *http.Request, tmpl string) (
-	strs []string, expr eval.Expr, c *eval.Check, done bool) {
+	strs []string, expr eval.Expr, c *eval.CheckList, done bool) {
 
 	// Retrieve the expression if there is one, open the
 	// basic page if there is not.
@@ -117,7 +117,7 @@ func setVariables(res http.ResponseWriter, req *http.Request, strs []string) {
 
 // singleCalculation evaluate a simple calculator expression.
 func singleCalculation(res http.ResponseWriter, req *http.Request,
-	c *eval.Check) (env eval.Env, done bool) {
+	c *eval.CheckList) (env eval.Env, done bool) {
 	env = make(eval.Env)
 	for v := range c.Map() {
 		var x string
@@ -148,7 +148,8 @@ func singleCalculation(res http.ResponseWriter, req *http.Request,
 // isometricPlot evaluates the given expression, running it with an
 // environment that consists of x, y and r variables. Plotting the
 // result to a 3D surface.
-func isometricPlot(res http.ResponseWriter, c *eval.Check, expr eval.Expr, p Plotter) {
+func isometricPlot(res http.ResponseWriter,
+	c *eval.CheckList, expr eval.Expr, p Plotter) {
 
 	// Set environment with given variables.
 	for v := range c.Map() {
