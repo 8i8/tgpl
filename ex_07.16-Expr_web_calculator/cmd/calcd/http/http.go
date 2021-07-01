@@ -75,7 +75,7 @@ func parseExprssion(res http.ResponseWriter, req *http.Request, tmpl string) (
 	str := req.Form.Get("expr")
 	if len(str) == 0 {
 		res.Header().Set("Content-Type", "text/html")
-		templ.ExecuteTemplate(res, tmpl, getData(req))
+		templ.ExecuteTemplate(res, tmpl, nil)
 		done = true
 		return
 	}
