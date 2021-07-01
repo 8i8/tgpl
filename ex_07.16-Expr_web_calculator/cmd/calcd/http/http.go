@@ -5,12 +5,12 @@ import (
 	"Expr_web_calculator/svg"
 	"errors"
 	"fmt"
-	"html"
 	"html/template"
 	"io"
 	"log"
 	"math"
 	"net/http"
+	"net/url"
 	"os"
 	"os/signal"
 	"strconv"
@@ -35,11 +35,11 @@ type data struct {
 	env     eval.Env
 }
 
-// SetExpr outputs the expression with any variables in an unescaped URL
+// URLEscExpr outputs the expression with any variables in an unescaped URL
 // GET format, to postfix href links in anchor tag.
-func (d data) SetExpr() string {
+func (d data) URLEscExpr() string {
 	buf := strings.Builder{}
-	buf.WriteString("?expr=" + html.UnescapeString(d.Expr))
+	buf.WriteString("?expr=" + url.QueryEscape(d.Expr))
 	if len(d.X) > 0 {
 		buf.WriteString("&x=" + d.X)
 	}
