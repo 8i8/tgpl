@@ -168,7 +168,7 @@ func isometricPlot(res http.ResponseWriter,
 	return
 }
 
-// screen handles the iframe that is used by the calculator.
+// plot handles the iframe that is used by the calculator.
 func plot(res http.ResponseWriter, req *http.Request) {
 	p := svg.NewIsoSurface()
 	// Prepare data.
