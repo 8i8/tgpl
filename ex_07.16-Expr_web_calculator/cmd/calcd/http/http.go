@@ -224,6 +224,17 @@ func plot(res http.ResponseWriter, req *http.Request) {
 func screen(res http.ResponseWriter, req *http.Request) {
 	const fname = "screen"
 
+	// Prepare data.
+	strs, _, _, done := parseExprssion(res, req, fname)
+	if done {
+		return
+	}
+
+	// Set variables from get request if present.
+	if len(strs) > 0 {
+		setVariables(res, req, strs)
+	}
+
 	// Load page.
 	res.Header().Set("Content-Type", "text/html")
 	err := templ.ExecuteTemplate(res, fname, prepareData(req))
