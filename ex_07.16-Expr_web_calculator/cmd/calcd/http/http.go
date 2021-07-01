@@ -52,8 +52,8 @@ func (d data) URLEscExpr() string {
 	return buf.String()
 }
 
-// getData fills a data struct with the required data for a plot.
-func getData(req *http.Request) data {
+// prepareData fills a data struct with the required data for a plot.
+func prepareData(req *http.Request) data {
 	return data{
 		Expr: req.Form.Get("expr"),
 		X:    req.Form.Get("x"),
@@ -200,7 +200,7 @@ func plot(res http.ResponseWriter, req *http.Request) {
 	}
 
 	// Load page.
-	data := getData(req)
+	data := prepareData(req)
 	data.Val = expr.Eval(env)
 	mode, err = c.Mode()
 	if err != nil {
@@ -244,7 +244,7 @@ func index(res http.ResponseWriter, req *http.Request) {
 
 	// Load page.
 	res.Header().Set("Content-Type", "text/html")
-	err := templ.ExecuteTemplate(res, "main", getData(req))
+	err := templ.ExecuteTemplate(res, fname, prepareData(req))
 	if err != nil {
 		log.Fatal(err)
 	}
