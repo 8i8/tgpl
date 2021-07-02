@@ -12,7 +12,7 @@ type Plotter interface {
 
 const (
 	width, height = 600, 320 // canvas size in pixels
-	cells         = 120      // number of grid cells
+	cells         = 100      // number of grid cells
 	xyrange       = 33       // axis ranges (-xyrange..+xyrange)
 	//xyscale       = width / 2 / xyrange // pixels per x or y unit
 	xyscale = 9 // pixels per x or y unit
