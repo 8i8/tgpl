@@ -106,7 +106,7 @@ func (r ident) String() string {
 	case log10e:
 		return "log10e"
 	default:
-		return fmt.Sprintf("(!%s)", r)
+		return fmt.Sprintf("(!%s)", "ident")
 	}
 }
 
