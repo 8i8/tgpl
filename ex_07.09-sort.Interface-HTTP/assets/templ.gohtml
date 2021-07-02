@@ -1,0 +1,29 @@
+{{ define "main" }}<!DOCTYPE html>
+<html lang=en-GB>
+	<head>
+		<meta charset="utf-8">
+		<title>Hello world</title>
+	</head>
+	<body>
+		<a href="{{ .Link.Href }}">{{ .Link.Tag }}</a>
+		<h3>The table is turning ... {{ .Link.Mode }}</h3></br>
+		<table>
+			<tr>
+				<td><a href="{{ .Link.Next }}?title">Title</a></td>
+				<td><a href="{{ .Link.Next }}?artist">Artist</a></td>
+				<td><a href="{{ .Link.Next }}?album">Album</a></td>
+				<td><a href="{{ .Link.Next }}?year">Year</a></td>
+				<td><a href="{{ .Link.Next }}?length">Length</a></td>
+			</tr>
+			{{ range .Tracks }}
+			<tr>
+				<td>{{ .Title }}</td>
+				<td>{{ .Artist }}</td>
+				<td>{{ .Album }}</td>
+				<td>{{ .Year }}</td>
+				<td>{{ .Length }}</td>
+			</tr>
+			{{ end }}
+		</table>
+	</body>
+</html>{{ end }}

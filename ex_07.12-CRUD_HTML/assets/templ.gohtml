@@ -1,0 +1,21 @@
+{{ define "main" }}<!DOCTYPE html>
+<html lang="en-GB">
+	<head>
+		<meta charset="utf-8">
+		<title>store</title>
+	</head>
+	<body>
+		<h3>Welcome to the store</h3>
+		<table>
+			<tr>
+				<td>Item</td><td>Price</td>
+			</tr>
+			{{ range . }}
+			<tr>
+				<td>{{ .Item }}</td><td>{{ .Price }}</td>
+			</tr>
+			{{ end }}
+		</table>
+	</body>
+</html>
+{{ end }}

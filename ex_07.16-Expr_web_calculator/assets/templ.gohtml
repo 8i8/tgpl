@@ -1,0 +1,59 @@
+{{ define "index" }}<!DOCTYPE html>
+<html lang="en-GB">
+	<head>
+		<meta charset="utf-8">
+		<title>calc</title>
+	</head>
+	<body>
+		Some fun functions ... <br>
+		<a href="/?expr=plot(sin(-x)*pow(1.5,-r))"
+			target="_parent">plot(sin(-x)*pow(1.5,-r))</a><br>
+		<a href="/?expr=plot(pow(2,sin(y))*pow(2,sin(x))/12)"
+			target="_parent">plot(pow(2,sin(y))*pow(2,sin(x))/12)</a><br>
+		<a href="/?expr=plot(sin(x*y/10)/10)"
+			target="_parent">plot(sin(x*y/10)/10)</a><br>
+		<a href="/?expr=plot(sin(r)/r)"
+			target="_parent">plot(sin(r)/r)</a><br>
+		<a href="/?expr=plot(tanh(x)%2Btanh(y))/3"
+			target="_parent">plot(tanh(x)+tanh(y))/3</a><br>
+		<iframe src="/screen{{ .URLEscExpr }}" name="screen" width="1000" height="320"
+			scrolling="no" frameborder="0"></iframe>
+		<form action="/" method="get" target="_parent">
+			<input type="text" name="expr" value="{{ .Expr }}"><br>
+			<input type="text" name="x" value="{{ .X }}"><br>
+			<input type="text" name="y" value="{{ .Y }}"><br>
+			<input type="text" name="r" value="{{ .R }}"><br>
+			<button type="submit">calculate</button>
+		</form>
+	</body>
+</html>
+{{ end }}
+
+{{ define "screen" }}<!DOCTYPE html>
+<html lang="en-GB">
+	<head>
+		<meta charset="utf-8">
+		<title>screen</title>
+	</head>
+	<body>
+		<iframe src="/screen/plot{{ .URLEscExpr }}" name="plot" width="600"
+			style="float: left;" height="330" scrolling="no" frameborder="0" ></iframe>
+			<a href="/clear" target="_parent">clear</a><br>
+		{{ range .List }}
+			<a href="/?expr={{ . }}" target="/">{{ . }}</a><br>
+		{{ end }}
+	</body>
+</html>
+{{ end }}
+
+{{ define "plot" }}<!DOCTYPE html>
+<html lang="en-GB">
+	<head>
+		<meta charset="utf-8">
+		<title>plot</title>
+	</head>
+	<body>
+		{{ .Val }}<br>
+	</body>
+</html>
+{{ end }}

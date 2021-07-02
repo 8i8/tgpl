@@ -1,0 +1,59 @@
+lwp-request -m POST -t 10 -H "Authorization: token c537f1922712dc29a8fcc96cbf1b6119a7f4cb25" -c application/vnd.github.v3.text-match+json -C 8i8 https://api.github.com/repos/8i8/test/issues
+{"title": "Found a bug","body": "I'm having a problem with this.","assignees":["octocat"],"milestone": 1,"labels":["bug"]}
+{"title": "The issue","body": "This is the thing you see."}
+
+POST -C 8i8 https://api.github.com/repos/8i8/test/issues -t 10 -c application/vnd.github.v3+json
+
+POST -C 8i8 https://api.github.com
+
+application/vnd.github.v3+json
+
+// go run issues.go repo:golang/go is:open json decoder
+
+GET https://api.github.com/search/issues?q=issues.go&q=repo:golang/go&q=is:open&q=json&q=decoder
+
+
+POST "Authorization: token c537f1922712dc29a8fcc96cbf1b6119a7f4cb25" -c application/vnd.github.v3.text-match+json https://api.github.com/repos/8i8/test
+POST -u 8i8 -c application/vnd.github.v3.text-match+json https://api.github.com/repos/8i8/test/?access_token=c537f1922712dc29a8fcc96cbf1b6119a7f4cb25
+POST -u 8i8 https://api.github.com/repos/8i8/test?access_token=c537f1922712dc29a8fcc96cbf1b6119a7f4cb25
+POST -c application/vnd.github.symmetra-preview+json https://api.github.com/repos/8i8/test/issues/?access_token=c537f1922712dc29a8fcc96cbf1b6119a7f4cb25
+POST -t 10 -c application/vnd.github.v3+json https://api.github.com/repos/8i8/test/issues
+
+curl basic
+
+curl --trace-ascii log-std -u 8i8 -c application/vnd.github.v3.text-match+json https://api.github.com/repos/8i8/test/issues
+
+From the github doc 	
+curl -u 8i8:9b0c17e4c8821c9c508859c28fd30064 https://api.github.com
+curl -H "Authorization: token c537f1922712dc29a8fcc96cbf1b6119a7f4cb25" https://api.github.com
+curl https://api.github.com/?access_token=c537f1922712dc29a8fcc96cbf1b6119a7f4cb25
+
+POST -C 8i8:9b0c17e4c8821c9c508859c28fd30064 -c application/vnd.github.v3.text-match+json https://api.github.com/repos/8i8/test/issues
+POST -H "Authorization: token c537f1922712dc29a8fcc96cbf1b6119a7f4cb25" https://api.github.com
+POST https://api.github.com/?access_token=c537f1922712dc29a8fcc96cbf1b6119a7f4cb25
+
+POST -C 8i8:9b0c17e4c8821c9c508859c28fd30064 -c application/vnd.github.v3+json -u https://api.githu/repos/8i8/test/issues
+
+working
+curl -i -u 8i8:9b0c17e4c8821c9c508859c28fd30064 -d '{"title":"The Next Big Issue","body":"This is the thing."}' https://api.github.com/repos/8i8/test/issues
+curl --trace-ascii log-token -i -H "Authorization: token 760007b75b4d3ecf3a4e5a2e2c1f1a3cc7569fd0" -d '{"title":"Another Big Issue","body":"This is the next thing."}' https://api.github.com/repos/8i8/test/issues
+curl --trace-ascii log-pass -i -u 8i8:9b0c17e4c8821c9c508859c28fd30064 -d '{"title":"The Next Big Issue","body":"This is the thing."}' https://api.github.com/repos/8i8/test/issues
+curl --trace-ascii log-commandline -i -u 8i8 https://api.github.com/user/issues
+
+POST -C 8i8:9b0c17e4c8821c9c508859c28fd30064 -c application/vnd.github.v3+json https://api.github.com/repos/8i8/test/issues
+
+search issues
+curl -u 8i8:760007b75b4d3ecf3a4e5a2e2c1f1a3cc7569fd0 https://api.github.com/issues
+curl https://api.github.com/repos/8i8/test/issues
+curl https://api.github.com/search/issues?q=repo:8i8/test
+curl -u 8i8:760007b75b4d3ecf3a4e5a2e2c1f1a3cc7569fd0 https://api.github.com/repos/8i8/test/issues
+curl -u 8i8:760007b75b4d3ecf3a4e5a2e2c1f1a3cc7569fd0 https://api.github.com/search/issues?q=repo:8i8/test
+
+OGk4OjM0MjJhOGY2YWZjYjE1NTI3MjJiNWI2MjkzYmE
+
+9b0c17e4c8821c9c508859c28fd30064
+c537f1922712dc29a8fcc96cbf1b6119a7f4cb25
+760007b75b4d3ecf3a4e5a2e2c1f1a3cc7569fd0
+d4e4243a5ccc610f682dfdc5a709d86b750fffae
+21a4e58be0f79da665a2338798b7f5f7795321f9
+
