@@ -33,6 +33,7 @@ type data struct {
 	Val     interface{}
 	X, Y, R string
 	env     eval.Env
+	List    []string
 }
 
 // URLEscExpr outputs the expression with any variables in an unescaped URL
@@ -53,12 +54,13 @@ func (d data) URLEscExpr() string {
 }
 
 // prepareData fills a data struct with the required data for a plot.
-func prepareData(req *http.Request) data {
+func prepareData(req *http.Request, list ...string) data {
 	return data{
 		Expr: req.Form.Get("expr"),
 		X:    req.Form.Get("x"),
 		Y:    req.Form.Get("y"),
 		R:    req.Form.Get("r"),
+		List: list,
 	}
 }
 
@@ -235,9 +237,12 @@ func screen(res http.ResponseWriter, req *http.Request) {
 		setVariables(res, req, strs)
 	}
 
+	// Set data into struct for output.
+	data := prepareData(req, buf.List()...)
+
 	// Load page.
 	res.Header().Set("Content-Type", "text/html")
-	err := templ.ExecuteTemplate(res, fname, prepareData(req))
+	err = templ.ExecuteTemplate(res, fname, data)
 	if err != nil {
 		log.Fatal(err)
 	}
