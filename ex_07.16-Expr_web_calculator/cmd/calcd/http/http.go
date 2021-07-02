@@ -64,23 +64,39 @@ func prepareData(req *http.Request, list ...string) data {
 	}
 }
 
-// parseExpression retrieves any expression in the request form,
-// splitting it to sepearte out any & seperated key value pairs from GET
-// requests, then parses the exprssion and generates and runs a
-// eval.Check checklist for checking for variables and running mode.
-func parseExprssion(res http.ResponseWriter, req *http.Request, tmpl string) (
-	strs []string, expr eval.Expr, c *eval.CheckList, done bool) {
+// parseForm retrieves any expression in the request form,
+func parseForm(res http.ResponseWriter, req *http.Request, tmpl string) (
+	str string, done bool) {
 
 	// Retrieve the expression if there is one, open the
 	// basic page if there is not.
 	req.ParseForm()
-	str := req.Form.Get("expr")
+	str = req.Form.Get("expr")
 	if len(str) == 0 {
 		res.Header().Set("Content-Type", "text/html")
 		templ.ExecuteTemplate(res, tmpl, nil)
 		done = true
 		return
 	}
+	if x := req.Form.Get("x"); len(x) != 0 {
+		str += "&x=" + x
+	}
+	if y := req.Form.Get("y"); len(y) != 0 {
+		str += "&y=" + y
+	}
+	if r := req.Form.Get("r"); len(r) != 0 {
+		str += "&r=" + r
+	}
+	return
+}
+
+// divideExpression splis the give expression, seperating out any & key
+// value pairs from the GET requests, then parsing the exprssion. It
+// theb generates and runs an eval.CheckList to asecetain the existace
+// of variables and the programs required running mode.
+func divideExpression(res http.ResponseWriter, str string) (
+	strs []string, expr eval.Expr, c *eval.CheckList, done bool) {
+
 	strs = strings.Split(str, "&")
 
 	// Parser expression.
@@ -176,7 +192,12 @@ func plot(res http.ResponseWriter, req *http.Request) {
 	p := svg.NewIsoSurface()
 
 	// Prepare data.
-	strs, expr, c, done := parseExprssion(res, req, fname)
+	str, done := parseForm(res, req, fname)
+	if done {
+		return
+	}
+
+	strs, expr, c, done := divideExpression(res, str)
 	if done {
 		return
 	}
@@ -226,8 +247,40 @@ func plot(res http.ResponseWriter, req *http.Request) {
 func screen(res http.ResponseWriter, req *http.Request) {
 	const fname = "screen"
 
+	str, done := parseForm(res, req, fname)
+	if done {
+		return
+	}
+
+	buf := eval.NewBuffer(15)
+	cookie, err := req.Cookie("buffer")
+	if err != nil && err != http.ErrNoCookie {
+		http.Error(res, err.Error(),
+			http.StatusInternalServerError)
+		panic(err)
+		return
+	} else if err == http.ErrNoCookie {
+		cookie = &http.Cookie{
+			Name:     "buffer",
+			Path:     "/",
+			Value:    str, // There is only one expression.
+			HttpOnly: true,
+			SameSite: http.SameSiteStrictMode,
+		}
+		if len(str) > 0 {
+			buf.Add(str)
+		}
+	} else {
+		if len(cookie.Value) > 0 {
+			buf.Load(cookie.Value)
+		}
+		buf.MoveUp(str)
+	}
+	cookie.Value = buf.Unload()
+	http.SetCookie(res, cookie)
+
 	// Prepare data.
-	strs, _, _, done := parseExprssion(res, req, fname)
+	strs, _, _, done := divideExpression(res, str)
 	if done {
 		return
 	}
@@ -252,8 +305,13 @@ func screen(res http.ResponseWriter, req *http.Request) {
 func index(res http.ResponseWriter, req *http.Request) {
 	const fname = "index"
 
+	str, done := parseForm(res, req, fname)
+	if done {
+		return
+	}
+
 	// Prepare data.
-	strs, _, _, done := parseExprssion(res, req, fname)
+	strs, _, _, done := divideExpression(res, str)
 	if done {
 		return
 	}
