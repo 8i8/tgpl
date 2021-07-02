@@ -242,6 +242,12 @@ func plot(res http.ResponseWriter, req *http.Request) {
 	}
 }
 
+func clear(res http.ResponseWriter, req *http.Request) {
+	http.SetCookie(res, &http.Cookie{Name: "buffer", MaxAge: -1})
+	res.Header().Set("Content-Type", "text/html")
+	templ.ExecuteTemplate(res, "index", nil)
+}
+
 // screen handles the intermediary calculator screen that wraps either a
 // plot or a calculation, nested in the main page.
 func screen(res http.ResponseWriter, req *http.Request) {
@@ -334,6 +340,7 @@ func Serve() {
 	mux.HandleFunc("/", index)
 	mux.HandleFunc("/screen", screen)
 	mux.HandleFunc("/screen/plot", plot)
+	mux.HandleFunc("/clear", clear)
 	err := http.ListenAndServe(":8000", mux)
 	if err != nil {
 		log.Fatal(err)
