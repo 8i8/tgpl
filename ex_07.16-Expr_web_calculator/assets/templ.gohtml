@@ -16,8 +16,8 @@
 			target="screen">plot(sin(r)/r)</a><br>
 		<a href="/screen?expr=plot(tanh(x)%2Btanh(y))/3"
 			target="screen">plot(tanh(x)+tanh(y))/3</a><br>
-		<iframe src="/screen{{ .URLEscExpr }}" name="screen" width="1000" height="320"
-			scrolling="no" frameborder="0"></iframe>
+		<iframe src="/screen{{ .URLEscExpr }}" name="screen" width="1000" 
+			height="325" scrolling="no" frameborder="0"></iframe>
 		<form action="/screen" method="get" target="screen">
 			<input type="text" name="expr" value="{{ .Expr }}"><br>
 			<input type="text" name="x" value="{{ .X }}"><br>
@@ -37,7 +37,7 @@
 	</head>
 	<body>
 		<iframe src="/screen/plot{{ .URLEscExpr }}" name="plot" width="600"
-			style="float: left;" height="330" scrolling="no" frameborder="0" ></iframe>
+			style="float: left;" height="325" scrolling="auto" frameborder="0" ></iframe>
 			<a href="/screen/clear" target="_self">clear</a><br>
 		{{ range .List }}
 			<a href="/screen?expr={{ . }}" target="screen">{{ . }}</a><br>
