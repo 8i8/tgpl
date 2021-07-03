@@ -64,7 +64,7 @@ func prepareData(req *http.Request, list ...string) data {
 	}
 }
 
-// parseForm retrieves any expression in the request form,
+// parseForm retrieves any expression from within the requests form,
 func parseForm(res http.ResponseWriter, req *http.Request, tmpl string) (
 	str string, done bool) {
 
