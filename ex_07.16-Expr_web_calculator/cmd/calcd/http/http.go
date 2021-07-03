@@ -242,8 +242,17 @@ func plot(res http.ResponseWriter, req *http.Request) {
 	}
 }
 
+// clear invalidates the current history cookie.
 func clear(res http.ResponseWriter, req *http.Request) {
-	http.SetCookie(res, &http.Cookie{Name: "buffer", MaxAge: -1})
+	http.SetCookie(res, &http.Cookie{
+		Name:     "history",
+		Path:     "/",
+		Value:    "",
+		HttpOnly: true,
+		SameSite: http.SameSiteStrictMode,
+		Secure:   true,
+		MaxAge:   -1,
+	})
 	res.Header().Set("Content-Type", "text/html")
 	templ.ExecuteTemplate(res, "screen", nil)
 }
@@ -259,7 +268,7 @@ func screen(res http.ResponseWriter, req *http.Request) {
 	}
 
 	buf := eval.NewBuffer(15)
-	cookie, err := req.Cookie("buffer")
+	cookie, err := req.Cookie("history")
 	if err != nil && err != http.ErrNoCookie {
 		http.Error(res, err.Error(),
 			http.StatusInternalServerError)
@@ -267,11 +276,12 @@ func screen(res http.ResponseWriter, req *http.Request) {
 		return
 	} else if err == http.ErrNoCookie {
 		cookie = &http.Cookie{
-			Name:     "buffer",
+			Name:     "history",
 			Path:     "/",
 			Value:    str, // There is only one expression.
 			HttpOnly: true,
 			SameSite: http.SameSiteStrictMode,
+			Secure:   true,
 		}
 		if len(str) > 0 {
 			buf.Add(str)
