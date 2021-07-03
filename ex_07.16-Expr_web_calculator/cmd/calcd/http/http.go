@@ -191,8 +191,8 @@ func isometricPlot(res http.ResponseWriter,
 	return
 }
 
-// plot handles the iframe that is used by the calculator.
-func plot(res http.ResponseWriter, req *http.Request) {
+// calc handles the iframe that is used by the calculator.
+func calc(res http.ResponseWriter, req *http.Request) {
 	const fname = "plot"
 	p := svg.NewIsoSurface()
 
@@ -354,7 +354,7 @@ func Serve() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", index)
 	mux.HandleFunc("/screen", screen)
-	mux.HandleFunc("/screen/plot", plot)
+	mux.HandleFunc("/screen/plot", calc)
 	mux.HandleFunc("/screen/clear", clear)
 	err := http.ListenAndServe(":8000", mux)
 	if err != nil {
