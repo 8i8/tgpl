@@ -78,6 +78,11 @@ func parseForm(res http.ResponseWriter, req *http.Request, tmpl string) (
 		done = true
 		return
 	}
+	if len(str) > 200 {
+		http.Error(res, "input to long", http.StatusNotAcceptable)
+		done = true
+		return
+	}
 	if x := req.Form.Get("x"); len(x) != 0 {
 		str += "&x=" + x
 	}
