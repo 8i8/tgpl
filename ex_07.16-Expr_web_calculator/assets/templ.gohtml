@@ -38,7 +38,7 @@
 	<body>
 		<iframe src="/screen/plot{{ .URLEscExpr }}" name="plot" width="600"
 			style="float: left;" height="330" scrolling="no" frameborder="0" ></iframe>
-			<a href="/screen/clear" target="screen">clear</a><br>
+			<a href="/screen/clear" target="_self">clear</a><br>
 		{{ range .List }}
 			<a href="/screen?expr={{ . }}" target="screen">{{ . }}</a><br>
 		{{ end }}
