@@ -360,12 +360,12 @@ func (m mode) Eval(env Env) (r Response) {
 	return
 }
 
-func (m mode) Check(vars *CheckList) error {
+func (m mode) Check(vars *CheckList) (err error) {
 	for i := range m.args {
-		m.args[i].Check(vars)
+		err = m.args[i].Check(vars)
 	}
 	vars.mode = m.id
-	return nil
+	return
 }
 
 func (m mode) String() string {
